@@ -681,8 +681,7 @@ static func setScrollFactor(object: Variant, x: float = 1, y: float = 1) -> void
 ##Set the order of the object in the screen.
 static func setObjectOrder(object: Variant, order: int)  -> void:
 	object = _find_object(object); if !object: return
-	var parent = object.get_parent()
-	if parent: parent.move_child(object,clamp(order,0,parent.get_child_count()))
+	var parent = object.get_parent(); if parent: parent.move_child(object,clampi(order,0,parent.get_child_count()))
 
 
 static func getObjectOrder(object: Variant) -> int: ##Returns the object's order.
@@ -754,10 +753,10 @@ static func makeText(tag: String,text: Variant = '', width: float = 500, x: floa
 	newText.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	newText.size.x = width
 	newText.set(&"theme_override_constants/outline_size",7)
-	if tag:
-		removeText(tag)
-		newText.name = tag
-		textsCreated[tag] = newText
+	if !tag: return newText
+	removeText(tag)
+	newText.name = tag
+	textsCreated[tag] = newText
 	return newText
 
 
@@ -913,14 +912,12 @@ static func doShadersTween(shaders: Array, parameter: StringName, value: Variant
 	var tweens: Array[TweenerMethod]; for i in shaders: tweens.append(doShaderTween(i,parameter,value,time,ease))
 	return tweens
 
-##Cancel the Tween. See also [method startTween].
-static func cancelTween(tag: String) -> void:
+static func cancelTween(tag: String) -> void: ##Cancel the Tween. See also [method startTween].
 	var tween = tweensCreated.get(tag); if !tween: return
 	TweenService.tweens_to_update.erase(tween)
 	tweensCreated.erase(tag)
 
-##Detect if the a Tween is running by its tag.
-static func isTweenRunning(tag: String) -> bool: return tag in tweensCreated
+static func isTweenRunning(tag: String) -> bool: return tag in tweensCreated ##Detect if the a Tween is running by its tag.
 
 ##Creates a TweenZoom for cameras.
 static func doTweenZoom(tag: String,object: Variant, toZoom, time = 1.0, easing: StringName = &'') -> TweenerObject: return startTween(tag,object,{&'zoom': float(toZoom)},float(time),easing)
@@ -970,19 +967,12 @@ static func noteTweenDirection(tag: String,noteID,target = 0.0,time = 1.0,easing
 ##Creates a Tween for the color of a Note. See also [method noteTweenAlpha].
 static func noteTweenColor(tag: String,noteID,target = 0.0,time = 1.0,easing: StringName = &'') -> TweenerObject: return startNoteTween(tag,noteID,{&'modulate': float(target)},float(time),easing)
 
-static func startNoteTween(tag: String, noteID, values: Dictionary, time, ease: String) -> TweenerObject:
-	return startTween(
-		tag,
-		_find_group_members('strumLineNotes',int(noteID)),
-		values,
-		float(time),
-		ease
-	)
+static func startNoteTween(tag: String, noteID: Variant, values: Dictionary, time, ease: String) -> TweenerObject:
+	noteID = _find_group_members('strumLineNotes',int(noteID)); return startTween(tag,noteID,values,float(time),ease)
 #endregion
 
 #region Note Methods
-##Returns a new Strum Note. If you want to add the Strum to a group, see also [method addSpriteToGroup].
-static func createStrumNote(note_data: int, style: String = 'funkin', tag: StringName = &''):
+static func createStrumNote(note_data: int, style: String = 'funkin', tag: StringName = &''): ##Returns a new Strum Note. If you want to add the Strum to a group, see also [method addSpriteToGroup].
 	var strum: StrumNote = StrumNote.new(note_data)
 	strum.loadFromStyle(style)
 	if tag: _insert_sprite(tag,strum)
@@ -1030,31 +1020,30 @@ static func initShader(shader: String, tag: StringName = &'', obrigatory: bool =
 static func addShaderCamera(camera: Variant, shader: Variant) -> void:
 	if !shader: return
 	if shader is String: shader = _find_shader_material(shader); if !shader: return
+	var is_material: bool = shader is ShaderMaterial
+	if !is_material: addShadersCamera(camera,shader); return
 	
-	if shader is ShaderMaterial:
-		if camera is Array: 
-			for i in camera: var cam = getCamera(i); if cam: cam.addFilter(shader); 
-			return
-		if camera is String: camera = getCamera(camera)
-		if !camera: return
-		camera.addFilter(shader)
+	if camera is Array: 
+		for i in camera: var cam = getCamera(i); if cam: cam.addFilter(shader);; return
+	
+	if camera is String: camera = getCamera(camera)
+	if camera: camera.addFilter(shader)
+
+static func addShadersCamera(camera: Variant, shaders: Array):
+	_check_shaders_array(shaders)
+	if camera is Array: 
+		for i in camera: var cam = getCamera(i); if cam: cam.addFilters(shaders);
 		return
 	
-	_check_shaders_array(shader)
-	
-	if camera is Array: for i in camera: var cam = getCamera(i); if cam: cam.addFilters(shader); return
 	if camera is String: camera = getCamera(camera)
-	
-	
-	if camera: camera.addFilters(shader)
+	if camera: camera.addFilters(shaders)
 
 static func _check_shaders_array(shaders: Array) -> void:
 	var index: int = shaders.size()-1
 	while index:
-		var s = shaders[index]
-		if s is ShaderMaterial: index -= 1; continue
-		shaders[index] = _find_shader_material(s)
 		index -= 1
+		var s = shaders[index]
+		if s is String: shaders[index] = _find_shader_material(s)
 
 ##Remove shader from the camera, [code]shader[/code] can be a [String] or a [Array].
 ##[br]See also [method addShaderCamera].

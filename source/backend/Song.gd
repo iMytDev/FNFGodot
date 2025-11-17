@@ -78,6 +78,7 @@ static func _loadData(json_path: String, difficulty: String = '') -> Dictionary:
 		fixChart(data)
 		sort_song_notes(data.notes)
 		_insertSectionTimes(data)
+		if data.notes: _convert_notes_to_new(data.notes)
 	return data
 
 static func _insertSectionTimes(json: Dictionary):
@@ -107,6 +108,8 @@ static func _convert_new_to_old(chart: Dictionary, songData: Dictionary = {}, di
 		for changes in songData.timeChanges:
 			bpms.append([changes.get('t',0),changes.get('bpm',0)])
 		json_bpm = bpms[0][1]
+	
+	var bpms_size = bpms.size()
 	
 	var bpmIndex: int = 0
 	var subSections: int = 0
@@ -141,21 +144,21 @@ static func _convert_new_to_old(chart: Dictionary, songData: Dictionary = {}, di
 	newJson.song = songData.get('songName','')
 	newJson.bpm = json_bpm
 	
+	newJson.notes = []
 	for notes in chart.notes.get(difficulty.to_lower(),[]):
 		var strumTime = notes.get('t',0)
 		var section = int(strumTime/sectionStep) - subSections
 		
 		#Detect Bpm Changes
-		if ArrayUtils.array_has_index(bpms,bpmIndex) and bpms[bpmIndex][0] <= strumTime:
+		if bpmIndex < bpms_size and bpms[bpmIndex][0] <= strumTime:
 			json_bpm = bpms[bpmIndex][1]
 			sectionStep = Conductor.get_section_crochet(json_bpm)
 			var newSection = strumTime/sectionStep - subSections
 			subSections -= newSection - section
 			section = newSection - subSections
 			bpmIndex += 1
-		
-		#Create Sections
-		while section >= newJson.notes.size():
+	
+		while newJson.notes.size() <= section: #Create Sections
 			var new_section = getSectionBase()
 			new_section.mustHitSection = true
 			new_section.sectionTime = curSectionTime
@@ -163,18 +166,38 @@ static func _convert_new_to_old(chart: Dictionary, songData: Dictionary = {}, di
 			curSectionTime += sectionStep
 			newJson.notes.append(new_section)
 		
-		var last_section = newJson.notes[section]
-		var note_data = [strumTime,notes.get('d',0),notes.get('l',0.0)]
-		if notes.has('k'): note_data.append(notes.k)
-		last_section.sectionNotes.append(note_data)
+		newJson.notes[section].sectionNotes.append(notes)
 	
 	if chart.get(&'events'): newJson.events = EventNoteUtils.loadEvents(chart.events)
 	return newJson
 
+static func _convert_notes_to_new(notes_data: Array):
+	var index: int = 0
+	var note_size = notes_data.size()
+	while index < note_size:
+		var section_data = notes_data[index].get('sectionNotes')
+		index += 1
+		if !section_data is Array: continue
+		
+		var new_notes: Array
+		var size = section_data.size()
+		var note_index: int = 0
+		while note_index < size:
+			var data = section_data[note_index]
+			var data_size = data.size()
+			var new_data: Dictionary = {'t': data[0],'d': data[1]}
+			if data_size >= 3: new_data.l = data[2] #Note Length
+			if data_size >= 4: new_data.k = data[3] #Note Type
+			new_notes.append(new_data)
+			note_index += 1
+		
+		section_data.clear()
+		section_data.assign(new_notes)
+	
+		
 static func sort_song_notes(song_notes: Array) -> void:
 	for i in song_notes:
-		if !i.sectionNotes: continue
-		i.sectionNotes.sort_custom(ArrayUtils.sort_array_from_first_index)
+		if i.sectionNotes: i.sectionNotes.sort_custom(ArrayUtils.sort_array_from_first_index)
 
 static func getSectionBase() -> Dictionary:
 	return {
@@ -187,11 +210,11 @@ static func getSectionBase() -> Dictionary:
 		&'bpm': 0
 	}
 
-static func getChartBase(bpm: float = 0) -> Dictionary: ##Returns a base [Dictionary] of the Song.
+static func getChartBase() -> Dictionary: ##Returns a base [Dictionary] of the Song.
 	return {
 		'notes': [],
 		'events': [],
-		'bpm': bpm,
+		'bpm': 0.0,
 		'song': '',
 		'songSuffix': '',
 		'player1': 'bf',

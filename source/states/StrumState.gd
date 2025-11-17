@@ -95,9 +95,9 @@ var grpNoteSplashes: SpriteGroup = SpriteGroup.new() ##Note Splashes Group.
 var grpNoteHoldSplashes: Dictionary[int,NoteSplash] ##Note Hold Splashes Group.
 
 static var isPixelStage: bool
-@export var arrowStyle: String = 'funkin'
-@export var splashStyle: String = 'NoteSplashes'
-@export var splashHoldStyle: String = 'HoldNoteSplashes'
+@export var arrowStyle: StringName = &'funkin'
+@export var splashStyle: StringName = &'NoteSplashes'
+@export var splashHoldStyle: StringName = &'HoldNoteSplashes'
 
 #region Rating Data
 var songScore: int ##Score
@@ -248,9 +248,9 @@ func loadSong(data: String = song_json_file, songDifficulty: String = difficulty
 
 ##Load song data. Used in PlayState
 func loadSongObjects():
-	var arrow_s = SONG.get('arrowStyle')
-	var splash_s = SONG.get('splashType')
-	var hold_s = SONG.get('holdSplashType')
+	var arrow_s = SONG.get(&'arrowStyle')
+	var splash_s = SONG.get(&'splashStyle')
+	var hold_s = SONG.get(&'holdSplashStyle')
 	
 	if arrow_s: arrowStyle = arrow_s
 	else: arrowStyle = 'pixel' if isPixelStage else 'funkin'
@@ -738,8 +738,7 @@ func createNumbers(number: int = combo): ##Create the Numbers combo
 	var dict = _comboPixelsPreload if isPixelStage else _comboPreloads
 	for i in digits:
 		if !i in dict: continue
-		
-		var comboNumber = _comboPreloads[i].duplicate()
+		var comboNumber = dict[i].duplicate()
 		comboNumber.position = ScreenUtils.screenSize/2.0 - Vector2(
 			ClientPrefs.data.comboOffset[2]+ 60.0*index,
 			ClientPrefs.data.comboOffset[3]
@@ -824,7 +823,7 @@ func clear_splashes():
 ##Load Notes from the Song.[br][br]
 ##[b]Note:[/b] This function have to be call [u]when [member SONG] and [member keyCount] is already setted.[/u]
 static func getNotesFromData(songData: Dictionary = {}) -> Array[Note]:
-	var _notes: Array[Note] = []
+	var _notes: Array[Note]
 	var notesData = songData.get('notes')
 	if !notesData: return _notes
 	
@@ -834,6 +833,7 @@ static func getNotesFromData(songData: Dictionary = {}) -> Array[Note]:
 	var stepCrochet: float = Conductor.get_step_crochet(_bpm)
 	
 	var types_founded: PackedStringArray = PackedStringArray()
+	
 	for section: Dictionary in notesData:
 		if section.changeBPM and section.bpm != _bpm:
 			_bpm = section.bpm
@@ -848,8 +848,8 @@ static func getNotesFromData(songData: Dictionary = {}) -> Array[Note]:
 			if isAltSection: note.animSuffix = '-alt'
 			if note.noteType: types_founded.append(note.noteType)
 			
-			var susLength = float(noteSection[2]) if noteSection.size() >= 3 else 0.0
-			if !susLength: continue 
+			var susLength = noteSection.get('l',0.0)
+			if susLength < stepCrochet: continue 
 			for i in _create_note_sustains(note,susLength,stepCrochet): _insert_note_to_array(i,_notes)
 	
 	var type_unique: PackedStringArray
@@ -875,7 +875,7 @@ static func _create_note_sustains(note: Note, length: float, stepCrochet: float)
 	var index: int = 0
 	var div: float = length/stepCrochet
 	var int_div = int(div)
-	var susCount: int = int_div  if div-int_div < stepCrochet/2.0 else int_div+1
+	var susCount: int = int_div if div-int_div < stepCrochet/2.0 else int_div+1
 	while index <= susCount:
 		var step = stepCrochet*index
 		var sus_length = minf(stepCrochet, length - step)
@@ -893,16 +893,14 @@ static func _create_note_sustains(note: Note, length: float, stepCrochet: float)
 	note.sustainLength = length
 	return susNotes
 
-static func createNoteFromData(data: Array, sectionData: Dictionary, keyCount: int = 4) -> NoteHit:
-	var noteData = int(data[1])
-	if noteData < 0: return
-	
+static func createNoteFromData(data: Dictionary, sectionData: Dictionary, keyCount: int = 4) -> NoteHit:
+	var noteData = int(data.d)
 	var note = NoteHit.new(noteData%keyCount)
 	var mustHitSection = sectionData.mustHitSection
 	var gfSection = sectionData.gfSection
-	var type = data[3] if data.size() >= 4 else null
+	var type = data.get('k','')
 	
-	note.strumTime = data[0]
+	note.strumTime = data.t
 	note.mustPress = mustHitSection and noteData < keyCount or not mustHitSection and noteData >= keyCount
 	if type and type is String: 
 		note.noteType = type

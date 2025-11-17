@@ -198,12 +198,9 @@ static func get_step_crochet(bpm: float) -> float: return 15000.0/bpm #15000.0 =
 
 static func get_section_crochet(bpm: float, section_beats: float = 4) -> float:  return get_crochet(bpm) * section_beats
 
-func get_section_data(section: int) -> Dictionary:
-	return ArrayUtils.get_array_index(
-		songJson.get('notes',[]),
-		section,
-		{}
-	)
+func get_section_data(section: int = Conductor.section) -> Dictionary:
+	if !songJson or !songJson.get('notes') or section >= songJson.notes.size(): return {}
+	return songJson.notes[section]
 
 static func get_crochet(bpm: float) -> float:
 	if !bpm: return 0.0
@@ -215,6 +212,7 @@ func get_section_time(_section: int = section, _bpm: float = songDefaultBpm) -> 
 	if section_data: return section_data.sectionTime
 	
 	var section_changes = get_bpm_changes(_section)
+	print(section_changes)
 	if !section_changes: return _section * get_section_crochet(_bpm)
 	return _section * get_section_crochet(section_changes.bpm) - section_changes.section_offset
 

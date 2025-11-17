@@ -42,6 +42,8 @@ func tween_shader(shader_material: ShaderMaterial, parameter: StringName, value:
 	if !shader_material: return
 	
 	var init_val = shader_material.get_shader_parameter(parameter)
+	if init_val == null: init_val = MathUtils.get_new_value(typeof(value))
+	
 	var tween: TweenerMethod = TweenerMethod.new(
 		func(val): 
 			shader_material.set_shader_parameter(parameter,val),

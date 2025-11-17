@@ -39,8 +39,7 @@ static func getStyleData(style: StringName, type: StyleType = StyleType.NOTES) -
 		StyleType.SPLASH: json = _load_splash_style(style); prefix = &'noteSplash'
 		StyleType.HOLD_SPLASH: json = _load_splash_style(style); prefix = &'holdNoteCover'
 		_: json = _load_style(style); prefix = &'notes'
-	if !json: return json
-	return json.get(prefix,{})
+	return json.get(prefix,{}) if json else {}
 
 #region Notes Data
 static func _load_style(style: StringName) -> Dictionary:

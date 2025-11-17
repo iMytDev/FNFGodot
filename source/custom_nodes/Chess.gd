@@ -17,6 +17,7 @@ extends Control
 var width: float
 var height: float
 
+var _node_offset: Vector2 = Vector2.ZERO
 var node: Node2D: get = _get_node
 func _init() -> void: resized.connect(_update_size)
 
@@ -31,6 +32,7 @@ func _get_node() -> Node2D:
 	
 	node = Node2D.new()
 	node.name = 'Chess'
+	node.show_behind_parent = true
 	add_child(node)
 	return node
 
@@ -197,8 +199,10 @@ func _draw_chess() -> void:
 	var repeat_count = maxf(steps,length)
 	var repeat_size = rect_size*2.0
 	
+	_node_offset = repeat_size*floorf(repeat_count/2)
 	RenderingServer.canvas_set_item_repeat(nrid,rect_size*2.0,maxi(steps,length))
-	RenderingServer.canvas_item_set_transform(nrid,Transform2D(0.0,repeat_size*floorf(repeat_count/2)))
+	RenderingServer.canvas_item_set_transform(nrid,Transform2D(0.0,_node_offset))
+	
 	
 	var rid = get_canvas_item()
 	_update_size()
@@ -208,7 +212,6 @@ func _draw_chess() -> void:
 	)
 	RenderingServer.canvas_item_set_clip(rid,true)
 	#RenderingServer.canvas_item_set_default_texture_repeat(rid,RenderingServer.CANVAS_ITEM_TEXTURE_REPEAT_ENABLED)
-	
 
 func _draw() -> void:
 	node.queue_redraw()

@@ -71,8 +71,8 @@ func followStrum() -> void:
 
 static func addSplashAnimation(splash: NoteSplash,prefix: StringName):
 	var data = splash.splashData.data.get(prefix)
+	if !data: data = splash.splashData.data.get(&'default'); if !data: return
 	
-	if !data: return
 	if data is Array: data = data.pick_random()
 	
 	var asset = data.get(&'assetPath')

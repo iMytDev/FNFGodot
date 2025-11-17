@@ -1,7 +1,8 @@
-[gd_scene load_steps=7 format=3 uid="uid://eonsf5cks44n"]
+[gd_scene load_steps=8 format=3 uid="uid://eonsf5cks44n"]
 
 [ext_resource type="Script" uid="uid://cyotiath61hou" path="res://source/states/Editors/ChartEditor/ChartEditor.gd" id="1_twph6"]
 [ext_resource type="PackedScene" uid="uid://b1a3jlb7iu130" path="res://scenes/objects/ButtonRange.tscn" id="2_p8wo6"]
+[ext_resource type="Script" uid="uid://dsm0luhaq03go" path="res://source/custom_nodes/ChessMovement.gd" id="2_y0grv"]
 [ext_resource type="Script" uid="uid://cvvli26q7wviq" path="res://source/general/popup/PopupDir.gd" id="3_nkmqi"]
 [ext_resource type="Script" uid="uid://bxu1ahcd17pxh" path="res://source/objects/Sprite/SolidSprite.gd" id="4_4ubu6"]
 
@@ -11,7 +12,8 @@ script/source = "extends Node2D
 
 const ChessNotes = preload(\"uid://qtqqk5lrhuyp\")
 const Icon = preload(\"uid://bgqwitowtypkw\")
-
+const NoteChart = preload(\"uid://dxl7cofy02rr5\")
+const ChessSize: Vector2 = Vector2(60,60)
 
 @onready var position_line = $PositionLine
 
@@ -21,6 +23,9 @@ const Icon = preload(\"uid://bgqwitowtypkw\")
 @onready var charter: Node = $\"..\"
 @onready var icon_player: Icon = Icon.new()
 @onready var icon_opponent: Icon = Icon.new()
+
+@onready var zoom: float = 1.0
+
 var chess_player: Chess = ChessNotes.new()
 var chess_opponent: Chess = ChessNotes.new()
 var chess_events: Chess = Chess.new()
@@ -28,18 +33,31 @@ var chess_events: Chess = Chess.new()
 var chess_nodes: Array[Chess] = [chess_player,chess_opponent,chess_events]
 
 var is_shift_pressed: bool
+
+
+var _notes_created: Array = []
+var _notes_section_created: Array[NoteChart] = []
+
+var eventIndex: int = 0.0
+var events_created: Array
+
 func _ready() -> void:
+	#region Event Chess
+	chess_events.rect_size = ChessSize
 	chess_events.steps = 1
 	chess_events.length = length
 	add_child(chess_events)
+	
 	var event_icon = Sprite2D.new()
 	event_icon.texture = Paths.texture('eventArrow')
 	event_icon.position.y = -45
 	event_icon.centered = false
-	event_icon.scale = Vector2(0.25,0.25)
 	add_child(event_icon)
+	#endregion
 	
-	chess_player.position.x = chess_player.rect_size.x * steps
+	#region Player Chess
+	chess_player.rect_size = ChessSize
+	chess_player.position.x = ChessSize.x * steps
 	chess_player.steps = steps
 	chess_player.length = length
 	add_child(chess_player)
@@ -47,8 +65,11 @@ func _ready() -> void:
 	icon_player.set_position_xy(chess_player.position.x,chess_player.position.y - 15)
 	_load_icon_player()
 	add_child(icon_player)
+	#endregion
 	
-	chess_opponent.position.x = chess_opponent.rect_size.x * steps * 2.5
+	#region Opponent Chess
+	chess_opponent.rect_size = ChessSize
+	chess_opponent.position.x = ChessSize.x * steps * 2.5
 	chess_opponent.steps = steps
 	chess_opponent.length = length
 	add_child(chess_opponent)
@@ -56,44 +77,90 @@ func _ready() -> void:
 	icon_opponent.set_position_xy(chess_opponent.position.x,chess_opponent.position.y - 15)
 	_load_icon_opponent()
 	add_child(icon_opponent)
+	#endregion
 	
 	_update_position_line_size()
 	
 	move_child(position_line,-1)
 	Conductor.beat_hit.connect(_icon_beat)
-	
+	Conductor.section_hit_once.connect(_on_section_hit)
+
 func _update_position_line_size(): position_line.size.x = chess_opponent.position.x + steps*chess_opponent.rect_size.x
 
 func _update_chess_pos() -> void: 
 	var pos = -fmod(Conductor.step_float,length)
 	for i in chess_nodes: i.position.y = pos*i.rect_size.y
 
-func _process(d: float) -> void:
+func _process(_d: float) -> void:
 	if Conductor.is_playing: _update_chess_pos()
 
 #region Icons
 func _load_icon_opponent():icon_opponent.reloadIconFromCharacterJson(charter.player1Data)
 func _load_icon_player(): icon_player.reloadIconFromCharacterJson(charter.player2Data)
 
-func _icon_beat():
-	icon_player.scale += icon_player.beat_value
-	icon_opponent.scale += icon_opponent.beat_value
+func _icon_beat(): icon_player.scale += icon_player.beat_value; icon_opponent.scale += icon_opponent.beat_value
 #endregion
 
 #region Notes
-func createNote(time: float, direction: int, mustPress: bool):
-	pass
+func createNote(time: float, direction: int, mustPress: bool): pass
+
+func createSectionNotes(section: int = Conductor.section):
+	var notes: Array[NoteChart]
+	var secData = (charter.section_data if Conductor.section == section else Conductor.get_section_data(section)).get('sectionNotes')
+	print(secData)
+	if !secData: return notes
+	for i in secData: print(i)
+	return notes
+
+func getNotesFromSection(section: int = Conductor.section) -> Array[NoteChart]:
+	while _notes_created.size() <= Conductor.section: _notes_created.append(null)
+	var notes =  _notes_created[Conductor.section]
+	if notes == null: notes = createSectionNotes(); _notes_created[Conductor.section] = notes
+	return notes
+
+func addNote(note: NoteChart):
+	var chess = chess_player if noteIsPlayer(note) else chess_opponent 
+	chess.add_child(note)
+	updateNotePosition(note)
+
+func noteIsPlayer(note: NoteChart) -> bool:
+	var hitSection = charter.section_data.get('mustHitSection')
+	return hitSection and note.noteData < charter.keyCount or !hitSection and note.noteData > charter.keyCount
+
+func loadSectionNotes():
+	_notes_section_created = getNotesFromSection()
+	for i in _notes_section_created: addNote(i)
+
+func updateNotePosition(note: NoteChart) -> void:
+	var parent = note.get_parent()
+	note._position = Vector2(parent.rect_size.x*note.noteData,Conductor.get_step(note.strumTime)*parent.rect_size.y*zoom)
+
+func updateNotesPosition() -> void: for i in _notes_section_created: updateNotePosition(i)
+#endregion
+
+#region Section
+func _on_section_hit():loadSectionNotes()
+func seek_next_section(): Conductor.seek(Conductor.get_section_time(Conductor.section+1))
+func seek_previos_section(): Conductor.seek(Conductor.get_section_time(Conductor.section-1))
 #endregion
 
 func getMousePosRounded(_position: Vector2, size: Vector2) -> Vector2: return (_position/size).floor() * size
 
-func _chess_input(event: InputEvent, chess: Chess, mustPress: bool):
+func _chess_input(event: InputEvent, chess: Chess):
 	if event is InputEventMouseButton:
 		var pos = event.position if is_shift_pressed else getMousePosRounded(event.position,chess.rect_size)
 
 func _input(event: InputEvent):
 	if event is InputEventKey:
 		if event.keycode == KEY_SHIFT: is_shift_pressed = event.pressed
+		
+#region Shortcuts
+func _unhandled_key_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if !event.pressed: return
+		match event.keycode:
+			KEY_A: seek_next_section()
+			KEY_D: seek_previos_section()
 "
 
 [sub_resource type="GDScript" id="GDScript_qvgc3"]
@@ -112,6 +179,24 @@ func _process(_d) -> void:
 [node name="Charter" type="Node"]
 script = ExtResource("1_twph6")
 songName = "test"
+
+[node name="ChessScroll" type="Control" parent="."]
+modulate = Color(0.06879827, 0.06879828, 0.06879828, 1)
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1290.0
+offset_bottom = 720.0
+mouse_filter = 2
+script = ExtResource("2_y0grv")
+primary_color = Color(1, 1, 1, 1)
+primary_fill = false
+primary_border_width = 1.5
+secondary_color = Color(1, 1, 1, 1)
+secondary_fill = false
+secondary_border_width = 1.5
+steps = 43
+length = 24
+metadata/_custom_type_script = "uid://dsm0luhaq03go"
 
 [node name="ChessControl" type="Node2D" parent="."]
 position = Vector2(0, 150)
