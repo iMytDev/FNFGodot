@@ -51,6 +51,7 @@ func _ready() -> void:
 	var event_icon = Sprite2D.new()
 	event_icon.texture = Paths.texture('eventArrow')
 	event_icon.position.y = -45
+	event_icon.scale = Vector2(0.8,0.8)
 	event_icon.centered = false
 	add_child(event_icon)
 	#endregion
@@ -62,7 +63,7 @@ func _ready() -> void:
 	chess_player.length = length
 	add_child(chess_player)
 	
-	icon_player.set_position_xy(chess_player.position.x,chess_player.position.y - 15)
+	icon_player.set_position_xy(chess_player.position.x,chess_player.position.y - 200)
 	_load_icon_player()
 	add_child(icon_player)
 	#endregion
@@ -74,7 +75,7 @@ func _ready() -> void:
 	chess_opponent.length = length
 	add_child(chess_opponent)
 	
-	icon_opponent.set_position_xy(chess_opponent.position.x,chess_opponent.position.y - 15)
+	icon_opponent.set_position_xy(chess_opponent.position.x,chess_opponent.position.y - 200)
 	_load_icon_opponent()
 	add_child(icon_opponent)
 	#endregion
@@ -186,7 +187,6 @@ layout_mode = 3
 anchors_preset = 0
 offset_right = 1290.0
 offset_bottom = 720.0
-mouse_filter = 2
 script = ExtResource("2_y0grv")
 primary_color = Color(1, 1, 1, 1)
 primary_fill = false

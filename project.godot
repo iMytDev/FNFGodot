@@ -162,7 +162,8 @@ pointing/emulate_touch_from_mouse=true
 
 [rendering]
 
-renderer/rendering_method="mobile"
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
 textures/vram_compression/import_s3tc_bptc=true
 textures/default_filters/use_nearest_mipmap_filter=true
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)

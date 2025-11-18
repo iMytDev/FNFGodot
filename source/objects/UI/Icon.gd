@@ -57,11 +57,13 @@ func _process(delta: float) -> void:
 
 func set_pixel(is_pixel: bool = false, scale_if_pixel: bool = false):
 	if is_pixel == isPixel: return
+	var _scale: Vector2 = Vector2.ONE
 	antialiasing = !is_pixel
-	if scale_if_pixel and is_pixel: scale = Vector2(4.5,4.5); beat_value = Vector2(0.8,0.8)
-	else: scale = Vector2.ONE; beat_value = Vector2(0.2,0.2)
+	if scale_if_pixel and is_pixel: _scale = Vector2(4.5,4.5); beat_value = Vector2(0.8,0.8)
+	else: beat_value = Vector2(0.2,0.2)
 	isPixel = is_pixel
-	default_scale = scale
+	setGraphicScale(_scale)
+	default_scale = _scale
 	
 func set_pivot_offset(pivot: Vector2) -> void:
 	super.set_pivot_offset(pivot) 
