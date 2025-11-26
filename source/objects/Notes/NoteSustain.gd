@@ -94,7 +94,7 @@ func resetNote() -> void:
 
 func _on_hit() -> void: 
 	isBeingDestroyed = true; wasHit = true;
-	if !isEndSustain: hit_time = (1.0 + fmod(Conductor.step_float,1.0)) * Conductor.stepCrochetMs;
+	if !isEndSustain: hit_time = (1.0 - fmod(Conductor.step_float,1.0)) * Conductor.stepCrochetMs;
 
 func followStrum(strum: StrumNote = strumNote) -> void: ##Update the Note position from the his [param strumNote].
 	super.followStrum(strum)
