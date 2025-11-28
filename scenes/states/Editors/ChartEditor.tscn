@@ -35,8 +35,8 @@ var chess_nodes: Array[Chess] = [chess_player,chess_opponent,chess_events]
 var is_shift_pressed: bool
 
 
-var _notes_created: Array = []
-var _notes_section_created: Array[NoteChart] = []
+var _notes_created: Array
+var _notes_section_created: Array[NoteChart]
 
 var eventIndex: int = 0
 var events_created: Array
@@ -96,7 +96,7 @@ func _process(_d: float) -> void:
 	if Conductor.is_playing: _update_chess_pos()
 
 #region Icons
-func _load_icon_opponent():icon_opponent.reloadIconFromCharacterJson(charter.player1Data)
+func _load_icon_opponent(): icon_opponent.reloadIconFromCharacterJson(charter.player1Data)
 func _load_icon_player(): icon_player.reloadIconFromCharacterJson(charter.player2Data)
 
 func _icon_beat(): icon_player.scale += icon_player.beat_value; icon_opponent.scale += icon_opponent.beat_value
@@ -108,7 +108,6 @@ func createNote(time: float, direction: int, mustPress: bool): pass
 func createSectionNotes(section: int = Conductor.section):
 	var notes: Array[NoteChart]
 	var secData = (charter.section_data if Conductor.section == section else Conductor.get_section_data(section)).get('sectionNotes')
-	print(secData)
 	if !secData: return notes
 	for i in secData: print(i)
 	return notes

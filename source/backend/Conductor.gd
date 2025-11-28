@@ -282,7 +282,7 @@ func get_section(
 	return _position / sec_crochet
 
 func get_section_data(section: int = Conductor.section) -> Dictionary: 
-	var notes = songJson.get(&'notes'); return notes[section] if notes.size() < section else {}
+	var notes = songJson.get(&'notes'); return notes[section] if notes and notes.size() < section else {}
 #endregion
 
 #region Beat Methods

@@ -15,64 +15,51 @@ static func getNotesFromData(songData: Dictionary = {}) -> Array[Note]:
 	
 	var types_founded: PackedStringArray = PackedStringArray()
 	
-	for section: Dictionary in notesData:
+	var i: int = 0
+	var length = notesData.size()-1
+	while i < length:
+		var section = notesData[i]
 		if section.changeBPM and section.bpm != _bpm:
 			_bpm = section.bpm
 			stepCrochet = Conductor.get_step_crochet(_bpm)
-		for noteSection in section.sectionNotes:
-			var note: NoteHit = createNoteFromData(noteSection,section,keyCount)
+		
+		var note_index: int = 0
+		var notes_length = section.sectionNotes.size()
+		while note_index < notes_length:
+			var note_data = section.sectionNotes[note_index]
+			note_index += 1
+			
+			var note: NoteHit = createNoteFromData(note_data,section,keyCount)
 			if !_insert_note_to_array(note,_notes): continue
 			if note.noteType: types_founded.append(note.noteType)
 			
-			var susLength = float(noteSection.get('l',0.0))
+			var susLength = note_data.get('l',0.0)
 			if susLength < stepCrochet: continue 
-			for i in _create_note_sustains(note,susLength): _insert_note_to_array(i,_notes)
+			for s in _create_note_sustains(note,susLength): _insert_note_to_array(s,_notes,false)
+			
+		i += 1
 	var type_unique: PackedStringArray
-	for i in types_founded: if not i in type_unique: type_unique.append(i)
+	for t in types_founded: if not t in type_unique: type_unique.append(t)
 	songData.noteTypes = type_unique
-	_remove_duplicate_notes(_notes)
 	return _notes
 
-static func _insert_note_to_array(note: Note, array: Array) -> bool:
+static func _insert_note_to_array(note: Note, array: Array, check_duplicated_note: bool = true) -> bool:
 	var index = array.size()
 	while index:
-		var prev_note: Note = array[index-1]
-		if note.strumTime <= prev_note.strumTime: index -= 1; continue
-		array.insert(index,note); return true
+		index -= 1
+		var prev_note: Note = array[index]
+		if prev_note.strumTime > note.strumTime: continue; 
+		if !check_duplicated_note or prev_note.strumTime < note.strumTime: array.insert(index + 1, note); return true
+		
+		#Remove duplicated note
+		if !sameNote(note,prev_note): continue
+		prints("Removed Duplicate Note at:",prev_note.strumTime,prev_note.noteData)
+		if note.sustainLength < prev_note.sustainLength: return false
+		array.insert(index + 1,note);
+		for i in array.pop_at(index).sustainParents: array.erase(i);
 	array.push_front(note)
 	return true
-
-static func _remove_duplicate_notes(_notes_array: Array):
-	var index: int = _notes_array.size()
-	while index:
-		index -= 1
-		var note: Note = _notes_array[index]
-		if note.isSustainNote: continue
 		
-		var prev_note: Note
-		var prev_index = index
-		while prev_index:
-			prev_index -= 1
-			prev_note = _notes_array[prev_index]
-			if !prev_note.isSustainNote: break
-			prev_note = null
-		
-		if !prev_note: continue
-		if prev_note and prev_note.strumTime < note.strumTime: continue
-		if sameNote(prev_note,note):
-			var note_to_remove: Note
-			var index_to_remove: int
-			if note.sustainLength > prev_note.sustainLength: note_to_remove = prev_note; index_to_remove = prev_index
-			else: note_to_remove = note; index_to_remove = index
-			
-			index = index_to_remove
-			
-			_notes_array.remove_at(index_to_remove)
-			for i in note_to_remove.sustainParents: _notes_array.erase(i); i.queue_free()
-			
-			note_to_remove.queue_free()
-		else:
-			index = prev_index
 
 static func _create_note_sustains(note: Note, length: float) -> Array[NoteSustain]:
 	var sustainFill: NoteSustain = createSustainFromNote(note,false)
@@ -141,7 +128,7 @@ static func createSustainFromNote(note: Note,isEnd: bool = false) -> NoteSustain
 
 static func sameNote(note1: Note,note2: Note):
 	return note1 and note2 and \
+		note1.isSustainNote == note2.isSustainNote and\
 		note1.strumTime == note2.strumTime and\
 		note1.noteData == note2.noteData and\
-		note1.mustPress == note2.mustPress and\
-		note1.isSustainNote == note2.isSustainNote
+		note1.mustPress == note2.mustPress\

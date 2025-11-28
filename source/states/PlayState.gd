@@ -177,9 +177,9 @@ func moveCamera(target: StringName = 'boyfriend') -> void:
 	camFollow = getCameraPos(get(target)) 
 	super.moveCamera(target)
 
-func screenBeat() -> void:
-	camGame.zoom += 0.015
-	super.screenBeat()
+func screenBeat(multi: float = 1.0) -> void:
+	camGame.zoom += 0.015 * multi
+	super.screenBeat(multi)
 
 func changeCharacter(type: int = 0, character: StringName = 'bf') -> Object:
 	var char_name: StringName = get_character_type_name(type)

@@ -251,7 +251,9 @@ func iconBeat() -> void:
 	if !can_process(): return #Do not beat if the game is not being processed.
 	for i in icons: i.scale += i.beat_value
 
-func screenBeat() -> void: camHUD.zoom += 0.03 ##Do screen beat effect. Also used in PlayState.
+##Do screen beat effect. Also used in PlayState.
+func screenBeat(multi: float = 1.0) -> void: camHUD.zoom += 0.03 * multi 
+
 
 func onBeatHit(beat: int = Conductor.beat) -> void:
 	if !can_process(): return

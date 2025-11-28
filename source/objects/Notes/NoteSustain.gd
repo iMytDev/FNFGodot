@@ -57,7 +57,7 @@ func loadSustainFrame():
 func updateNote() -> void:
 	distance = (strumTime - Conductor.songPositionDelayed)
 	
-	if !isEndSustain and hit_time: hit_time -= get_process_delta_time(); if hit_time <= 0.0: hit_time = 0.0
+	if hit_time: hit_time -= get_process_delta_time(); if hit_time <= 0.0: hit_time = 0.0
 	if isBeingDestroyed or _sus_animated: updateSustain()
 	_check_hit()
 	followStrum()

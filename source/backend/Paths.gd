@@ -497,8 +497,8 @@ static func getFilesAt(folder: String, return_folder: bool = false, filters: Var
 
 static func _check_filters(filters: PackedStringArray) -> PackedStringArray:
 	if !filters: return filters
-	var index: int = 0
-	while index < filters.size(): var s = filters[index]; index += 1; if s.begins_with('.'): filters[index] = s.right(-1)
+	var index: int = filters.size()
+	while index: index -= 1; var s = filters[index]; if s.begins_with('.'): filters[index] = s.right(-1)
 	return filters
 
 static func getFilesAtAbsolute(

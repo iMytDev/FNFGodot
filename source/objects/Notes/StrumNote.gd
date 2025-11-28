@@ -91,7 +91,6 @@ func _load_anims_from_prefix() -> void:
 
 func _load_graphic_anims() -> void:
 	var keyCount: int = Song.keyCount
-	print(data)
 	var strum_data = data % keyCount
 	image.region_rect.size = imageSize/Vector2(keyCount,5)
 	animation.addFrameAnim(&'static',[strum_data])

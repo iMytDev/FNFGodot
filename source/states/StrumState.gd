@@ -279,9 +279,8 @@ func _create_strums() -> void:
 	
 	updateStrumsPosition()
 	var i: int = keyCount
-	#Player Strums
 	i = keyCount*2
-	while i > keyCount:
+	while i > keyCount: #Player Strums
 		i -= 1
 		var strum = createStrum(i-keyCount)
 		strum.mustPress = !botplay
@@ -290,8 +289,7 @@ func _create_strums() -> void:
 		strum._position = defaultStrumPos[i]
 		strum.mustPress = !playAsOpponent and !botplay
 		strum.modulate.a = defaultStrumAlpha[i]
-	#Opponent Strums
-	while i:
+	while i: #Opponent Strums
 		i -= 1
 		var strum = createStrum(i)
 		opponentStrums.insert(0,strum)
@@ -344,10 +342,7 @@ func updateNotes():
 			if note.strumTime - _songPos > noteSpawnTime: note.kill(); _unspawnIndex -= 1
 			elif !updateNote(note): continue
 			members.remove_at(note_index)
-	else:
-		while note_index:
-			note_index -= 1
-			if !updateNote(members[note_index]): members.remove_at(note_index)
+	else: while note_index: note_index -= 1; if !updateNote(members[note_index]): members.remove_at(note_index)
 	if !botplay and canHitNotes: _check_hit_notes()
 
 func _check_unspawn_notes() -> void:
