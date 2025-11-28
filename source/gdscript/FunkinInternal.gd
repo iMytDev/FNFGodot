@@ -137,8 +137,8 @@ static func _insert_script(script: Object, path: String = '') -> bool:
 	return true
 
 static func removeScript(path: Variant):
-	var script: Resource
-	if path is Resource: 
+	var script: Object
+	if path is Object: 
 		script = path
 		path = _find_script_path(script)
 		if !path: return

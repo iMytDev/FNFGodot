@@ -91,10 +91,12 @@ func _load_anims_from_prefix() -> void:
 
 func _load_graphic_anims() -> void:
 	var keyCount: int = Song.keyCount
+	print(data)
+	var strum_data = data % keyCount
 	image.region_rect.size = imageSize/Vector2(keyCount,5)
-	animation.addFrameAnim(&'static',[data])
-	animation.addFrameAnim(&'confirm',[data + (keyCount*3),data + (keyCount*4),data + keyCount])
-	animation.addFrameAnim(&'press',[data + (keyCount*3),data + (keyCount*2)])
+	animation.addFrameAnim(&'static',[strum_data])
+	animation.addFrameAnim(&'confirm',[strum_data + (keyCount*3),strum_data + (keyCount*4),strum_data + keyCount])
+	animation.addFrameAnim(&'press',[strum_data + (keyCount*3),strum_data + (keyCount*2)])
 
 func loadFromStyle(noteStyle: String):
 	styleName = noteStyle

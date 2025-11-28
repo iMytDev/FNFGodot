@@ -2,7 +2,6 @@ extends "FunkinInternal.gd"
 class_name FunkinGD
 
 #region Variables
-const TimeLabel = preload("uid://d3x26l4q6bk7j")
 const TweenerObject = preload("uid://b3wombi1g7mtv")
 const TweenerMethod = preload("uid://buyyxjslew1n1")
 
@@ -130,8 +129,8 @@ static var downscroll: bool:
 static var hideHud: bool
 
 #TimeBar
-static var hideTimeBar: bool
-static var timeBarType: TimeLabel.Styles
+static var timeBarType: StringName:
+	get(): return game.timeBarType if game else ClientPrefs.data.timeBarType
 
 static var shadersEnabled: bool:
 	get(): return ClientPrefs.data.shadersEnabled
@@ -180,10 +179,10 @@ static func precacheVideo(path: String) -> VideoStreamTheora: return Paths.video
 static func addCharacterToList(character: StringName, type: Variant = 'bf') -> void: ##Precache character.
 	if not (Paths.character(character) and game): return
 	if type is int: game.addCharacterToList(type,character); return
-	match type:
-		'bf','boyfriend': game.addCharacterToList(0,character)
-		'dad':game.addCharacterToList(1,character)
-		'gf':game.addCharacterToList(2,character)
+	match StringName(type):
+		&'bf',&'boyfriend': game.addCharacterToList(0,character)
+		&'dad':game.addCharacterToList(1,character)
+		&'gf':game.addCharacterToList(2,character)
 #endregion
 
 

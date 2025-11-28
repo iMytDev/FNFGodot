@@ -81,7 +81,7 @@ static var data: Dictionary[StringName, Variant] = {
 	&'vsync_mode': ProjectSettings.get_setting("display/window/vsync/vsync_mode"),
 	&'fps': 120,
 	
-	&'timeBarType': 0, #0 = Disabled, 1 = TIME_LEFT, 2 = SONG_NAME, 3 = POSITION
+	&'timeBarType': &"Disabled", 
 	&'hideHud': false,
 	&'botplay': false,
 	
@@ -91,7 +91,7 @@ static var data: Dictionary[StringName, Variant] = {
 	#endregion
 	
 	#region Audio Options
-	'songOffset': 0.0,
+	&'songOffset': 0.0,
 	#endregion
 	
 	
@@ -132,6 +132,7 @@ static func setOptionValues():
 	Engine.max_fps = data.fps
 	DisplayServer.window_set_mode(data.window_mode)
 	DisplayServer.window_set_vsync_mode(data.vsync_mode)
+
 static func disableMod(mod_name: String):
 	data.modsEnabled[mod_name] = false
 	

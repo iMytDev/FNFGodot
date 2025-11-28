@@ -278,35 +278,33 @@ func _create_strums() -> void:
 	opponentStrums.members.clear()
 	
 	updateStrumsPosition()
-	var i: int = 0
-	#Opponent Strums
-	while i < keyCount:
-		var strum = createStrum(i,true,defaultStrumPos[i])
-		strum.mustPress = playAsOpponent and !botplay
-		strum.modulate.a = defaultStrumAlpha[i]
-		i += 1
-	
+	var i: int = keyCount
 	#Player Strums
-	i = keyCount
-	var length = i*2
-	while i < length:
-		var strum = createStrum(i-length,false,defaultStrumPos[i])
+	i = keyCount*2
+	while i > keyCount:
+		i -= 1
+		var strum = createStrum(i-keyCount)
+		strum.mustPress = !botplay
+		playerStrums.insert(0,strum)
+		strumLineNotes.insert(0,strum)
+		strum._position = defaultStrumPos[i]
 		strum.mustPress = !playAsOpponent and !botplay
 		strum.modulate.a = defaultStrumAlpha[i]
-		i +=1
-
-func createStrum(i: int, opponent_strum: bool = true, pos: Vector2 = Vector2.ZERO) -> StrumNote:
+	#Opponent Strums
+	while i:
+		i -= 1
+		var strum = createStrum(i)
+		opponentStrums.insert(0,strum)
+		strumLineNotes.insert(0,strum)
+		strum._position = defaultStrumPos[i]
+		strum.mustPress = playAsOpponent and !botplay
+		strum.modulate.a = defaultStrumAlpha[i]
+	
+	
+func createStrum(i: int) -> StrumNote:
 	var strum = StrumNote.new(i)
 	strum.loadFromStyle(arrowStyle)
-	
-	strum.mustPress = !opponent_strum and !botplay
-	if opponent_strum: opponentStrums.add(strum)
-	else: playerStrums.add(strum)
-	
 	strum.downscroll = downScroll
-	strum._position = pos
-	
-	strumLineNotes.add(strum)
 	strum.name = &"StrumNote"
 	return strum
 
@@ -457,6 +455,7 @@ func reloadNote(note: Note):
 	note.resetNote()
 	if note.isSustainNote: note.splashStyle = splashHoldStyle
 	else: note.splashStyle = note.splashStyle
+
 func _disable_note_sustains(note: Note) -> void:
 	if note: for sus in note.sustainParents: sus.blockHit = true; sus.ignoreNote = true; sus.modulate.a = 0.3
 #endregion

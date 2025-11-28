@@ -181,7 +181,7 @@
 	"splashAlpha": 0.8,
 	"splashSkin": "noteSplashes/noteSplashes",
 	"splashesEnabled": true,
-	"timeBarType": 0.0,
+	"timeBarType": "Position",
 	"vsync_mode": 0.0,
 	"window_mode": 0.0
 }

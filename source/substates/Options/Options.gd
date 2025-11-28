@@ -1,5 +1,5 @@
 extends Node
-const TimeLabel = preload("res://source/objects/Display/TimeLabel.gd")
+
 const OptionMenu = preload("res://source/substates/Options/OptionMenu.gd")
 var back_to: Variant #Can be a GDScript or a PackedScene
 var cur_visual: Node
@@ -60,10 +60,10 @@ var options: Array[Dictionary] = [
 		{
 			&'name': "Time Bar Style",
 			&'options': {
-				TimeLabel.Styles.DISABLED: "Disabled",
-				TimeLabel.Styles.SONG_NAME: "Song Name",
-				TimeLabel.Styles.TIME_LEFT: "Time Left",
-				TimeLabel.Styles.POSITION: "Song Position",
+				&"Disabled": &"Disabled",
+				&"Song Name": &"Song Name",
+				&"Time Left": &"Time Left",
+				&"Song Position": &"Song Position",
 			},
 			&'object': ClientPrefs.data,
 			&'property': &'timeBarType'
@@ -86,10 +86,10 @@ var options: Array[Dictionary] = [
 	}
 ]
 var cur_menu: OptionMenu: set = set_cur_menu
-var options_changed: bool = false
+var options_changed: bool
 var cur_text_selected: Node
-var menus_created: Dictionary = {}
-var prev_menus: Array = []
+var menus_created: Dictionary
+var prev_menus: Array
 
 
 var bg: Sprite2D = Sprite2D.new()

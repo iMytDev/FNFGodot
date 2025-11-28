@@ -2,7 +2,6 @@
 ##PlayState Base.
 extends "res://source/states/StrumState.gd"
 
-const TimeLabel = preload("uid://d3x26l4q6bk7j")
 const PauseSubstate = preload("uid://yw07oc1elhfb")
 
 const Bar = preload("uid://cesg7bsxvgdcm")
@@ -73,14 +72,9 @@ var skipCountdown: bool
 @export_group("Hud Elements")
 @export var hideHud: bool = ClientPrefs.data.hideHud: set = _set_hide_hud
 
-var hideTimeBar: bool = ClientPrefs.data.timeBarType == TimeLabel.Styles.DISABLED
-var timeBarType: TimeLabel.Styles = ClientPrefs.data.timeBarType
-
 var _healthBar_State: IconState = IconState.NORMAL
 var healthBar: Bar = Bar.new('healthBar')
 
-var timeBar: Bar
-var timeTxt: TimeLabel
 #region Icons
 const Icon := preload("res://source/objects/UI/Icon.gd")
 var iconP1: Icon = Icon.new()
@@ -104,7 +98,7 @@ var isStoryMode: bool
 #endregion
 
 @export_category("Song Data")
-var songName: StringName = ''
+var songName: StringName
 
 @export_category("Cutscene")
 var seenCutscene: bool
@@ -114,8 +108,7 @@ var videoPlayer: VideoStreamPlayer
 
 var introSoundsSuffix: StringName
 
-
-var stateLoaded: bool = false #Used in FunkinGD
+var stateLoaded: bool #Used in FunkinGD
 func _ready():
 	Global.onSwapTree.connect(destroy,CONNECT_ONE_SHOT)
 	name = 'PlayState'
@@ -150,7 +143,6 @@ func _process(delta: float) -> void:
 	FunkinGD.callOnScripts(&'onUpdate',[delta])
 	
 	super._process(delta)
-	updateTimeBar()
 	
 	for icon in icons: updateIconPos(icon)	
 
@@ -194,22 +186,7 @@ func _setup_hud() -> void:
 	uiGroup.add(scoreTxt)
 	
 	healthBar.name = &'healthBar'
-	_setup_time_bar()
-
-func _setup_time_bar():
-	if hideTimeBar: return
-	timeBar = Bar.new('timeBar')
-	timeBar.name = &'timeBar'
-	timeBar.position = Vector2(ScreenUtils.screenCenter.x - timeBar.bg.pivot_offset.x,5)
-	
-	timeTxt = TimeLabel.new()
-	timeTxt.size.x = timeBar.bg.width
-	timeTxt.position = timeBar.position# + Vector2(timeBar.bg.pivot_offset.x,0)
-	if isPixelStage: timeTxt.set("theme_override_fonts/font",Paths.font('pixel.otf'))
-	
-	uiGroup.add_child(timeBar)
-	uiGroup.add(timeTxt)
-
+	FunkinGD.callOnScripts(&"onSetupHud")
 
 
 func createMobileGUI():
@@ -220,16 +197,6 @@ func createMobileGUI():
 	button.position.x = ScreenUtils.screenCenter.x
 	button.pressed.connect(pauseSong)
 	add_child(button)
-
-func get_hud_elements() -> Array[Node]:
-	if hideHud: return []
-	elif hideTimeBar: return [scoreTxt,iconP1,iconP2,healthBar]
-	return [timeTxt,scoreTxt,timeBar,iconP1,iconP2,healthBar]
-
-func updateTimeBar() -> void:
-	if hideTimeBar: return
-	timeBar.progress = Conductor.songPosition/_songLength
-	timeTxt.update()
 
 #region Icon Methods
 func updateIconsImage(state: IconState = _healthBar_State):
@@ -300,7 +267,9 @@ func createSplash(note) -> NoteSplash:
 	return splash
 
 func createStrum(i: int, opponent_strum: bool = true, pos: Vector2 = Vector2.ZERO) -> StrumNote:
-	var strum = super.createStrum(i,opponent_strum,pos)
+	var strum = super.createStrum(i)
+	strum.mustPress = !opponent_strum and !botplay
+	strum._position = pos
 	FunkinGD.callOnScripts(&'onLoadStrum',[strum,opponent_strum])
 	return strum
 
@@ -730,9 +699,8 @@ func _update_icons_cos_sin() -> void: _icons_cos_sin = Vector2(cos(healthBar.rot
 func set_default_zoom(value: float) -> void: defaultCamZoom = value;
 
 func _set_hide_hud(hide: bool) -> void:
-	hideHud = false
-	for i in get_hud_elements(): if i: i.visible = !hide
 	hideHud = hide
+	FunkinGD.callOnScripts(&"onHideHud",hide)
 
 func _set_play_opponent(isOpponent: bool = playAsOpponent) -> void:
 	healthBar.flip = !isOpponent

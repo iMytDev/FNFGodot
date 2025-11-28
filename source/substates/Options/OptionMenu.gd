@@ -1,10 +1,10 @@
 extends Node2D
-const AlphabetText = preload("res://source/objects/AlphabetText/AlphabetText.gd")
-const FunkinCheckBox = preload("res://source/states/Menu/CheckBoxSprite.gd")
-const NumberRange = preload("res://source/substates/Options/NumberRange.gd")
-const TextRange = preload("res://source/substates/Options/NumberRangeKeys.gd")
+const AlphabetText = preload("uid://b8v0hkg10y6g3")
+const FunkinCheckBox = preload("uid://7ipxxo56l60m")
+const NumberRange = preload("uid://7g33qugw2fc1")
+const TextRange = preload("uid://csxpt0kkmvoci")
 var data: Array
-var optionIndex: int = 0: set = set_option_index
+var optionIndex: int : set = set_option_index
 var cur_data: Dictionary
 
 signal on_index_changed

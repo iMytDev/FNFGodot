@@ -6,8 +6,8 @@ const StrumNote = preload(\"res://source/objects/Notes/StrumNote.gd\")
 const Note = preload(\"res://source/objects/Notes/NoteHit.gd\")
 
 var DownPos = ScreenUtils.screenHeight - 150
-var strums: Array[StrumNote] = []
-var notes: Array[Note] = []
+var strums: Array[StrumNote]
+var notes: Array[Note]
 
 var left_side: bool: 
 	set(value): left_side = value; update_strum_x()
