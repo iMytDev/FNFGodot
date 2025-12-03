@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cyotiath61hou" path="res://source/states/Editors/ChartEditor/ChartEditor.gd" id="1_twph6"]
 [ext_resource type="PackedScene" uid="uid://b1a3jlb7iu130" path="res://scenes/objects/ButtonRange.tscn" id="2_p8wo6"]
 [ext_resource type="Script" uid="uid://dsm0luhaq03go" path="res://source/custom_nodes/ChessMovement.gd" id="2_y0grv"]
-[ext_resource type="Script" uid="uid://cvvli26q7wviq" path="res://source/general/popup/PopupDir.gd" id="3_nkmqi"]
+[ext_resource type="Script" uid="uid://cvvli26q7wviq" path="res://source/general/popup/DynamicFileMenuButton.gd" id="3_nkmqi"]
 [ext_resource type="Script" uid="uid://bxu1ahcd17pxh" path="res://source/objects/Sprite/SolidSprite.gd" id="4_4ubu6"]
 
 [sub_resource type="GDScript" id="GDScript_y0grv"]

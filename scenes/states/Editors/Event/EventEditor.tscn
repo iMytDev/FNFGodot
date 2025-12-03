@@ -1,0 +1,230 @@
+[gd_scene load_steps=5 format=3 uid="uid://dr0s73rjg4kxf"]
+
+[ext_resource type="Script" uid="uid://dsm0luhaq03go" path="res://source/custom_nodes/ChessMovement.gd" id="1_yx6pg"]
+
+[sub_resource type="GDScript" id="GDScript_jcq8v"]
+script/source = "extends Node2D
+
+const VariableScene = preload(\"uid://sy6dvoqbgemm\")
+
+@onready var dialog: FileDialog = $FileDialog
+var cur_event_data: Dictionary = {
+	'variables': [],
+	\"icon\": \"\",
+	\"description\": \"\"
+}
+
+@onready var variables_container: VBoxContainer = $TabContainer/Variables/Scroll/Container
+
+func _save_event_data() -> void:
+	dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+	dialog.visible = true
+	dialog.file_selected.connect(_on_file_selected,CONNECT_ONE_SHOT)
+	dialog.canceled.connect(_on_cancel_load,CONNECT_ONE_SHOT)
+
+func _load_event():
+	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	dialog.visible = true
+	dialog.file_selected.connect(_on_file_selected,CONNECT_ONE_SHOT)
+	dialog.canceled.connect(_on_cancel_load,CONNECT_ONE_SHOT)
+
+func _on_file_selected(file: String):
+	dialog.canceled.disconnect(_on_cancel_load)
+	loadEvent(file)
+
+func _on_cancel_load():
+	dialog.files_selected.disconnect(_on_file_selected)
+
+func loadEvent(absolute_path: String): cur_event_data = Paths.loadJson(absolute_path); _load_event_info()
+
+func _load_event_info():
+	var variables = cur_event_data.get('variables')
+	for i in variables:
+		var v = VariableScene.instantiate()
+		v.name = i
+		v.data = variables[i]
+		variables_container.add_child(v)
+
+
+func create_variable() -> Dictionary:
+	var variable = VariableScene.instantiate()
+	return variable.data
+
+func create_variable_from_data(data: Dictionary):
+	var variable = VariableScene.instantiate()
+	variable.name = data.get('name','value1')
+	var type = data.get('type')
+	type = MathUtils.type_via_string(type) if type else TYPE_STRING
+	variable.data.default_value = data.get('default_value',MathUtils.get_new_value(type))
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_yx6pg"]
+script/source = "extends CodeEdit
+
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	_set_default_code()
+
+
+func _set_default_code():
+	text = \"\"\"extends FunkinGD
+func onLocalEvent(variables: Dictionary): #Called when this event is trigged.
+	pass
+\"\"\"
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_lohrh"]
+script/source = "extends DynamicFileMenuButton
+
+func _ready():
+	super._ready();
+	get_popup().index_pressed.connect(func(i): $\"../..\".loadEvent(\"custom_events/\"+get_popup().get_item_text(i)))
+"
+
+[node name="EventEditor" type="Node2D"]
+script = SubResource("GDScript_jcq8v")
+
+[node name="ChessScroll" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1290.0
+offset_bottom = 720.0
+script = ExtResource("1_yx6pg")
+primary_color = Color(0.039215688, 0.039215688, 0.039215688, 1)
+primary_fill = false
+primary_border_width = 2.0
+secondary_color = Color(0.039215688, 0.039215688, 0.039215688, 1)
+secondary_fill = false
+secondary_border_width = 2.0
+steps = 43
+length = 24
+metadata/_custom_type_script = "uid://dsm0luhaq03go"
+
+[node name="TabContainer" type="TabContainer" parent="."]
+offset_left = 712.0
+offset_top = 252.0
+offset_right = 1280.0
+offset_bottom = 723.0
+current_tab = 2
+tab_focus_mode = 0
+
+[node name="Data" type="Label" parent="TabContainer"]
+visible = false
+layout_mode = 2
+text = "
+Icon:
+
+
+Description:"
+metadata/_tab_index = 0
+
+[node name="Icon" type="LineEdit" parent="TabContainer/Data"]
+layout_mode = 0
+offset_left = 48.0
+offset_top = 13.0
+offset_right = 460.0
+offset_bottom = 36.0
+placeholder_text = "ui/chart-editor/events/eventArrow"
+
+[node name="Description" type="LineEdit" parent="TabContainer/Data"]
+layout_mode = 0
+offset_left = 113.0
+offset_top = 52.0
+offset_right = 536.0
+offset_bottom = 110.0
+
+[node name="Variables" type="Control" parent="TabContainer"]
+visible = false
+layout_mode = 2
+metadata/_tab_index = 1
+
+[node name="Add" type="Button" parent="TabContainer/Variables"]
+layout_mode = 0
+offset_left = 471.0
+offset_top = 4.0
+offset_right = 564.0
+offset_bottom = 27.0
+text = "Add
+"
+
+[node name="Scroll" type="ScrollContainer" parent="TabContainer/Variables"]
+layout_mode = 0
+offset_top = 42.0
+offset_right = 568.0
+offset_bottom = 542.0
+
+[node name="Container" type="VBoxContainer" parent="TabContainer/Variables/Scroll"]
+custom_minimum_size = Vector2(0, 500)
+layout_mode = 2
+
+[node name="Code" type="Control" parent="TabContainer"]
+layout_mode = 2
+metadata/_tab_index = 2
+
+[node name="Button" type="Button" parent="TabContainer/Code"]
+layout_mode = 0
+offset_left = 473.0
+offset_top = 3.0
+offset_right = 566.0
+offset_bottom = 26.0
+text = "Save Code"
+
+[node name="Event Code" type="CodeEdit" parent="TabContainer/Code"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 41.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "func onLocalEvent(variables: Dictionary):
+	pass
+
+func"
+line_folding = true
+gutters_draw_line_numbers = true
+code_completion_enabled = true
+auto_brace_completion_enabled = true
+auto_brace_completion_highlight_matching = true
+script = SubResource("GDScript_yx6pg")
+
+[node name="Panel" type="Panel" parent="."]
+offset_left = 707.0
+offset_right = 1279.0
+offset_bottom = 85.0
+
+[node name="NewEvent" type="Button" parent="Panel"]
+layout_mode = 0
+offset_left = 245.0
+offset_top = 37.0
+offset_right = 338.0
+offset_bottom = 60.0
+text = "New Event"
+
+[node name="DynamicFileMenuButton" type="MenuButton" parent="Panel"]
+layout_mode = 0
+offset_left = 66.0
+offset_top = 35.0
+offset_right = 232.0
+offset_bottom = 63.0
+flat = false
+script = SubResource("GDScript_lohrh")
+dir_to_look = "custom_events/"
+metadata/_custom_type_script = "uid://cvvli26q7wviq"
+
+[node name="EventName" type="Label" parent="Panel"]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 41.0
+offset_right = 65.0
+offset_bottom = 56.0
+text = "Event:"
+
+[node name="FileDialog" type="FileDialog" parent="."]
+oversampling_override = 1.0
+initial_position = 1
+size = Vector2i(800, 500)
+filters = PackedStringArray("*.json")

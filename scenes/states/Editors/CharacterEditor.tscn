@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://dsm0luhaq03go" path="res://source/custom_nodes/ChessMovement.gd" id="2_fjx64"]
 [ext_resource type="PackedScene" uid="uid://b1a3jlb7iu130" path="res://scenes/objects/ButtonRange.tscn" id="3_atq18"]
 [ext_resource type="StyleBox" uid="uid://go6q2nvp2mu1" path="res://source/general/FoldableContent/FoldableStyleBox.tres" id="3_fjx64"]
-[ext_resource type="Script" uid="uid://cvvli26q7wviq" path="res://source/general/popup/PopupDir.gd" id="4_6y1bd"]
+[ext_resource type="Script" uid="uid://cvvli26q7wviq" path="res://source/general/popup/DynamicFileMenuButton.gd" id="4_6y1bd"]
 
 [node name="Character Editor" type="Node"]
 script = ExtResource("1_qbwox")
@@ -53,10 +53,11 @@ offset_right = 1280.0
 offset_bottom = 721.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-current_tab = 0
+current_tab = 1
 tab_focus_mode = 0
 
 [node name="Animation Data" type="ScrollContainer" parent="TabContainer"]
+visible = false
 layout_mode = 2
 focus_mode = 2
 mouse_filter = 0
@@ -292,7 +293,6 @@ tooltip_text = "Character backs to dance when his sing animation ends."
 text = "Dance when end"
 
 [node name="Json Data" type="ScrollContainer" parent="TabContainer"]
-visible = false
 self_modulate = Color(1, 1, 1, 0.0705882)
 layout_mode = 2
 metadata/_tab_index = 1
@@ -366,11 +366,9 @@ text = "Load Image"
 layout_mode = 2
 focus_mode = 0
 theme_override_styles/panel = ExtResource("3_fjx64")
-folded = true
 title = "Offsets"
 
 [node name="Data" type="Label" parent="TabContainer/Json Data/Container/Offstes"]
-visible = false
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 text = "
@@ -436,9 +434,11 @@ offset_bottom = 108.0
 layout_mode = 2
 focus_mode = 0
 theme_override_styles/panel = ExtResource("3_fjx64")
+folded = true
 title = "Health Bar"
 
 [node name="HealthBar" type="Label" parent="TabContainer/Json Data/Container/HealthBar"]
+visible = false
 layout_mode = 2
 text = "
 Color:             Icon:
