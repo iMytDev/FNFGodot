@@ -25,3 +25,7 @@ func _draw() -> void:
 		Vector2(0,center),marker_size),
 		h_color
 	)
+
+func _validate_property(property: Dictionary) -> void:
+	match property.name:
+		"position": property.usage = PROPERTY_USAGE_NONE

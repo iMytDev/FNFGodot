@@ -20,7 +20,7 @@ var _value_str: String
 @export var limit_min: bool
 @export var limit_max: bool
 @export var value: float: set = set_value
-@export var step: float = 1.0 ##The value that will be added when the arrows are been pressed.
+@export var step: float = 0.1 ##The value that will be added when the arrows are been pressed.
 
 @export var shift_step_mult: float = 2.0##When pressing [param KEY_SHIFT], the [param value] will be multiplicated for this value.
 @export var int_value: bool: 
@@ -43,9 +43,13 @@ func _ready():
 	minimum_size_changed.connect(_update_nodes_position.call_deferred)
 
 #region Value Methods
-func addValue() -> void: value += step*shift_step_mult if Input.is_action_pressed("shift") else step
+func addValue() -> void: 
+	var _r_step = ceilf(step) if int_value else step
+	value += _r_step*shift_step_mult if Input.is_action_pressed("shift") else _r_step
 
-func subValue() -> void: value -= step*shift_step_mult if Input.is_action_pressed("shift") else step
+func subValue() -> void: 
+	var _r_step = ceilf(step) if int_value else step
+	value -= _r_step*shift_step_mult if Input.is_action_pressed("shift") else _r_step
 
 func set_value_no_signal(_value: float):
 	_call_emit = false

@@ -15,32 +15,32 @@ static func setProperty(property: String, value: Variant, target: Variant):
 	if !target:
 		var obj_find = _find_object_with_split(property)
 		target = obj_find[0]
-		if !target: FunkinInternal._show_property_no_found_error(property); return
+		if !target: 
+			if split.size() > 1:
+				FunkinInternal.debug_message(
+				'Error on setting "'+property.right(-target.length()-1)+'" property: '+target+" not founded"
+				)
+			else:
+				FunkinInternal.debug_message('Error on setting property: "'+property+'" not founded')
+			return
 		split = obj_find[1]
 	
 	else: split = property.split('.')
 	
 	if !split: return
 	
-	var value_to_set: String = split[split.size()-1]
+	var value_to_set: StringName = split[split.size()-1]
 	var _property: String
 	var _prev_target: Variant
 	var size: int = split.size()-1
 	
-	
-	if size:
-		var i: int = 0
-		while i < size:
-			_property = split[i]
-			if MathUtils.value_exists(target,_property):
-				_prev_target = target
-				target = target[_property]
-				i += 1
-				continue
-			FunkinInternal.debug_message(
-				'Error on setting property: '+str(_property)+" not founded in "+str(target)
-			)
-			return
+	var i: int = 0
+	while i < size:
+		_property = split[i]
+		i += 1
+		if MathUtils.value_exists(target,_property): _prev_target = target; target = target[_property]; continue
+		FunkinInternal.debug_message('Error on setting property: '+str(_property)+" not founded in "+str(target))
+		return
 	var type = typeof(target)
 	if VectorUtils.is_vector_type(type): _prev_target[_property][value_to_set] = value; return
 	if ArrayUtils.is_array_type(type): target.set(int(value_to_set),value); return

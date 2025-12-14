@@ -133,7 +133,7 @@ func createProp(data, prop_index:int =0):
 	var animations = data.get('animations')
 	if animations:
 		for i in data.animations: 
-			sprite.animation.addAnimByPrefix(i.name,i.prefix,i.get('frameRate',24.0),true)
+			sprite.animation.add_animation_by_prefix(i.name,i.prefix,i.get('frameRate',24.0),true)
 		sprite.animation.play(&'idle')
 	
 	sprite.position = VectorUtils.array_to_vec(data.get('offsets',[0,0]))

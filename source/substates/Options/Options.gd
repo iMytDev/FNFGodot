@@ -9,31 +9,31 @@ var options: Array[Dictionary] = [
 	{&'name': 'Gameplay Options', &'menu': [
 		{
 			&'name': 'middlescroll', &'visual': "Strums",
-			&'object': ClientPrefs.data, &'property': &'middlescroll', 
+			&'object': ClientPrefs, &'property': &'middlescroll', 
 			&'setter': set_middlescroll,
 			&'description': 'Enabling this, the notes will be centered.'
 		},
 		{
 			&'name': 'downscroll',
 			&'visual': "Strums",
-			&'object': ClientPrefs.data, &'property': &'downscroll', &'setter': set_downscroll,
+			&'object': ClientPrefs, &'property': &'downscroll', &'setter': set_downscroll,
 			&'description': 'Enabling this, the notes will come from the top of the screen.'
 		},
 		{
 			&'name': 'play as opponent','visual': "Strums",
-			&'object': ClientPrefs.data, 'property': &'playAsOpponent', 'setter': set_play_as_opponent,
+			&'object': ClientPrefs, 'property': &'playAsOpponent', 'setter': set_play_as_opponent,
 			&'description': 'Enabling this, you will play as the opponent.'
 		},
 		{
 			&'name': 'Botplay',&'visual': "Strums",
-			&'object': ClientPrefs.data, &'property': 'botplay',
+			&'object': ClientPrefs, &'property': 'botplay',
 			&'description': &'Botplay, just that.'
 		},
 	]},
 	{&'name': 'Visual Options', &'menu': [
 		{
 			&'name': 'Low Quality', 
-			&'object': ClientPrefs.data, 
+			&'object': ClientPrefs, 
 			&'property': &'lowQuality',
 			&'description': 'Removes some sprites and effects, improvising performance.'
 		},
@@ -65,7 +65,7 @@ var options: Array[Dictionary] = [
 				&"Time Left": &"Time Left",
 				&"Song Position": &"Song Position",
 			},
-			&'object': ClientPrefs.data,
+			&'object': ClientPrefs,
 			&'property': &'timeBarType'
 		},
 		{
@@ -79,7 +79,7 @@ var options: Array[Dictionary] = [
 		},
 		{
 			&'name': "Splashes Enabled",
-			&'object': ClientPrefs.data,
+			&'object': ClientPrefs,
 			&'property': &'splashesEnabled'
 		},
 	]
@@ -240,7 +240,7 @@ func set_max_fps(fps: int) -> void:
 	ClientPrefs.data.fps = fps
 #endregion
 
-func saveOptions(): Paths.saveFile(ClientPrefs.data,'res://data/options.json')
+func saveOptions(): Paths.saveFile(ClientPrefs,'res://data/options.json')
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_WM_CLOSE_REQUEST: saveOptions()

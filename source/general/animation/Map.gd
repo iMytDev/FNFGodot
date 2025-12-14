@@ -1,4 +1,4 @@
-static var maps_created: Dictionary = {}
+static var maps_created: Dictionary
 
 ##Load the animation and sprites from the map('.json') file
 static func loadMap(folder: String) -> Dictionary:
@@ -16,8 +16,7 @@ static func loadMap(folder: String) -> Dictionary:
 		'type': 'map'
 	}
 	for anim in json.ATLAS.SPRITES:
-		if not 'SPRITE' in anim:
-			continue
+		if not 'SPRITE' in anim: continue
 		var spriteData: Dictionary = anim.SPRITE
 		var sprite: Sprite2D = Sprite2D.new()
 		sprite.region_enabled = true

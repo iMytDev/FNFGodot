@@ -1,73 +1,40 @@
+@tool
 @icon("res://icons/Camera2D.svg")
 class_name FunkinCamera extends Node2D
-#region Transform
-@export var x: float:
-	set(val): position.x = val 
-	get(): return position.x
-@export var y: float: 
-	set(val): position.y = val 
-	get(): return position.y
 
-@export var zoom: float = 1.0:
-	set(val): zoom = val; _update_zoom()
+#region Properties
+@export_category("Transform")
+@export var zoom: float = 1.0: set = set_zoom
+@export var size: Vector2: set = set_size
+@export var pivot_offset: Vector2: set = set_pivot_offset
+var _real_pivot_offset: Vector2: set = _set_real_pivot_offset
 
-var color: Color:
-	set(value): modulate = value
-	get(): return modulate
+@export var scroll: Vector2: set = set_scroll
+var scroll_transform: Transform2D
+var scrollOffset: Vector2: set = set_scroll_offset
+var _scroll_position: Vector2: set = _set_scroll_position
+var _scroll_camera: Node2D = Node2D.new()
+@export_category("Shake")
+@export var shakeTime: float
+@export var shakeIntensity: float: set = set_shake_intensity
+var _shake_pos: Vector2: set = _set_shake_pos
+var _is_shaking: bool
 
-var angle: float:
-	set(val): angle_degrees = deg_to_rad(val); _update_angle()
-	get(): return rad_to_deg(angle_degrees)
+var defaultZoom: float = 1.0 #Used in PlayState
 
-var angle_degrees: float:
-	set(val): angle_degrees = val;
+@export var angle: float: set = set_angle, get = get_angle
+var _angle_rad: float:
+	set(val):
+		_angle_rad = val;
+		_update_pivot()
+		_update_transform_scale_zoom()
+		_update_canvas_transform()
 
-var width: float:
-	set(value): width = value; _update_camera_size()
-var height: float:
-	set(value): height = value; _update_camera_size()
-
-var pivot_offset: Vector2 = Vector2.ZERO: 
-	set(val): pivot_offset = val; _update_pivot()
-#endregion
-
-#region Camera
 var bg: SolidSprite = SolidSprite.new()
 var _first_index: int
 
-var scroll_camera: Node2D = Node2D.new()
-var scroll: Vector2: 
-	set(val): scroll = val; _update_scroll_pos()
-
-var scrollOffset: Vector2: 
-	set(val): scrollOffset = val; _update_scroll_pos()
-
-var _scroll_position: Vector2: 
-	set(val): _scroll_position = val; _update_pivot();
-
-var _scroll_pivot_offset: Vector2: 
-	set(val): _scroll_pivot_offset = val; _update_scroll_transform() 
-
-var _real_scroll_position: Vector2
-
 var flashSprite: SolidSprite = SolidSprite.new()
-@export var defaultZoom: float = 1.0 #Used in PlayState
 
-#region Shake
-@export_category("Shake")
-var shakeIntensity: float: 
-	set(val): shakeIntensity = val; _is_shaking = val; if !_is_shaking: _shake_pos = Vector2.ZERO
-
-var shakeTime: float
-var _shake_pos: Vector2:
-	set(val): _shake_pos = val; _update_scroll_transform()
-
-var _is_shaking: bool = false
-#endregion
-
-#endregion
-
-#region Shaders
 var filtersArray: Array[Material]
 var viewport: SubViewport
 var _viewports_created: Array[SubViewport]
@@ -75,47 +42,7 @@ var _last_viewport_added: SubViewport
 var _shader_image: Sprite2D
 #endregion
 
-#region Shotcuts
-var remove: Callable = scroll_camera.remove_child
-#endregion
-
-func _init() -> void:
-	bg.modulate = Color.TRANSPARENT
-	bg.name = &'bg'
-	width = ScreenUtils.screenWidth
-	height = ScreenUtils.screenHeight
-	
-	scroll_camera.name = &'Scroll'
-	add_child(scroll_camera)
-	
-	flashSprite.name = &'flashSprite'
-	flashSprite.modulate.a = 0.0
-	scroll_camera.child_exiting_tree.connect(func(node):
-		if node.get_index() < _first_index: _first_index -= 1
-	)
-	
-	child_entered_tree.connect(func(_n):
-		move_child.call_deferred(flashSprite,-1)
-	)
-	
-	
-	add_child(flashSprite)
-
-func _ready() -> void: _update_camera_size()
-
-#region Size Methods
-func _update_camera_size():
-	bg.scale.x = width; bg.scale.y = height
-	var size = bg.scale
-	flashSprite.size = size
-	
-	if viewport: viewport.size = size
-	pivot_offset = size*0.5
-	_update_rect_visible()
-
-func _update_viewport_size():
-	for i in _viewports_created: i.size = Vector2.ONE * ScreenUtils.screenWidth/get_viewport().size.xj
-#endregion
+func _update_camera_size(): pivot_offset = size*0.5; if viewport: viewport.size = size
 
 #region Shaders Methods
 func setFilters(shaders: Array) -> void: ##Set Shaders in the Camera
@@ -139,7 +66,6 @@ func addFilter(shader: ShaderMaterial) -> void:
 	_shader_image.material = shader
 
 func addFilters(shaders: Array) -> void: for i in _convertFiltersToMaterial(shaders): addFilter(i) ##Add shaders to the existing ones.
-	
 
 func _addViewportShader(filter: ShaderMaterial) -> Sprite2D:
 	if !_last_viewport_added: return
@@ -179,7 +105,7 @@ func removeFilter(shader: ShaderMaterial) -> void: ##Remove shaders.
 	prev_image.texture = view_image.texture
 	_viewports_created.remove_at(filter_id)
 	shader_viewport.queue_free()
-	
+
 
 func removeFilters(): ##Remove every shader created in this camera.
 	if !filtersArray: return
@@ -188,9 +114,7 @@ func removeFilters(): ##Remove every shader created in this camera.
 	
 	if can_remove_viewport(): remove_viewport()
 	
-	if _viewports_created:
-		for i in _viewports_created: i.queue_free()
-		_viewports_created.clear()
+	while _viewports_created: _viewports_created.pop_back().queue_free()
 
 func safe_remove_viewport() -> void: if can_remove_viewport(): remove_viewport()
 
@@ -198,15 +122,16 @@ func create_viewport() -> void:
 	if viewport: return
 	viewport = _get_new_viewport()
 	viewport.own_world_3d = true
+	
 	add_child(viewport)
 	_update_transform()
 	queue_redraw()
 	
 	_last_viewport_added = viewport
 	
-	scroll_camera.transform = Transform2D(Vector2.RIGHT,Vector2.DOWN,Vector2.ZERO)
-	scroll_camera.reparent(viewport,false)
-	
+	#scroll_camera.transform = Transform2D(Vector2.RIGHT,Vector2.DOWN,Vector2.ZERO)
+	_scroll_camera.reparent(viewport,false)
+	queue_redraw()
 	create_shader_image()
 	
 func create_shader_image():
@@ -221,9 +146,9 @@ func create_shader_image():
 
 func remove_viewport() -> void:
 	if !viewport: return
-	scroll_camera.reparent(self,false)
-	move_child(scroll_camera,0)
-	
+	#scroll_camera.reparent(self,false)
+	#move_child(scroll_camera,0)
+	queue_redraw()
 	viewport.queue_free()
 	viewport = null
 	queue_redraw()
@@ -271,77 +196,100 @@ func flash(color: Color = Color.WHITE, time: float = 1.0, force: bool = false) -
 	FunkinGD.doTweenAlpha(tag,flashSprite,0.0,time).bind_node = self
 #endregion
 
+
 #region Insert/Remove Nodes Methods
 func add(node: Node,front: bool = true) -> void: ##Add a node to the camera, if [code]front = false[/code], the node will be added behind of the first node added.
 	if !node: return
 	_insert_object_to_camera(node)
-	if not front: move_to_order(node,_first_index)
+	if !front: 
+		_scroll_camera.move_child(node,_first_index); 
+		_first_index += 1
 
-func move_to_order(node: Node, order: int):
+@warning_ignore("native_method_override")
+func move_child(node: Node, order: int): move_to_order(node, order)
+
+func move_to_order(node: Node, index: int):
 	if !node: return
 	var old_index = node.get_index()
-	order = mini(order,scroll_camera.get_child_count())
-	scroll_camera.move_child(node,order)
-	if old_index >= _first_index and order <= _first_index: _first_index += 1 #If the node was ahead of _first_index and moved before or to _first_index, add to _first_index
-	elif old_index < _first_index and order > _first_index: _first_index -= 1 #If the node was before or at _first_index and moved past it, subadd to _first_index
+	if old_index == index: return
+	index = mini(index,get_child_count())
+	if old_index >= _first_index and index < _first_index: _first_index += 1 #If the node was ahead of _first_index and moved before or to _first_index, add to _first_index
+	elif old_index < _first_index and index > _first_index: _first_index -= 1 #If the node was before or at _first_index and moved past it, subadd to _first_index
+	_scroll_camera.move_child(node, index)
 
 func insert(index: int = 0,node: Object = null) -> void: ##Insert the node at [param index].
 	if !node: return
 	_insert_object_to_camera(node)
-	move_to_order(node,index)
+	_scroll_camera.move_to_order(node,index)
 
 func _insert_object_to_camera(node: Node):
-	var parent = node.get_parent()
-	if parent: parent.remove_child(node)
-	scroll_camera.add_child(node)
-	node.set("camera",self)
+	if node.is_inside_tree(): node.reparent(_scroll_camera)
+	else: _scroll_camera.add_child(node)
+	node.set(&"camera",self)
 #endregion
 
 #region Transform
-func _process(delta: float) -> void: if _is_shaking: _updateShake(delta)
-
-func _update_rect_visible():
-	RenderingServer.canvas_item_set_custom_rect(get_canvas_item(),true,Rect2(0,0,width,height))
-
-func _update_transform() -> void:
-	_update_angle(false)
-	_update_zoom(false)
-	_update_pivot()
+func _update_transform() -> void: _update_zoom(false); _update_pivot()
 
 func _update_pivot() -> void:
 	var _real_pivot = pivot_offset - _scroll_position
-	var _scroll_pivot = _real_pivot
-	if zoom != 1.0: _scroll_pivot *= zoom
-	if angle_degrees: _scroll_pivot = _scroll_pivot.rotated(-angle_degrees)
-	_scroll_pivot_offset = (_scroll_pivot - _real_pivot)
+	var _pivot = _real_pivot
+	if zoom != 1.0: _pivot *= zoom
+	if _angle_rad: _pivot = _pivot.rotated(_angle_rad)
+	_real_pivot_offset = (_pivot - _real_pivot)
+	_update_origin()
 
-func _update_angle(update_pivo: bool = true)  -> void:
-	if viewport: 
-		viewport.canvas_transform.x.y = -angle_degrees
-		viewport.canvas_transform.y.x = angle_degrees
-	else: scroll_camera.rotation = angle_degrees
-	if update_pivo: _update_pivot()
 
 func _update_zoom(update_pivo: bool = true) -> void:
-	var new_zoom = Vector2(zoom,zoom)
-	if viewport: 
-		viewport.canvas_transform.x.x = zoom
-		viewport.canvas_transform.y.y = zoom
-	else: scroll_camera.scale = new_zoom
+	_update_transform_scale_zoom()
 	if update_pivo: _update_pivot()
+	else: _update_canvas_transform()
 
-func _update_scroll_pos() -> void: _scroll_position = -scroll + scrollOffset
 
-func _update_scroll_transform():
-	_real_scroll_position = _scroll_position - _scroll_pivot_offset + _shake_pos
-	if viewport: viewport.canvas_transform.origin = _real_scroll_position
-	else: scroll_camera.position = _real_scroll_position
+func _update_origin():
+	scroll_transform.origin = _scroll_position - _real_pivot_offset + _shake_pos; _update_canvas_transform()
+
+func _update_transform_scale_zoom():
+	var cos_r = cos(_angle_rad) * zoom
+	var sin_r = sin(_angle_rad) * zoom
+	scroll_transform.x.x = cos_r
+	scroll_transform.x.y = sin_r
+	scroll_transform.y.x = -sin_r
+	scroll_transform.y.y = cos_r
+
+func _update_canvas_transform():
+	if viewport: viewport.canvas_transform = scroll_transform
+	else: queue_redraw()
+
 #endregion
 
 #region Setters
+func set_scroll(val: Vector2) -> void: _scroll_position -= val - scroll; scroll = val;
+func set_scroll_offset(val: Vector2) -> void: _scroll_position += val - scrollOffset; scrollOffset = val;
+func set_pivot_offset(val: Vector2) -> void: pivot_offset = val; _update_pivot()
+func set_size(val: Vector2) -> void: size = val; _update_camera_size()
+func set_zoom(val: float) -> void: zoom = val; _update_zoom()
+func set_angle(val: float) -> void: _angle_rad = deg_to_rad(val)
+func set_angle_radius(val: float) -> void: _angle_rad = val;
+func set_shake_intensity(val: float) -> void: shakeIntensity = val; _is_shaking = val; if !_is_shaking: _shake_pos = Vector2.ZERO
+
+func _set_scroll_position(val: Vector2) -> void: _scroll_position = val; _update_pivot();
+func _set_real_pivot_offset(val: Vector2) -> void: scroll_transform.origin -= val - _real_pivot_offset; _real_pivot_offset = val;
+func _set_shake_pos(val: Vector2) -> void: scroll_transform.origin += val - _shake_pos; _shake_pos = val;
+func _set(property: StringName, value: Variant) -> bool:
+	match property:
+		&"width": size.x = value; return true
+		&"height": size.y = value; return true
+	return false
 #endregion
 
 #region Getters
+func get_angle(): return rad_to_deg(_angle_rad)
+func _get(property: StringName) -> Variant:
+	match property:
+		&"width": return size.x
+		&"height": return size.y
+	return
 func _property_get_revert(property: StringName) -> Variant:
 	match property:
 		&'zoom': return defaultZoom
@@ -349,9 +297,61 @@ func _property_get_revert(property: StringName) -> Variant:
 		&'scrollOffset': return Vector2.ZERO
 		&'angle',&'shakeIntensity',&'x',&'y': return 0.0
 	return null
-
 #endregion
 
+#region Native Methods
+func _process(delta: float) -> void: if _is_shaking: _updateShake(delta)
+
+@warning_ignore("native_method_override")
+func add_child(node: Node, force_readable_name: bool = false, internal: InternalMode = INTERNAL_MODE_DISABLED): 
+	_scroll_camera.add_child(node,force_readable_name,internal) 
+
+@warning_ignore("native_method_override")
+func get_child_count(include_internal: bool = false) -> int: return _scroll_camera.get_child_count(include_internal)
+
+func _init() -> void:
+	bg.modulate = Color.TRANSPARENT
+	bg.name = &'bg'
+	size = ScreenUtils.screenSize
+	
+	flashSprite.name = &'flashSprite'
+	flashSprite.modulate.a = 0.0
+	flashSprite.top_level = true
+	#scroll_camera.child_exiting_tree.connect(func(node):
+	child_exiting_tree.connect(func(node):
+		if node.get_index() < _first_index: _first_index -= 1
+
+	)
+	add_child(bg,false,INTERNAL_MODE_BACK)
+	add_child(flashSprite,false,INTERNAL_MODE_FRONT)
+	add_child(_scroll_camera)
+
+func _draw() -> void:
+	var rid = get_canvas_item()
+	
+	var _real_position = scroll_transform.origin / zoom
+	var _real_size = size * zoom
+	flashSprite.position = _real_position
+	flashSprite.size = _real_size
+	
+	bg.position = _real_position
+	bg.size = _real_size
+	if viewport: 
+		RenderingServer.canvas_item_set_clip(rid,false);
+		RenderingServer.canvas_item_set_custom_rect(rid,false);
+		return
+	RenderingServer.canvas_item_set_transform(_scroll_camera.get_canvas_item(),scroll_transform)
+	RenderingServer.canvas_item_set_custom_rect(rid,true,Rect2(Vector2.ZERO,size));
+	RenderingServer.canvas_item_set_clip(rid,true)
+
+func _validate_property(property: Dictionary) -> void:
+	match StringName(property.name):
+		&"flashSprite",&"_first_index",\
+		&"_scroll_position",\
+		&"_shake_pos",&"_is_shaking",\
+		&"_shader_image",&"_viewports_created",&"_last_viewport_added",\
+		&"remove": property.usage = PROPERTY_USAGE_NONE
+#endregion
 static func _convertFiltersToMaterial(shaders: Array) -> Array[Material]:
 	var array: Array[Material] = []
 	for i in shaders:
@@ -368,5 +368,3 @@ static func _get_new_viewport() -> SubViewport:
 	view.size = ScreenUtils.screenSize
 	view.own_world_3d = true
 	return view
-
-func _draw() -> void: RenderingServer.canvas_item_set_clip(get_canvas_item(),true)

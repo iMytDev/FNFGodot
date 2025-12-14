@@ -39,9 +39,9 @@ func _on_visibility_changed():
 	if visible: followStrum()
 
 func show_splash() -> void:
-	visible = true
 	if holdSplash: animation.play(&'start',false); _update_animation_scale();
 	else: animation.play_random()
+	visible = true
 
 func _update_animation_scale() -> void: 
 	animation.setAnimDataValue(&'hold',&'speed_scale',minf(1.0 / (Conductor.stepCrochetMs*8.0),3.0))
@@ -53,9 +53,9 @@ func _set_pixel(isPixel: bool):
 	if isPixel:
 		if splashData.get(&'isPixel'): return
 		if !mosaicShader: mosaicShader = Paths.loadShader('MosaicShader')
-		material = mosaicShader
-		if material: material.set_shader_parameter(&'strength',6.0)
-	else: material = null
+		image.material = mosaicShader
+		image.material.set_shader_parameter(&'strength',6.0)
+	else: image.material = null
 
 
 func _on_animation_finished(anim_name: StringName) -> void:
@@ -72,8 +72,8 @@ func _process(_d) -> void:
 func followStrum() -> void:
 	if !strum: return
 	modulate.a = strum.modulate.a
-	#if holdSplash: rotation = strum.rotation
 	_position = strum._position
+	#if holdSplash: rotation = strum.rotation
 
 ##Add animation to splash. Returns [code]true[/code] if the animation as added successfully.
 static func loadSplash(style: StringName, splash_name: StringName = &'default', prefix: StringName = &'', holdSplash: bool =false) -> NoteSplash:
@@ -110,7 +110,7 @@ static func _load_splash_animation(splash: NoteSplash,prefix: StringName) -> boo
 	
 	if !splash.holdSplash:
 		var prefix_anim = data.get(&'prefix'); if !prefix_anim: return false
-		splash.animation.addAnimByPrefix(&'splash',prefix_anim,24.0,false)
+		splash.animation.add_animation_by_prefix(&'splash',prefix_anim,24.0,false)
 		splash.offset = data.get(&'offsets',offsets)
 		splash.scale = Vector2(scale,scale)
 		return true
@@ -120,7 +120,7 @@ static func _load_splash_animation(splash: NoteSplash,prefix: StringName) -> boo
 		if !data: continue
 		var sprefix = anim_data.get(&'prefix')
 		if !sprefix: continue
-		splash.animation.addAnimByPrefix(i,sprefix,24.0,i==&'hold')
+		splash.animation.add_animation_by_prefix(i,sprefix,24.0,i==&'hold')
+		splash.animation.set_anim_offset(i,data.get(&'offsets',offsets))
 		splash.animation.auto_loop = true
-		splash.addAnimOffset(i,anim_data.get(&'offsets',offsets))
 	return true

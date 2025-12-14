@@ -25,14 +25,12 @@ func _init():
 	
 func _ready():
 	var char_name = opponentName if isOpponent else characterName
-	if !character: 
-		character = Character.create_from_name(char_name,!isOpponent)
-	
+	if !character: character = Character.create_from_json(char_name,Character.Type.BF)
 	else:
 		if character.curCharacter != char_name:
-			var old_pos = character._position
-			character = Character.create_from_name(char_name,character.isPlayer)
-			character._position = old_pos
+			var old_pos = character.get(&"position")
+			character = Character.create_from_json(char_name,Character.Type.BF)
+			character.set(&"position", old_pos)
 		else: character.reparent(self)
 	
 	character.material = null

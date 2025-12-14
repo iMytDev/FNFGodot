@@ -1,6 +1,8 @@
+static var events_data: Dictionary
+static var easing_types: PackedStringArray
 
 ##A script to help with Event Notes.
-static func _get_events_data(events: Array) -> Array[Dictionary]:
+static func _get_events_chart_data(events: Array) -> Array[Dictionary]:
 	var new_events: Array[Dictionary]
 	var event_base = _get_event_base()
 	for data in events:
@@ -25,17 +27,26 @@ static func _convert_event_to_new(data: Array) -> Array[Dictionary]:
 		var event_name: StringName = i[0]
 		var variables = get_event_variables(event_name)
 		var vars_keys = variables.keys()
-		
+		var keys_length = vars_keys.size()
+		var event_length = minf(i.size()-1,keys_length)
 		event.t = data[0]
 		event.e = event_name
 		
-		var first_val = vars_keys[0]
-		for v in variables: event.v[v] = variables[v].default_value
+		var index: int = 0
+		while index < event_length:
+			var key = vars_keys[index]
+			var val = i[index+1]
+			event.v[key] = _convert_event_value_type(
+				val,
+				variables[key].get(&'type',TYPE_NIL),
+				val
+			)
+			index += 1
 		
-		event.v[first_val] = _convert_event_value_type(i[1],variables[first_val].type,event.v[first_val])
-		if vars_keys.size() >= 2 and i.size() >= 3: 
-			var second_val = vars_keys[1]
-			event.v[second_val] = _convert_event_value_type(i[2],variables[second_val].type,event.v[second_val])
+		while index < keys_length:
+			var key = vars_keys[index]
+			event.v[key] = variables[key].default_value
+			index += 1
 		new_events.append(event)
 	return new_events
 
@@ -48,21 +59,26 @@ static func _convert_event_value_type(value: Variant, type: Variant.Type, defaul
 	return type_convert(value,type)
 
 static func loadEvents(chart: Array) -> Array[Dictionary]:
-	var events = _get_events_data(chart)
+	var events = _get_events_chart_data(chart)
 	events.sort_custom(func(a,b):return a.t < b.t)
 	return events
 
 #region Chart Methods
-static var event_variables: Dictionary
-static var easing_types: PackedStringArray
+
+
+
+const default_value_data: Dictionary = {
+	&"type": TYPE_STRING,
+	&"default_value": &""
+}
 
 const default_variables = {
 	&'value1': {
-		&'type': TYPE_STRING_NAME,
+		&'type': TYPE_STRING,
 		&'default_value': &''
 	},
 	&'value2': {
-		&'type': TYPE_STRING_NAME,
+		&'type': TYPE_STRING,
 		&'default_value': &''
 	}
 }
@@ -90,23 +106,37 @@ static func _get_transitions():
 ##Return the variables of the a custom_event using "@vars" in his text.[br]
 ##The function returns a [Dictionary] that contains an [Array] with its type and its default value.[br][br]
 ##[b]Example:[/b] [code]{"value1": [TYPE_STRING,''], "value2": [TYPE_FLOAT,0.0]}[/code]
-static func get_event_variables(event_name: StringName) -> Dictionary:
-	if event_name in event_variables: return event_variables[event_name]
-	var vars = get_event_variables_no_cache(event_name)
-	event_variables[event_name] = vars
-	return vars
 
-
-static func get_event_variables_no_cache(event_name: StringName) -> Dictionary:
-	var event_data: Dictionary[StringName,Variant] = DictUtils.getDictTyped(
+static func get_event_data(event_name: StringName) -> Dictionary[StringName, Variant]: 
+	var data = events_data.get(event_name)
+	if data: return data
+	data = get_event_data_no_cache(event_name)
+	events_data[event_name] = data
+	return data
+	
+static func get_event_data_no_cache(event_name: String) -> Dictionary[StringName, Variant]:
+	var json = DictUtils.getDictTyped(
 		Paths.loadJsonNoCache('custom_events/'+event_name+'.json'),
 		TYPE_STRING_NAME
 	)
-	if !event_data or !event_data.has(&'variables'): return default_variables
-	DictUtils.convertKeysToStringNames(event_data.variables,true)
-	var variables = event_data.variables
+	if !json: return json
+	var variables = json.get('variables')
+	if !variables: 
+		json.variables = default_value_data.duplicate()
+		return json
+	
 	for i in variables: _fix_variable_data(variables[i])
-	return variables
+	return json
+
+static func get_event_variables(event_name: StringName) -> Dictionary:
+	var data = get_event_data(event_name)
+	if !data: return default_variables.duplicate()
+	return data.get('variables',{})
+
+static func get_event_variables_no_cache(event_name: StringName) -> Dictionary[StringName, Variant]:
+	var event_data: Dictionary[StringName,Variant] = get_event_data(event_name)
+	if !event_data or !event_data.has(&'variables'): return default_variables
+	return event_data.variables
 
 static func get_event_default_values(event_name: StringName) -> Dictionary[StringName,Variant]:
 	var default: Dictionary[StringName,Variant]
@@ -124,8 +154,8 @@ static func _fix_variable_data(data: Dictionary) -> Dictionary:
 			options.append_array(easing_types)
 			value_type = TYPE_STRING
 		_: value_type = MathUtils.get_type_by_name(type)
-		
-	var default_value: Variant = data.get('default_value')
+	
+	var default_value: Variant = data.get('default_value','')
 	var look_at = data.get('look_at')
 	if look_at:
 		var directory = look_at.get('directory')

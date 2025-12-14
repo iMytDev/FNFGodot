@@ -294,6 +294,7 @@ offset_right = 384.0
 offset_bottom = 219.0
 text = "Section Copy Offset:"
 value = 1.0
+step = 1.0
 int_value = true
 
 [node name="Button" type="Button" parent="TabContainer/Section" unique_id=949992340]
@@ -322,6 +323,7 @@ offset_top = 94.0
 offset_right = 273.0
 offset_bottom = 134.0
 text = "New BPM:"
+step = 1.0
 
 [node name="Swap Section" type="Button" parent="TabContainer/Section" unique_id=1909397756]
 layout_mode = 0
@@ -436,6 +438,7 @@ offset_top = 92.0
 offset_right = 143.0
 offset_bottom = 107.0
 text = "Sustain Length:"
+step = 1.0
 
 [node name="ShowStrums" type="CheckBox" parent="TabContainer/Note" unique_id=1369184988]
 layout_mode = 0
@@ -567,6 +570,7 @@ text = "Event Selected:"
 suffix = "/0"
 limit_min = true
 limit_max = true
+step = 1.0
 int_value = true
 
 [node name="Song" type="Control" parent="TabContainer" unique_id=1144860482]
@@ -609,6 +613,7 @@ offset_top = 89.0
 offset_right = 46.0
 offset_bottom = 104.0
 text = "BPM:"
+step = 1.0
 
 [node name="Song" type="LineEdit" parent="TabContainer/Song" unique_id=771191483]
 layout_mode = 0
@@ -693,6 +698,7 @@ offset_top = 135.0
 offset_right = 65.0
 offset_bottom = 150.0
 text = "Speed:"
+step = 1.0
 
 [node name="Stage" type="MenuButton" parent="TabContainer/Song" unique_id=1775748824]
 layout_mode = 0
@@ -911,6 +917,7 @@ offset_left = 38.0
 offset_top = 80.0
 offset_right = 269.0
 offset_bottom = 129.0
+step = 1.0
 
 [node name="CreateChart2" type="Button" parent="CreateChart" unique_id=576302393]
 layout_mode = 0

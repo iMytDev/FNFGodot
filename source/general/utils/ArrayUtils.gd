@@ -16,9 +16,10 @@ const array_types: Dictionary[Variant.Type,bool] = {
 }
 static func is_array_type(type: int):return type in array_types
 static func is_array(variable: Variant) -> bool: return is_array_type(typeof(variable))
-static func array_has_index(array: Array, index: int) -> bool: return index >= 0 and index < array.size()
+static func array_has_index(array: Variant, index: int) -> bool: return index >= 0 and index < array.size()
 
-static func set_array_index(array: Array,index: int,variable: Variant,fill: Variant = null) -> void:
+
+static func set_array_index(array: Variant,index: int,variable: Variant,fill: Variant = null) -> void:
 	var arraySize = array.size()
 	if arraySize <= index:
 		array.resize(index+1)

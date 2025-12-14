@@ -83,7 +83,7 @@ var _bpm_index: int = -1:
 		_bpm_index = i
 		if i != -1: _update_bpm_changes_index(); return
 		bpm = songDefaultBpm
-		_cur_bpm_changes = {}
+		_cur_bpm_changes.clear()
 
 var bpm: float: 
 	set(val): bpm = val; _update_bpm()
@@ -103,6 +103,7 @@ signal section_hit_once
 signal beat_hit ##Emitted when the beat changes.
 signal bpm_changes ##Emitted when the bpms changes.
 
+signal on_song_started
 #region Song methods
 func loadSong(json_name: String, suffix: String = '') -> Dictionary:
 	songJson = SongData.loadJson(json_name, suffix)
@@ -191,7 +192,7 @@ func sync_voices() -> void:
 ##Set the current position of the song in milliseconds.
 func seek(pos: float) -> void:
 	songPosition = pos
-	songPositionSeconds = pos / 1000.0
+	songPositionSeconds = pos * 0.001
 	if !songs: return
 	
 	if songPosition < 0.0:
@@ -349,8 +350,8 @@ func _update_rhythm() -> void:
 
 #region Bpm Methods
 func detectBpmChanges() -> void:
-	if _bpm_changes.is_read_only(): _bpm_changes = []
-	if _beats_reduced_array.is_read_only(): _beats_reduced_array = []
+	_bpm_changes.clear()
+	_beats_reduced_array.clear()
 	
 	var sectionBpm: float = bpm
 	var bpm_section: int = 0
@@ -440,7 +441,7 @@ func removeBpmChange(section: int): for i in _bpm_changes: if i.section == secti
 
 func _update_bpm_changes_index() -> void:
 	var i = _bpm_changes[_bpm_index]
-	_cur_bpm_changes = i
+	_cur_bpm_changes.assign(i)
 	bpm = i.bpm
 
 func _find_current_change_index(position: float = step,start_index: int = _bpm_index, key: StringName = &'step', backwards: bool = false):
@@ -469,6 +470,6 @@ func _process(_d) -> void:
 	if songs[0].playing:
 		is_playing = true
 		songPositionSeconds = songs[0].get_playback_position()
-		songPosition = songPositionSeconds*1000.0
+		songPosition = songPositionSeconds * 1000.0
 	else:
 		is_playing = false

@@ -29,21 +29,19 @@ func _init(_text: String = '', width: float = ScreenUtils.screenWidth):
 	horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	set(&"theme_override_constants/outline_size",7)
 
-func _enter_tree() -> void: 
-	_update_position()
-	parent = get_parent()
+func _enter_tree() -> void: _update_position(); parent = get_parent()
+func _exit_tree() -> void: parent = null
 
-func _process(_d: float) -> void:
-	if _need_to_update_scroll: _update_scroll()
+func _process(_d: float) -> void: if _need_to_update_scroll: _update_scroll()
 
 func _update_scroll():
 	var pos = camera.scroll if camera else parent.get(&'position')
 	if !pos: _real_scroll_factor = Vector2.ZERO; return
 	_real_scroll_offset = pos * _real_scroll_factor
 	
-func _update_position():
-	position = _position - _real_scroll_factor
+func _update_position(): position = _position - _real_scroll_factor
 
-@warning_ignore("native_method_override")
-func set_position(_pos: Vector2, _keep_offsets: bool = false):
-	_position = _pos
+func _set(property: StringName, value: Variant) -> bool:
+	match property:
+		&"position": _position = value; return true
+	return false

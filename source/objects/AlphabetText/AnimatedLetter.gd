@@ -34,7 +34,7 @@ func _init(imagePath: StringName = ''):
 func set_letter(_letter: StringName):
 	var prefix = _letter.to_lower()+suffix
 	letter = _letter
-	animation.addAnimByPrefix('anim',prefix,24,true)
+	animation.add_animation_by_prefix('anim',prefix,24,true)
 
 func _process(delta: float) -> void:
 	animation.curAnim.process_frame(delta)

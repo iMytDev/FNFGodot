@@ -13,3 +13,8 @@ func _process(delta: float) -> void:
 	scroll.x = fmod(scroll.x,rect_size.x*2.0)
 	scroll.y = fmod(scroll.y,rect_size.y*2.0)
 	RenderingServer.canvas_item_set_transform(node.get_canvas_item(),Transform2D(0.0,scroll - rect_size))
+
+func _validate_property(property: Dictionary) -> void:
+	match property.name:
+		"scroll": 
+			property.usage = PROPERTY_USAGE_NONE

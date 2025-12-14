@@ -1,3 +1,5 @@
+@tool
+class_name Sparrow extends Object
 static var parser: XMLParser = XMLParser.new()
 static var sparrows_loaded: Dictionary[String,Dictionary]
 
@@ -10,15 +12,13 @@ const deg_90 = deg_to_rad(-90)
 ##loadSparrow(Paths.detectFileFolder("images/Image.xml")) #Also works if the file are found.
 ##[/codeblock]
 static func loadSparrow(file: String) -> Dictionary[StringName,Array]:
-	
 	if !file.ends_with('.xml'): file += '.xml'
 	
-	var sparrow: Dictionary[StringName,Array] = sparrows_loaded.get(
-		file,
-		Dictionary({},TYPE_STRING_NAME,&'',null,TYPE_ARRAY,&"",null)
-	) #Aqui, ele já salva o arquivo no Dictionary tlgd
+	var sparrow: Dictionary[StringName,Array]
+	if sparrows_loaded.has(file): sparrow = sparrows_loaded[file]
+	
 	if sparrow: return sparrow
-	if !FileAccess.file_exists(file): return {}
+	if !FileAccess.file_exists(file): return sparrow
 	
 	parser.open(file)
 	while parser.read() == OK: #Aqui começa a ler

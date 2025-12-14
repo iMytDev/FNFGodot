@@ -21,48 +21,41 @@ const key_actions: Array = [
 
 #region Static Vars
 static var _rating_offset: PackedFloat32Array = [-1.0,45.0,130.0,150.0]
-static var noteStylesLoaded: Dictionary
-static var miraculousRating: bool
 #endregion
 
-#region Copy Strum Vars
+#region Copy Strum Properties
 var copyX: bool = true  ##If [code]true[/code], the note will follow the x position from his [member strum].
 var copyY: bool = true ##If [code]true[/code], the note will follow the y position from his [member strum].
 var copyAlpha: bool = true ##If [code]true[/code], the note will follow the alpha from his [member strum].
 var copyScale: bool ##If [code]true[/code], the note will follow the scale from his [member strum].
 #endregion
 
-var _is_processing: bool
-
-#region Sustain Vars
+#region Sustain Properties
 var isSustainNote: bool ##If the note is a Sustain. See also ["source/objects/NoteSustain.gd"]
 var isEndSustain: bool
 var sustainLength: float  ##The Sustain time
 #endregion
 
-#region Health Vars
+#region Health Properties
 var hitHealth: float = 0.023 ##the amount of life will gain by hitting the note
 var missHealth: float = 0.0475##the amount of life will lose by missing the note
 #endregion
 
-#region Strum Vars
+#region Strum Properties
 var strumConfirm: bool = true ##If [code]true[/code], the strum will play animation when hit the note
 var strumTime: float ##Position of the note in the song
 var strumNote: StrumNote: set = setStrum ##Strum Parent that note will follow
 #endregion
 
-
-#region Note Style Variables
+#region Note Style Properties
 var noteSpeed: float = 1.0: set = setNoteSpeed ##Note Speed
 var _real_note_speed: float = 1.0
 
 var animSuffix: String
-#endregion
 
-#region Note Type Variables
 var gfNote: bool ##Is GF Note
 var ignoreNote: bool ##if is opponent note or a bot playing, they will ignore this note
-var noteType: StringName ##Note Type
+var noteType: String ##Note Type
 
 var autoHit: bool ##If [code]true[/code], the note will be hit automatically, independent if is a player note.
 var noAnimation: bool ##When hit the note and this variable is [code]true[/code], the character will dont play animation
@@ -73,13 +66,13 @@ var blockHit: bool ##Unable to hit the note
 var lowPriority: bool ##if two notes are close to the strum and this variable is true, the game will prioritize the another one
 #endregion
 
-#region Mult Variables
+#region Mult Properties
 var multSpeed: float = 1.0: set = setMultSpeed##Note Speed multiplier
 var multAlpha: float = 1.0 ##Note Alpha multiplier
 var multScale: Vector2 = Vector2.ONE
 #endregion
 
-#region General Variables
+#region General Properties
 ##The group the note will be added when spawned,
 ##see [method "source/states/StrumState.gd".spawnNote] in his script for more information.[br][br]
 ##[b]Tip:[/b] Is recommend to set this value as a [SpriteGroup]!! 
@@ -97,6 +90,7 @@ var real_distance: float
 
 var canBeHit: bool  ##If the note can be hit
 var hitAnim: StringName ##Strum animation when hit this note, this property is set in StrumState.
+var hitCharacter: Node ##The Character that will play the animation when this note are hit or missed. Used in PlayState
 
 var wasHit: bool
 var judgementTime: float = INF ##Used in ModchartEditor
@@ -118,22 +112,18 @@ var rating: StringName ## The Rating ot the note in [String]. [param sick, good,
 var ratingDisabled: bool ##Disable Rating. If [code]true[/code], the rating will always be "sick".
 #endregion
 
-
-
-
-
 func _init(data: int = 0) -> void: noteData = data; super._init()
 
 func updateNote() -> void:
 	distance = (strumTime - Conductor.songPositionDelayed)
-	_check_hit()
+	canBeHit = _can_hit()
 	followStrum()
 
-func _check_hit() -> void:
-	if blockHit: canBeHit = false; return
-	if autoHit: canBeHit = distance <= 0.0; return
+func _can_hit() -> bool:
+	if missed: return false
+	if autoHit: return distance <= 0.0;
 	var limit = _rating_offset[3]
-	canBeHit = distance >= -limit and distance <= limit
+	return distance >= -limit and distance <= limit
 
 func followStrum(strum: StrumNote = strumNote) -> void:
 	if !strum: return
@@ -142,11 +132,13 @@ func followStrum(strum: StrumNote = strumNote) -> void:
 	var posY: float = strumNote.y + offsetY
 	
 	if strumNote._direction_radius: 
-		var lerp_dir = strumNote._direction_lerp; posX += real_distance*lerp_dir.y; posY += real_distance*lerp_dir.x
+		var lerp_dir = strumNote._direction_lerp; 
+		posX += real_distance*lerp_dir.y; 
+		posY += real_distance*lerp_dir.x
 	else: posY += real_distance
 	
-	if copyX: x = posX
-	if copyY: y = posY
+	if copyX: _position.x = posX
+	if copyY: _position.y = posY
 	if copyAlpha: modulate.a = strumNote.modulate.a * multAlpha
 
 func reloadNote() -> void:
@@ -163,10 +155,10 @@ func reloadNote() -> void:
 func _reload_note_from_data(data: Dictionary) -> void:
 	noteScale = data.get(&'scale',noteScale)
 	var prefix = data.get(&'prefix')
-	if prefix: animation.addAnimByPrefix(&'static', prefix, data.get(&'fps',24.0), true)
+	if prefix: animation.add_animation_by_prefix(&'static', prefix, data.get(&'fps',24.0), true)
 
 func _reload_note_without_data() -> void:
-	var cut = imageSize/Vector2(Song.keyCount,5)
+	var cut = imageSize/Vector2(styleData.get(&'keyCount',4),5)
 	setNoteRect(
 		Rect2(
 			Vector2(cut.x*noteData,cut.y),
@@ -179,19 +171,23 @@ func _get_data_animation_name() -> StringName:
 	if styleData.data.has(_name): return _name
 	return &'default'
 
-func resetNote() -> void: ##Reset Note values when spawned.
-	distance = 5000.0
-	judgementTime = INF
+func resetNote() -> void: ##Reset Note properties.
+	material = null
+	
+	ignoreNote = false
 	wasHit = false
-	_is_processing = true
+	
+	judgementTime = INF
 	missed = false
 	offset = Vector2.ZERO
-	material = null
-	ignoreNote = false
+	strumConfirm = true
+	
+	noAnimation = false
 	splashName = &"noteSplash"
 
 #region Updaters
-func _update_distance() -> void: real_distance = distance*_real_note_speed
+
+func _get_distance(): return distance*_real_note_speed
 
 func _update_note_speed() -> void: 
 	_real_note_speed = noteSpeed * 0.45 * multSpeed
@@ -212,7 +208,9 @@ func setNoteSpeed(_speed: float) -> void:
 
 func setNoteData(data: int): super.setNoteData(data); splashPrefix = directions[data]
 
-func setDistance(dist: float) -> void: distance = dist; _update_distance()
+func setDistance(dist: float) -> void: 
+	distance = dist; 
+	real_distance = _get_distance()
 
 func setMultSpeed(_speed: float):
 	if multSpeed == _speed: return
@@ -229,11 +227,9 @@ func setStrum(strum: StrumNote) -> void:
 func _on_hit() -> void: kill(); wasHit = true;
 
 func _enter_tree() -> void: 
-	_is_processing = true
 	if !strumNote: return
 	strumNote.mult_speed_changed.connect(_update_note_speed)
 	_update_note_speed()
 
 func _exit_tree() -> void: 
-	_is_processing = false
 	if strumNote: strumNote.mult_speed_changed.disconnect(_update_note_speed)

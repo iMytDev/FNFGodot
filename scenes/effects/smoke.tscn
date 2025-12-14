@@ -1,9 +1,49 @@
 [gd_scene load_steps=7 format=3 uid="uid://cproj0w72ysi"]
 
-[ext_resource type="Shader" uid="uid://vx2ixvestbob" path="res://assets/shaders/Smoke.gdshader" id="1_8prmg"]
+[sub_resource type="Shader" id="Shader_irdru"]
+resource_local_to_scene = true
+code = "shader_type canvas_item;
+
+uniform float smoke_speed = 0.1;
+uniform float smoke_alpha = 1;
+uniform float limit_top = 0.0;
+uniform float limit_bottom = 1.0;
+uniform float limit_left = 0.0;
+uniform float limit_right = 1.0;
+uniform float fade_margin = 0.5;
+uniform bool move_x = true;
+uniform bool move_y = false;
+uniform sampler2D smoke_texture;
+
+vec2 mirror_repeat(vec2 uv){
+	//uv = mod(uv,vec2(2.0));
+	return abs(uv - (trunc(uv)));
+}
+void fragment(){
+	vec2 uv = UV;
+	if(move_x && move_y){
+		uv = mirror_repeat(UV - (TIME*smoke_speed));
+	}
+	else if(move_x){
+		uv = mirror_repeat(UV - (TIME*vec2(smoke_speed,0.0)));
+	}
+	else if(move_y){
+		uv = mirror_repeat(UV - TIME*vec2(0.0,smoke_speed));
+	}
+
+	float alpha = smoke_alpha;
+	if (UV.x < limit_left) alpha *= smoothstep(limit_left - fade_margin, limit_left, UV.x);
+	if (UV.x > limit_right) alpha *= smoothstep(limit_right + fade_margin, limit_right, UV.x);
+	if (UV.y < limit_top) alpha *= smoothstep(limit_top - fade_margin, limit_top, UV.y);
+	if (UV.y > limit_bottom) alpha *= smoothstep(limit_bottom + fade_margin, limit_bottom, UV.y);
+
+	vec4 smoke_tex = texture(TEXTURE, uv);
+	COLOR = vec4(smoke_tex.rgb, alpha * max(smoke_tex.r,max(smoke_tex.g,smoke_tex.b)));
+}
+"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_v4g5g"]
-shader = ExtResource("1_8prmg")
+shader = SubResource("Shader_irdru")
 shader_parameter/smoke_speed = 0.5
 shader_parameter/smoke_alpha = 0.8
 shader_parameter/limit_top = 1.0
@@ -40,7 +80,7 @@ func _ready():
 	if texture and texture.width <= 1: texture.width = ScreenUtils.screenWidth
 "
 
-[node name="Smoke" type="Sprite2D"]
+[node name="Smoke" type="Sprite2D" unique_id=1097920078]
 material = SubResource("ShaderMaterial_v4g5g")
 scale = Vector2(1277, 1)
 texture = SubResource("NoiseTexture2D_jahxy")

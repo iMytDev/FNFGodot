@@ -60,36 +60,37 @@ func _init(dir: int = 0):
 	offset_follow_scale = true
 	offset_follow_rotation = true
 	animation.animation_finished.connect(_on_animation_finished)
-
+	
 func reloadStrumNote() -> void: ##Reload Strum Texture Data
-	_animOffsets.clear()
 	offset = Vector2.ZERO
 	image.texture = Paths.texture(texture)
 	antialiasing = !isPixelNote
 	
-	if styleData and styleData.data: _load_anims_from_prefix()
+	if styleData and styleData.get('data'): _load_anims_from_prefix()
 	else: _load_graphic_anims()
 	setGraphicScale(Vector2(default_scale,default_scale))
 
 const _anim_direction: PackedStringArray = ['left','down','up','right']
+
+var _anim_offsets: Dictionary = {
+	&'static': Vector2.ZERO,
+	&'confirm': Vector2.ZERO,
+	&'pressed': Vector2.ZERO
+}
 func _load_anims_from_prefix() -> void:
 	var type = _anim_direction[_data_mod]
 	
-	var static_anim = styleData.data[type+'Static']
-	var press_anim = styleData.data[type+'Press']
-	var confirm_anim = styleData.data[type+'Confirm']
-	animation.addAnimByPrefix(&'static',static_anim.prefix,24,true)
-	animation.addAnimByPrefix(&'press',press_anim.prefix,24,false)
-	animation.addAnimByPrefix(&'confirm',confirm_anim.prefix,24,false)
+	var press_data = styleData.data[type+'Press']
+	var static_data = styleData.data[type+'Static']
+	var confirm_data = styleData.data[type+'Confirm']
 	
-	var confirm_offset = confirm_anim.get(&'offsets',default_offset)
-	addAnimOffset(&'confirm',confirm_offset)
+	animation.add_animation_by_prefix(&'static',static_data.prefix,24,true)
+	animation.add_animation_by_prefix(&'confirm',confirm_data.prefix,24,false)
+	animation.add_animation_by_prefix(&'press',press_data.prefix,24,false)
 	
-	var press_offset = press_anim.get(&'offsets',default_offset)
-	addAnimOffset(&'press',press_offset)
-	
-	var static_offset = static_anim.get(&'offsets',default_offset)
-	addAnimOffset(&'static',static_offset)
+	animation.set_anim_offset(&'static',static_data.get(&'offsets',default_offset))
+	animation.set_anim_offset(&'confirm',confirm_data.get(&'offsets',default_offset))
+	animation.set_anim_offset(&'press',press_data.get(&'offsets',default_offset))
 
 func _load_graphic_anims() -> void:
 	var keyCount: int = Song.keyCount
@@ -141,7 +142,10 @@ func _process(delta: float) -> void:
 		hitTime -= delta
 		if hitTime <= 0.0: hitTime = 0.0; animation.play(&'static')
 
+
 func _on_animation_finished(anim: StringName):if return_to_static_on_finish and anim != &'static': animation.play(&'static')
+
+
 func _property_can_revert(property: StringName) -> bool:
 	match property:
 		&'data',&'styleData': return false

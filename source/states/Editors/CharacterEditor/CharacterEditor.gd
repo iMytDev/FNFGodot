@@ -7,13 +7,14 @@ static var back_to: Variant
 
 var charactersFound: PackedStringArray
 var characterData: Dictionary = Character.getCharacterBaseData()
-var animData: Dictionary[StringName,Variant] = Character.getAnimBaseData()
+var animData: Dictionary[StringName,Variant]:
+	set(val): animData= val; updateAnimData()
 
 var isMovingCamera: bool
 
 static var curCharacter: StringName
 
-@onready var character_node: Character = Character.create_from_name(curCharacter)
+@onready var character_node: Character = Character.create_from_json(curCharacter)
 
 var character_ghost: Character
 
@@ -23,7 +24,7 @@ var cur_offset: Vector2:
 		cur_offset = value
 		animation_offset[0].set_value_no_signal(value.x)
 		animation_offset[1].set_value_no_signal(value.y)
-		character_node.set_offset_from_anim(cur_anim)
+		character_node.animation.set_anim_offset(cur_anim,cur_offset)
 
 var cur_indices: String
 var cur_scale: float = 1.0:
@@ -37,7 +38,7 @@ var cur_scale: float = 1.0:
 var cur_frame_rate: float = 24.0
 var cur_looped: bool
 
-var charJson: Dictionary
+var charJson: Dictionary[StringName,Variant]
 
 
 var cur_image: StringName: set = setCharacterImage
@@ -74,7 +75,7 @@ var _character_path: String = Paths.exePath+'/'
 
 @onready var animation_follow_flip := $"TabContainer/Animation Data/Container/Offsets/Data/Offset Follow Flip"
 @onready var animation_follow_scale := $"TabContainer/Animation Data/Container/Offsets/Data/Offset Follow Scale"
-@onready var animation_sing_follow_flip := $"TabContainer/Animation Data/Container/Sing_Dance/Data/Sing Animation Follow Flip"
+@onready var animation_sing_follow_flip := $"TabContainer/Animation Data/Container/Sing_Dance/Data/MirrorSingAnimations"
 
 @onready var animationGhostPop: PopupMenu = animationGhost.get_popup()
 @onready var animationListPop: PopupMenu = animationList.get_popup()
@@ -113,8 +114,8 @@ var camera_y_limit = -300
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	character_node.loadCharacter(curCharacter)
 	charJson = character_node.json
+	loadCharacter(curCharacter)
 	camera.add_child(character_node)
 	updateCharacterData()
 	
@@ -123,14 +124,13 @@ func _ready():
 	
 	bar.position = Vector2(50,670)
 	bar.progress = 1
-	icon._position = Vector2(20,600)
+	icon.set(&"position",Vector2(20,600))
 	
 	
 	characterPop.index_pressed.connect(func(i):
 		var character = characterPop.get_item_text(i)
 		if character == curCharacter: return
-		character_node.loadCharacter(character)
-		updateCharacterData()
+		loadCharacter(character)
 	)
 	
 	animationListPop.index_pressed.connect(func(i): cur_anim = animationListPop.get_item_text(i))
@@ -148,14 +148,14 @@ func _ready():
 		func(i): 
 			animation_prefix.text = prefixListPop.get_item_text(i); animation_prefix.text_submitted.emit(animation_prefix.text)
 	)
-	$BG/Ground.texture =  Paths.texture('editors/character_editor/ground')
+	
 	camera_y_limit = $BG/Ground.texture.get_size().y*$BG/Ground.scale.y + 300
 
 
 func exit():
 	if !back_to: return
 	Global.doTransition().finished.connect(Global.swapTree.bind(back_to,false))
-	
+
 
 func createGhost(animation: StringName):
 	if character_ghost: character_ghost.queue_free()
@@ -165,18 +165,20 @@ func createGhost(animation: StringName):
 	character_ghost.loadCharacterFromJson(charJson)
 	character_ghost.danceAfterHold = false
 	character_ghost.danceOnAnimEnd = false
-	character_ghost._position = character_node._position
+	character_ghost.set(&"position",character_node._position)
 	camera.add_child(character_ghost)
 	camera.move_child(character_ghost,character_node.get_index())
 	character_ghost.modulate.a = 0.5
+	character_ghost.flipX = character_node.flipX
 	character_ghost.animation.play(animation,true)
 	
 	
-func loadCharacter(json: StringName, isPlayer: bool = json.begins_with('bf')) -> Character:
+func loadCharacter(json: StringName = curCharacter, type: Character.Type = Character.Type.BF) -> Character:
+	character_node.charType = type
 	character_node.loadCharacter(json)
+	updateCharacterData()
 	character_node.danceAfterHold = false
 	character_node.danceOnAnimEnd = false
-	character_node.isPlayer = isPlayer
 	return character_node
 
 	
@@ -206,7 +208,7 @@ func set_json_value(value: Variant, property: StringName): charJson[property] = 
 func set_character_value(value: Variant, property: StringName): character_node[property] = value;
 
 func add_anim_offset():
-	character_node.addAnimOffset(cur_anim,cur_offset.x,cur_offset.y)
+	character_node.animation.set_anim_offset(cur_anim,cur_offset)
 	replayCharAnim()
 
 func get_animation_indices_str(indices = animData.get('frameIndices',[])):
@@ -216,7 +218,7 @@ func get_animation_indices_str(indices = animData.get('frameIndices',[])):
 
 func updateAnimData():
 	animationList.text = cur_anim
-	cur_offset = character_node._animOffsets.get(cur_anim,Vector2.ZERO)
+	cur_offset = animData.get(&'offsets',Vector2.ZERO)
 	cur_indices = get_animation_indices_str()
 	cur_looped = animData.get('loop',false)
 	animation_prefix.text = animData.get('prefix','')
@@ -239,19 +241,18 @@ func updatePrefixList():
 			for p in prefix_list: prefixListPop.add_item(p)
 	
 func updateCharacterData():
-	character_node._position = Vector2(640,0) + character_node.positionArray
+	character_node.set(&"position",Vector2(640,0) + character_node.positionArray)
 	curCharacter = character_node.curCharacter
-	character_node.isPlayer = curCharacter.begins_with('bf')
-	character_node.isGF = curCharacter.begins_with('gf')
+	character_node.charType = Character.Type.BF if curCharacter.begins_with('bf') else Character.Type.OPPONENT
 	characterList.text = curCharacter
 	animation_asset.placeholder_text = charJson.assetPath
-	playable_character.set_pressed_no_signal(character_node.isPlayer)
-	gf_character.set_pressed_no_signal(character_node.isGF)
+	playable_character.set_pressed_no_signal(character_node.charType == Character.Type.BF)
+	gf_character.set_pressed_no_signal(character_node.charType == Character.Type.GF)
 	updatePrefixList()
 	updateDataInfo()
 	updateAnimationList()
-	cur_anim = character_node.animation.current_animation
 	_character_path = Paths.characterPath(curCharacter).get_base_dir()
+	cur_anim = character_node.animation.current_animation
 	
 func updateDataInfo():
 	icon.reloadIconFromCharacterJson(charJson)
@@ -262,7 +263,7 @@ func updateDataInfo():
 	
 	animation_follow_flip.set_pressed_no_signal(character_node.offset_follow_flip)
 	animation_follow_scale.set_pressed_no_signal(character_node.offset_follow_scale)
-	animation_sing_follow_flip.set_pressed_no_signal(charJson.sing_follow_flip)
+	animation_sing_follow_flip.set_pressed_no_signal(character_node.mirror_sing_on_flip)
 	
 	json_flip.set_pressed_no_signal(charJson.flipX)
 	
@@ -362,13 +363,10 @@ func _on_anim_offset_x_value_changed(value: float) -> void:
 func _on_anim_offset_y_value_changed(value: float) -> void:
 	cur_offset.y = value
 	animData.offsets[1] = value
-	add_anim_offset()
-
-
-func _on_reload_character_button_up() -> void: character_node.loadCharacterFromJson(Paths.character(curCharacter))
 
 func _on_flip_sing_direction_toggled(toggled_on: bool) -> void:
-	charJson.sing_follow_flip = toggled_on
+	charJson.mirror_sing_on_flip = toggled_on
+	character_node.mirror_sing_on_flip = toggled_on
 	character_node.reloadAnims()
 	character_node.animation.play(cur_anim)
 
@@ -381,10 +379,9 @@ func _on_save_character_button_up() -> void:
 	add_child(folders)
 	folders.file_selected.connect(func(dir):
 		if not dir in charactersFound: charactersFound.append(dir)
-		Paths.saveFile(charJson,dir)
+		Paths.saveFile(Character.export_character_json(charJson),dir)
 		folders.queue_free()
 	)
-
 
 func _on_load_character_from_file_button_up() -> void:
 	var dialog = Paths.get_dialog(_character_path)
@@ -408,7 +405,7 @@ func _on_indices_text_submitted(new_text: String) -> void:
 
 func _on_loop_from_value_changed(value: int) -> void:
 	animData.loop_frame = value
-	character_node.animation.getAnimData(cur_anim).loop_frame = value
+	character_node.animation.animationsArray[cur_anim].loop_frame = value
 	character_node.animation.curAnim.loop_frame = value
 
 func _on_offset_follow_flip_toggled(toggled_on: bool) -> void:
@@ -446,14 +443,14 @@ func _on_scale_icon_toggled(toggled_on: bool) -> void:
 	icon.set_pixel(charJson.healthIcon.get(&'isPixel',false),toggled_on)
 	if !toggled_on: charJson.healthIcon.erase(&'canScale')
 	else: charJson.healthIcon.canScale = true
-	
+
 
 func _on_asset_path_text_submitted(new_text: String) -> void:
 	animation_asset.release_focus()
 	if new_text == animData.get('assetPath',''): return
 	animData.assetPath = new_text
 	reloadCharacterAnim()
-	
+
 func _on_add_animation_button_up() -> void:
 	addCharacterAnimation(animation_insert_name.text)
 
@@ -461,7 +458,7 @@ func _on_remove_animation_button_up() -> void:
 	character_node.animation.removeAnimation(cur_anim)
 	for i in charJson.animations:
 		if i.name == cur_anim: charJson.animations.erase(i); break
-	if !animationGhostPop.item_count: cur_anim = ''
+	if !animationGhostPop.item_count: cur_anim = &''
 	else: cur_anim = animationGhostPop.get_item_text(1)
 	updateAnimationList()
 
@@ -523,7 +520,7 @@ func _on_camera_y_value_changed(value: float) -> void:
 	updateCameraPosition()
 	
 func _on_flip_x_toggled(toggled_on: bool) -> void:
-	character_node.flipX = toggled_on != character_node.isPlayer
+	character_node.flipX = toggled_on != character_node.isPlayer()
 	charJson.flipX = toggled_on
 	
 	if animation_sing_follow_flip.button_pressed: character_node.reloadAnims()

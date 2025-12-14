@@ -1,10 +1,10 @@
-[gd_resource type="AudioBusLayout" load_steps=2 format=3 uid="uid://djw6qsfavpa73"]
+[gd_resource type="AudioBusLayout" format=3 uid="uid://djw6qsfavpa73"]
 
 [sub_resource type="AudioEffectSpectrumAnalyzer" id="AudioEffectSpectrumAnalyzer_j3pel"]
 resource_name = "SpectrumAnalyzer"
 
 [resource]
-bus/0/volume_db = -5.042245
+bus/0/volume_db = -7.042245
 bus/1/name = &"Visualizer"
 bus/1/solo = false
 bus/1/mute = false

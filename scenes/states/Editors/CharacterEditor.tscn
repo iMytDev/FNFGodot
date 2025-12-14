@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://droixhbemd0xd"]
+[gd_scene load_steps=10 format=3 uid="uid://droixhbemd0xd"]
 
 [ext_resource type="Script" uid="uid://dkyvojm86n535" path="res://source/states/Editors/CharacterEditor/CharacterEditor.gd" id="1_qbwox"]
 [ext_resource type="Script" uid="uid://cdw8oloedo54f" path="res://source/states/Editors/CharacterEditor/Marker.gd" id="2_6y1bd"]
@@ -6,11 +6,34 @@
 [ext_resource type="PackedScene" uid="uid://b1a3jlb7iu130" path="res://scenes/objects/ButtonRange.tscn" id="3_atq18"]
 [ext_resource type="StyleBox" uid="uid://go6q2nvp2mu1" path="res://source/general/FoldableContent/FoldableStyleBox.tres" id="3_fjx64"]
 [ext_resource type="Script" uid="uid://cvvli26q7wviq" path="res://source/general/popup/DynamicFileMenuButton.gd" id="4_6y1bd"]
+[ext_resource type="Script" uid="uid://bcwb15rt0wux4" path="res://scenes/objects/LineEditAutoUnfocus.gd" id="5_3un4d"]
 
-[node name="Character Editor" type="Node"]
+[sub_resource type="GDScript" id="GDScript_3un4d"]
+script/source = "@tool
+extends Sprite2D
+var tex = Paths.texture('editors/character_editor/ground')
+func _ready() -> void: 
+	set_editable_instance(self,false)
+	texture = tex
+
+func _validate_property(property: Dictionary) -> void:
+	match property.name:
+		\"texture\": property.usage = PROPERTY_USAGE_NONE
+"
+
+[sub_resource type="GDScript" id="GDScript_e6wko"]
+script/source = "extends CheckBox
+
+@onready var character_editor: Node = $\"../..\"
+
+func _toggled(toggled_on: bool) -> void:
+	character_editor.character_node.charType = Character.Type.BF if toggled_on else Character.Type.OPPONENT
+"
+
+[node name="Character Editor" type="Node" unique_id=87527271]
 script = ExtResource("1_qbwox")
 
-[node name="ChessScroll" type="Control" parent="."]
+[node name="ChessScroll" type="Control" parent="." unique_id=736391516]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 1290.0
@@ -24,29 +47,28 @@ length = 24
 metadata/_custom_type_script = "uid://dsm0luhaq03go"
 metadata/_edit_lock_ = true
 
-[node name="BG" type="Node2D" parent="."]
+[node name="BG" type="Node2D" parent="." unique_id=411087546]
 texture_filter = 2
 position = Vector2(-443, 0)
 scale = Vector2(0.8, 0.8)
 
-[node name="Marker_Origin" type="Node2D" parent="BG"]
+[node name="Marker_Origin" type="Node2D" parent="BG" unique_id=1974594475]
 z_index = 1
-position = Vector2(611.25, 5.00002)
 script = ExtResource("2_6y1bd")
 v_color = Color(0, 1, 0, 1)
 h_color = Color(1, 0, 0, 1)
 
-[node name="Marker_Camera" type="Node2D" parent="BG"]
+[node name="Marker_Camera" type="Node2D" parent="BG" unique_id=916331833]
 z_index = 1
-position = Vector2(557.5, 5)
 script = ExtResource("2_6y1bd")
 
-[node name="Ground" type="Sprite2D" parent="BG"]
+[node name="Ground" type="Sprite2D" parent="BG" unique_id=554568220]
 position = Vector2(-600, -850)
 scale = Vector2(2.5, 2.5)
 centered = false
+script = SubResource("GDScript_3un4d")
 
-[node name="TabContainer" type="TabContainer" parent="."]
+[node name="TabContainer" type="TabContainer" parent="." unique_id=1683341163]
 offset_left = 667.0
 offset_top = 269.0
 offset_right = 1280.0
@@ -56,7 +78,7 @@ size_flags_vertical = 3
 current_tab = 1
 tab_focus_mode = 0
 
-[node name="Animation Data" type="ScrollContainer" parent="TabContainer"]
+[node name="Animation Data" type="ScrollContainer" parent="TabContainer" unique_id=1241570581]
 visible = false
 layout_mode = 2
 focus_mode = 2
@@ -64,21 +86,19 @@ mouse_filter = 0
 mouse_force_pass_scroll_events = false
 metadata/_tab_index = 0
 
-[node name="Container" type="VBoxContainer" parent="TabContainer/Animation Data"]
+[node name="Container" type="VBoxContainer" parent="TabContainer/Animation Data" unique_id=1727007484]
 self_modulate = Color(0.29219002, 0.29219005, 0.29219002, 1)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="Current Animation" type="FoldableContainer" parent="TabContainer/Animation Data/Container"]
+[node name="Current Animation" type="FoldableContainer" parent="TabContainer/Animation Data/Container" unique_id=216405159]
 layout_mode = 2
 focus_mode = 0
 theme_override_styles/panel = ExtResource("3_fjx64")
-folded = true
 title = "Current Animation Data"
 
-[node name="Data" type="Label" parent="TabContainer/Animation Data/Container/Current Animation"]
-visible = false
+[node name="Data" type="Label" parent="TabContainer/Animation Data/Container/Current Animation" unique_id=604490835]
 custom_minimum_size = Vector2(0, 350)
 layout_mode = 2
 text = "
@@ -94,7 +114,7 @@ text = "
 
  Indices: "
 
-[node name="AnimationList" type="MenuButton" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="AnimationList" type="MenuButton" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=935325776]
 layout_mode = 0
 offset_left = 179.0
 offset_top = 50.0
@@ -102,7 +122,7 @@ offset_right = 287.0
 offset_bottom = 74.0
 flat = false
 
-[node name="Insert Animation Name" type="LineEdit" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="Insert Animation Name" type="LineEdit" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=1062130947]
 layout_mode = 0
 offset_left = 140.0
 offset_top = 10.0
@@ -111,8 +131,10 @@ offset_bottom = 41.0
 focus_mode = 1
 mouse_force_pass_scroll_events = false
 placeholder_text = "Animation Name"
+script = ExtResource("5_3un4d")
+metadata/_custom_type_script = "uid://bcwb15rt0wux4"
 
-[node name="Add Animation" type="Button" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="Add Animation" type="Button" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=1243783971]
 layout_mode = 0
 offset_left = 301.0
 offset_top = 9.0
@@ -121,7 +143,7 @@ offset_bottom = 40.0
 focus_mode = 0
 text = "Add Animation"
 
-[node name="Remove Animation" type="Button" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="Remove Animation" type="Button" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=445561493]
 layout_mode = 0
 offset_left = 440.0
 offset_top = 11.0
@@ -130,14 +152,16 @@ offset_bottom = 42.0
 focus_mode = 0
 text = "Remove Animation"
 
-[node name="AssetPath" type="LineEdit" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="AssetPath" type="LineEdit" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=864200744]
 layout_mode = 0
 offset_left = 70.0
 offset_top = 83.0
 offset_right = 269.0
 offset_bottom = 114.0
+script = ExtResource("5_3un4d")
+metadata/_custom_type_script = "uid://bcwb15rt0wux4"
 
-[node name="Prefix" type="LineEdit" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="Prefix" type="LineEdit" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=1906430555]
 layout_mode = 0
 offset_left = 78.0
 offset_top = 132.0
@@ -146,8 +170,10 @@ offset_bottom = 163.0
 focus_mode = 1
 clear_button_enabled = true
 draw_control_chars = true
+script = ExtResource("5_3un4d")
+metadata/_custom_type_script = "uid://bcwb15rt0wux4"
 
-[node name="PrefixList" type="MenuButton" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="PrefixList" type="MenuButton" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=122860517]
 layout_mode = 0
 offset_left = 301.0
 offset_top = 131.0
@@ -156,7 +182,7 @@ offset_bottom = 162.0
 text = "Prefix List"
 flat = false
 
-[node name="Indices" type="LineEdit" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="Indices" type="LineEdit" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=1105015490]
 layout_mode = 0
 offset_left = 91.0
 offset_top = 192.0
@@ -169,8 +195,10 @@ clear_button_enabled = true
 shortcut_keys_enabled = false
 deselect_on_focus_loss_enabled = false
 drag_and_drop_selection_enabled = false
+script = ExtResource("5_3un4d")
+metadata/_custom_type_script = "uid://bcwb15rt0wux4"
 
-[node name="Looped" type="CheckBox" parent="TabContainer/Animation Data/Container/Current Animation/Data"]
+[node name="Looped" type="CheckBox" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=646069155]
 layout_mode = 0
 offset_left = 292.0
 offset_top = 256.0
@@ -179,10 +207,8 @@ offset_bottom = 287.0
 focus_mode = 0
 text = "Loop"
 
-[node name="LoopFrom" parent="TabContainer/Animation Data/Container/Current Animation/Data" instance=ExtResource("3_atq18")]
+[node name="LoopFrom" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=341507311 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 10.0
 offset_top = 261.0
 offset_right = 104.0
@@ -190,30 +216,24 @@ offset_bottom = 276.0
 text = "Loop From:"
 int_value = true
 
-[node name="anim_offset_x" parent="TabContainer/Animation Data/Container/Current Animation/Data" instance=ExtResource("3_atq18")]
+[node name="anim_offset_x" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=1389551906 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 11.0
 offset_top = 317.0
 offset_right = 96.0
 offset_bottom = 332.0
 text = "Offset X:"
 
-[node name="anim_offset_y" parent="TabContainer/Animation Data/Container/Current Animation/Data" instance=ExtResource("3_atq18")]
+[node name="anim_offset_y" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=1871792083 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 302.0
 offset_top = 315.0
 offset_right = 387.0
 offset_bottom = 330.0
 text = "Offset Y:"
 
-[node name="FrameRate" parent="TabContainer/Animation Data/Container/Current Animation/Data" instance=ExtResource("3_atq18")]
+[node name="FrameRate" parent="TabContainer/Animation Data/Container/Current Animation/Data" unique_id=1181752648 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 322.0
 offset_top = 217.0
 offset_right = 360.0
@@ -221,19 +241,19 @@ offset_bottom = 232.0
 text = "FPS:"
 value = 24.0
 
-[node name="Offsets" type="FoldableContainer" parent="TabContainer/Animation Data/Container"]
+[node name="Offsets" type="FoldableContainer" parent="TabContainer/Animation Data/Container" unique_id=1292291726]
 layout_mode = 2
 focus_mode = 0
 theme_override_styles/panel = ExtResource("3_fjx64")
 folded = true
 title = "Offsets"
 
-[node name="Data" type="Control" parent="TabContainer/Animation Data/Container/Offsets"]
+[node name="Data" type="Control" parent="TabContainer/Animation Data/Container/Offsets" unique_id=920832714]
 visible = false
 custom_minimum_size = Vector2(0, 60)
 layout_mode = 2
 
-[node name="Offset Follow Flip" type="CheckBox" parent="TabContainer/Animation Data/Container/Offsets/Data"]
+[node name="Offset Follow Flip" type="CheckBox" parent="TabContainer/Animation Data/Container/Offsets/Data" unique_id=1441006644]
 layout_mode = 0
 offset_left = 2.0
 offset_right = 209.0
@@ -242,7 +262,7 @@ tooltip_text = "If the character is flipped, the offset will be inverted."
 focus_mode = 0
 text = "Offset follows flip"
 
-[node name="Offset Follow Scale" type="CheckBox" parent="TabContainer/Animation Data/Container/Offsets/Data"]
+[node name="Offset Follow Scale" type="CheckBox" parent="TabContainer/Animation Data/Container/Offsets/Data" unique_id=2020165336]
 layout_mode = 0
 offset_left = 2.0
 offset_top = 30.0
@@ -252,29 +272,27 @@ tooltip_text = "The animation offset will follow the character's scale."
 focus_mode = 0
 text = "Follow Scale"
 
-[node name="Sing_Dance" type="FoldableContainer" parent="TabContainer/Animation Data/Container"]
+[node name="Sing_Dance" type="FoldableContainer" parent="TabContainer/Animation Data/Container" unique_id=856281617]
 layout_mode = 2
 focus_mode = 0
 theme_override_styles/panel = ExtResource("3_fjx64")
-folded = true
 title = "Dance Properties"
 
-[node name="Data" type="Control" parent="TabContainer/Animation Data/Container/Sing_Dance"]
-visible = false
+[node name="Data" type="Control" parent="TabContainer/Animation Data/Container/Sing_Dance" unique_id=1227811779]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 
-[node name="Sing Animation Follow Flip" type="CheckBox" parent="TabContainer/Animation Data/Container/Sing_Dance/Data"]
+[node name="MirrorSingAnimations" type="CheckBox" parent="TabContainer/Animation Data/Container/Sing_Dance/Data" unique_id=1697152245]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 67.0
 offset_right = 276.0
 offset_bottom = 98.0
-tooltip_text = "If the character is flipped horizontally, \"singLEFT\" and \"singRIGHT\" animation will be reversed."
+tooltip_text = "If true, sing animations will be mirrored when the character flips horizontally. (\"singLEFT\" will become \"singRIGHT\", and vice-versa)"
 focus_mode = 0
-text = "Sing Animation Follow Flip"
+text = "Mirror sing animations on flip"
 
-[node name="DanceAfterHold" type="CheckBox" parent="TabContainer/Animation Data/Container/Sing_Dance/Data"]
+[node name="DanceAfterHold" type="CheckBox" parent="TabContainer/Animation Data/Container/Sing_Dance/Data" unique_id=462064716]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 9.0
@@ -283,7 +301,7 @@ offset_bottom = 33.0
 tooltip_text = "Makes the character automatically return to dancing after holding a note, with the return time varying based on the song’s duration and speed."
 text = "Dance after hold"
 
-[node name="DAnceWhenEnd" type="CheckBox" parent="TabContainer/Animation Data/Container/Sing_Dance/Data"]
+[node name="DAnceWhenEnd" type="CheckBox" parent="TabContainer/Animation Data/Container/Sing_Dance/Data" unique_id=1420904926]
 layout_mode = 0
 offset_left = 4.0
 offset_top = 38.0
@@ -292,42 +310,39 @@ offset_bottom = 62.0
 tooltip_text = "Character backs to dance when his sing animation ends."
 text = "Dance when end"
 
-[node name="Json Data" type="ScrollContainer" parent="TabContainer"]
+[node name="Json Data" type="ScrollContainer" parent="TabContainer" unique_id=1162146532]
 self_modulate = Color(1, 1, 1, 0.0705882)
 layout_mode = 2
 metadata/_tab_index = 1
 
-[node name="Container" type="VBoxContainer" parent="TabContainer/Json Data"]
+[node name="Container" type="VBoxContainer" parent="TabContainer/Json Data" unique_id=1410624794]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="Image" type="FoldableContainer" parent="TabContainer/Json Data/Container"]
+[node name="Image" type="FoldableContainer" parent="TabContainer/Json Data/Container" unique_id=121734574]
 layout_mode = 2
 focus_mode = 0
 theme_override_styles/panel = ExtResource("3_fjx64")
 folded = true
 title = "Image"
 
-[node name="Data" type="Label" parent="TabContainer/Json Data/Container/Image"]
+[node name="Data" type="Label" parent="TabContainer/Json Data/Container/Image" unique_id=500504151]
 visible = false
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 text = "
 Image File:"
 
-[node name="scale" parent="TabContainer/Json Data/Container/Image/Data" instance=ExtResource("3_atq18")]
+[node name="scale" parent="TabContainer/Json Data/Container/Image/Data" unique_id=1746582562 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 3.0
 offset_top = 69.0
 offset_right = 60.0
 offset_bottom = 84.0
 text = "Scale:"
 value = 1.0
-step = 0.1
 
-[node name="antialiasing" type="CheckBox" parent="TabContainer/Json Data/Container/Image/Data"]
+[node name="antialiasing" type="CheckBox" parent="TabContainer/Json Data/Container/Image/Data" unique_id=648353622]
 layout_mode = 0
 offset_left = 364.0
 offset_top = 65.0
@@ -337,7 +352,7 @@ focus_mode = 0
 button_pressed = true
 text = "Antialiasing"
 
-[node name="FlipX" type="CheckBox" parent="TabContainer/Json Data/Container/Image/Data"]
+[node name="FlipX" type="CheckBox" parent="TabContainer/Json Data/Container/Image/Data" unique_id=1956906676]
 layout_mode = 0
 offset_left = 264.0
 offset_top = 63.0
@@ -346,14 +361,16 @@ offset_bottom = 87.0
 focus_mode = 0
 text = "Flip X"
 
-[node name="image_file" type="LineEdit" parent="TabContainer/Json Data/Container/Image/Data"]
+[node name="image_file" type="LineEdit" parent="TabContainer/Json Data/Container/Image/Data" unique_id=1988749568]
 layout_mode = 0
 offset_left = 104.0
 offset_top = 12.0
 offset_right = 421.0
 offset_bottom = 42.0
+script = ExtResource("5_3un4d")
+metadata/_custom_type_script = "uid://bcwb15rt0wux4"
 
-[node name="Load Image" type="Button" parent="TabContainer/Json Data/Container/Image/Data"]
+[node name="Load Image" type="Button" parent="TabContainer/Json Data/Container/Image/Data" unique_id=2119889870]
 layout_mode = 0
 offset_left = 433.0
 offset_top = 14.0
@@ -362,82 +379,72 @@ offset_bottom = 37.0
 focus_mode = 0
 text = "Load Image"
 
-[node name="Offstes" type="FoldableContainer" parent="TabContainer/Json Data/Container"]
+[node name="Offstes" type="FoldableContainer" parent="TabContainer/Json Data/Container" unique_id=1632978393]
 layout_mode = 2
 focus_mode = 0
 theme_override_styles/panel = ExtResource("3_fjx64")
+folded = true
 title = "Offsets"
 
-[node name="Data" type="Label" parent="TabContainer/Json Data/Container/Offstes"]
+[node name="Data" type="Label" parent="TabContainer/Json Data/Container/Offstes" unique_id=1877101422]
+visible = false
 custom_minimum_size = Vector2(0, 150)
 layout_mode = 2
 text = "
 Position Array:         Camera Position:     Origin Offset:"
 
-[node name="position_x" parent="TabContainer/Json Data/Container/Offstes/Data" instance=ExtResource("3_atq18")]
+[node name="position_x" parent="TabContainer/Json Data/Container/Offstes/Data" unique_id=340191569 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 1.0
 offset_top = 46.0
 offset_right = 20.0
 offset_bottom = 61.0
 text = "x:"
 
-[node name="position_y" parent="TabContainer/Json Data/Container/Offstes/Data" instance=ExtResource("3_atq18")]
+[node name="position_y" parent="TabContainer/Json Data/Container/Offstes/Data" unique_id=1084670019 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = -1.0
 offset_top = 90.0
 offset_right = 18.0
 offset_bottom = 105.0
 text = "y:"
 
-[node name="Camera X" parent="TabContainer/Json Data/Container/Offstes/Data" instance=ExtResource("3_atq18")]
+[node name="Camera X" parent="TabContainer/Json Data/Container/Offstes/Data" unique_id=1789749697 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 225.0
 offset_top = 49.0
 offset_right = 226.0
 offset_bottom = 64.0
 
-[node name="Camera Y" parent="TabContainer/Json Data/Container/Offstes/Data" instance=ExtResource("3_atq18")]
+[node name="Camera Y" parent="TabContainer/Json Data/Container/Offstes/Data" unique_id=171315913 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 224.0
 offset_top = 93.0
 offset_right = 225.0
 offset_bottom = 108.0
 
-[node name="Origin X" parent="TabContainer/Json Data/Container/Offstes/Data" instance=ExtResource("3_atq18")]
+[node name="Origin X" parent="TabContainer/Json Data/Container/Offstes/Data" unique_id=1052766122 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 424.0
 offset_top = 49.0
 offset_right = 425.0
 offset_bottom = 64.0
 
-[node name="Origin Y" parent="TabContainer/Json Data/Container/Offstes/Data" instance=ExtResource("3_atq18")]
+[node name="Origin Y" parent="TabContainer/Json Data/Container/Offstes/Data" unique_id=71052372 instance=ExtResource("3_atq18")]
 layout_mode = 0
-anchors_preset = 0
-anchor_bottom = 0.0
 offset_left = 424.0
 offset_top = 93.0
 offset_right = 425.0
 offset_bottom = 108.0
 
-[node name="HealthBar" type="FoldableContainer" parent="TabContainer/Json Data/Container"]
+[node name="HealthBar" type="FoldableContainer" parent="TabContainer/Json Data/Container" unique_id=851093439]
 layout_mode = 2
 focus_mode = 0
 theme_override_styles/panel = ExtResource("3_fjx64")
 folded = true
 title = "Health Bar"
 
-[node name="HealthBar" type="Label" parent="TabContainer/Json Data/Container/HealthBar"]
+[node name="HealthBar" type="Label" parent="TabContainer/Json Data/Container/HealthBar" unique_id=1929247575]
 visible = false
 layout_mode = 2
 text = "
@@ -446,7 +453,7 @@ Color:             Icon:
 
 "
 
-[node name="HealthColor" type="ColorPickerButton" parent="TabContainer/Json Data/Container/HealthBar/HealthBar"]
+[node name="HealthColor" type="ColorPickerButton" parent="TabContainer/Json Data/Container/HealthBar/HealthBar" unique_id=1525471849]
 layout_mode = 0
 offset_left = 57.0
 offset_top = 11.0
@@ -454,7 +461,7 @@ offset_right = 168.0
 offset_bottom = 43.0
 text = "Color:"
 
-[node name="HealthIcon" type="LineEdit" parent="TabContainer/Json Data/Container/HealthBar/HealthBar"]
+[node name="HealthIcon" type="LineEdit" parent="TabContainer/Json Data/Container/HealthBar/HealthBar" unique_id=250236266]
 layout_mode = 0
 offset_left = 229.0
 offset_top = 11.0
@@ -463,8 +470,10 @@ offset_bottom = 42.0
 focus_mode = 1
 keep_editing_on_text_submit = true
 drag_and_drop_selection_enabled = false
+script = ExtResource("5_3un4d")
+metadata/_custom_type_script = "uid://bcwb15rt0wux4"
 
-[node name="isPixelIcon" type="CheckBox" parent="TabContainer/Json Data/Container/HealthBar/HealthBar"]
+[node name="isPixelIcon" type="CheckBox" parent="TabContainer/Json Data/Container/HealthBar/HealthBar" unique_id=213334738]
 layout_mode = 0
 offset_left = 126.0
 offset_top = 47.0
@@ -473,7 +482,7 @@ offset_bottom = 71.0
 focus_mode = 0
 text = "is Pixel Icon"
 
-[node name="scaleIcon" type="CheckBox" parent="TabContainer/Json Data/Container/HealthBar/HealthBar"]
+[node name="scaleIcon" type="CheckBox" parent="TabContainer/Json Data/Container/HealthBar/HealthBar" unique_id=944659335]
 layout_mode = 0
 offset_left = -1.0
 offset_top = 47.0
@@ -482,14 +491,14 @@ offset_bottom = 71.0
 focus_mode = 0
 text = "Scale Icon"
 
-[node name="CharacterData" type="Panel" parent="."]
+[node name="CharacterData" type="Panel" parent="." unique_id=1633576632]
 self_modulate = Color(1, 1, 1, 0.541176)
 offset_left = 762.0
 offset_top = -3.0
 offset_right = 1280.0
 offset_bottom = 218.0
 
-[node name="Label" type="Label" parent="CharacterData"]
+[node name="Label" type="Label" parent="CharacterData" unique_id=619714618]
 layout_mode = 0
 offset_top = 17.0
 offset_right = 150.0
@@ -499,7 +508,7 @@ text = "Character:
 
 Animation Ghost:"
 
-[node name="Save Character" type="Button" parent="CharacterData"]
+[node name="Save Character" type="Button" parent="CharacterData" unique_id=858737311]
 layout_mode = 0
 offset_left = 150.0
 offset_top = 115.0
@@ -508,7 +517,7 @@ offset_bottom = 146.0
 focus_mode = 1
 text = "Save Character"
 
-[node name="Reload Character" type="Button" parent="CharacterData"]
+[node name="Reload Character" type="Button" parent="CharacterData" unique_id=121620825]
 layout_mode = 0
 offset_left = 301.0
 offset_top = 115.0
@@ -517,7 +526,7 @@ offset_bottom = 146.0
 focus_mode = 1
 text = "Reload Character"
 
-[node name="New Character" type="Button" parent="CharacterData"]
+[node name="New Character" type="Button" parent="CharacterData" unique_id=234500203]
 layout_mode = 0
 offset_left = 2.0
 offset_top = 115.0
@@ -526,7 +535,7 @@ offset_bottom = 146.0
 focus_mode = 1
 text = "New Character"
 
-[node name="Load Character From File" type="Button" parent="CharacterData"]
+[node name="Load Character From File" type="Button" parent="CharacterData" unique_id=1945387615]
 layout_mode = 0
 offset_left = 262.0
 offset_top = 9.0
@@ -535,7 +544,7 @@ offset_bottom = 40.0
 focus_mode = 0
 text = "Load from File"
 
-[node name="Playable Character" type="CheckBox" parent="CharacterData"]
+[node name="Playable Character" type="CheckBox" parent="CharacterData" unique_id=1504552534]
 layout_mode = 0
 offset_left = -4.0
 offset_top = 152.0
@@ -544,8 +553,9 @@ offset_bottom = 183.0
 focus_mode = 0
 button_pressed = true
 text = "As Playable Character"
+script = SubResource("GDScript_e6wko")
 
-[node name="GF Character" type="CheckBox" parent="CharacterData"]
+[node name="GF Character" type="CheckBox" parent="CharacterData" unique_id=1912675306]
 layout_mode = 0
 offset_left = 231.0
 offset_top = 153.0
@@ -555,7 +565,7 @@ focus_mode = 0
 button_pressed = true
 text = "Is GF Character"
 
-[node name="AnimationGhost" type="MenuButton" parent="CharacterData"]
+[node name="AnimationGhost" type="MenuButton" parent="CharacterData" unique_id=368456263]
 layout_mode = 0
 offset_left = 154.0
 offset_top = 63.0
@@ -564,7 +574,7 @@ offset_bottom = 94.0
 focus_mode = 1
 flat = false
 
-[node name="New Character Tab" type="ColorRect" parent="CharacterData"]
+[node name="New Character Tab" type="ColorRect" parent="CharacterData" unique_id=2092207385]
 visible = false
 layout_mode = 0
 offset_left = -762.0
@@ -573,14 +583,14 @@ offset_right = 518.0
 offset_bottom = 724.0
 color = Color(0, 0, 0, 0.34902)
 
-[node name="Panel" type="Panel" parent="CharacterData/New Character Tab"]
+[node name="Panel" type="Panel" parent="CharacterData/New Character Tab" unique_id=274224327]
 layout_mode = 0
 offset_left = 441.0
 offset_top = 237.0
 offset_right = 829.0
 offset_bottom = 485.0
 
-[node name="Label" type="Label" parent="CharacterData/New Character Tab/Panel"]
+[node name="Label" type="Label" parent="CharacterData/New Character Tab/Panel" unique_id=327576750]
 layout_mode = 0
 offset_top = 3.0
 offset_right = 383.0
@@ -594,7 +604,7 @@ Animation Type:
 
 Image:"
 
-[node name="CharacterName" type="LineEdit" parent="CharacterData/New Character Tab/Panel"]
+[node name="CharacterName" type="LineEdit" parent="CharacterData/New Character Tab/Panel" unique_id=1959775915]
 layout_mode = 0
 offset_left = 139.0
 offset_top = 50.0
@@ -602,7 +612,7 @@ offset_right = 275.0
 offset_bottom = 73.0
 text = "bf"
 
-[node name="AnimationType" type="MenuButton" parent="CharacterData/New Character Tab/Panel"]
+[node name="AnimationType" type="MenuButton" parent="CharacterData/New Character Tab/Panel" unique_id=2089865687]
 layout_mode = 0
 offset_left = 140.0
 offset_top = 89.0
@@ -616,14 +626,14 @@ popup/item_0/id = 0
 popup/item_1/text = "Sprite Map"
 popup/item_1/id = 1
 
-[node name="Image" type="LineEdit" parent="CharacterData/New Character Tab/Panel"]
+[node name="Image" type="LineEdit" parent="CharacterData/New Character Tab/Panel" unique_id=1912780306]
 layout_mode = 0
 offset_left = 56.0
 offset_top = 125.0
 offset_right = 214.0
 offset_bottom = 148.0
 
-[node name="Select New Character Image From File" type="Button" parent="CharacterData/New Character Tab/Panel/Image"]
+[node name="Select New Character Image From File" type="Button" parent="CharacterData/New Character Tab/Panel/Image" unique_id=1564074113]
 layout_mode = 0
 offset_left = 162.0
 offset_top = -1.0
@@ -632,7 +642,7 @@ offset_bottom = 22.0
 focus_mode = 0
 text = "Select From File"
 
-[node name="CreateNewCharacter" type="Button" parent="CharacterData/New Character Tab/Panel"]
+[node name="CreateNewCharacter" type="Button" parent="CharacterData/New Character Tab/Panel" unique_id=66986259]
 layout_mode = 0
 offset_left = 158.0
 offset_top = 202.0
@@ -640,7 +650,7 @@ offset_right = 223.0
 offset_bottom = 225.0
 text = "Create"
 
-[node name="CharacterList" type="MenuButton" parent="CharacterData"]
+[node name="CharacterList" type="MenuButton" parent="CharacterData" unique_id=1627594490]
 layout_mode = 0
 offset_left = 94.0
 offset_top = 9.0
@@ -669,7 +679,7 @@ metadata/_custom_type_script = "uid://cvvli26q7wviq"
 [connection signal="value_changed" from="TabContainer/Animation Data/Container/Current Animation/Data/FrameRate" to="." method="set_character_animation_value" binds= [&"frameRate"]]
 [connection signal="toggled" from="TabContainer/Animation Data/Container/Offsets/Data/Offset Follow Flip" to="." method="_on_offset_follow_flip_toggled"]
 [connection signal="toggled" from="TabContainer/Animation Data/Container/Offsets/Data/Offset Follow Scale" to="." method="_on_offset_follow_scale_toggled"]
-[connection signal="toggled" from="TabContainer/Animation Data/Container/Sing_Dance/Data/Sing Animation Follow Flip" to="." method="_on_flip_sing_direction_toggled"]
+[connection signal="toggled" from="TabContainer/Animation Data/Container/Sing_Dance/Data/MirrorSingAnimations" to="." method="_on_flip_sing_direction_toggled"]
 [connection signal="value_changed" from="TabContainer/Json Data/Container/Image/Data/scale" to="." method="_on_scale_value_changed"]
 [connection signal="value_changed" from="TabContainer/Json Data/Container/Image/Data/scale" to="." method="set_json_value" binds= ["scale"]]
 [connection signal="toggled" from="TabContainer/Json Data/Container/Image/Data/antialiasing" to="." method="_on_antialiasing_toggled"]
@@ -687,12 +697,11 @@ metadata/_custom_type_script = "uid://cvvli26q7wviq"
 [connection signal="toggled" from="TabContainer/Json Data/Container/HealthBar/HealthBar/isPixelIcon" to="." method="_on_is_pixel_icon_toggled"]
 [connection signal="toggled" from="TabContainer/Json Data/Container/HealthBar/HealthBar/scaleIcon" to="." method="_on_scale_icon_toggled"]
 [connection signal="button_up" from="CharacterData/Save Character" to="." method="_on_save_character_button_up"]
-[connection signal="button_up" from="CharacterData/Reload Character" to="." method="_on_reload_character_button_up"]
+[connection signal="button_up" from="CharacterData/Reload Character" to="." method="loadCharacter"]
 [connection signal="button_down" from="CharacterData/New Character" to="CharacterData/New Character Tab" method="show"]
 [connection signal="button_up" from="CharacterData/Load Character From File" to="." method="_on_load_character_from_file_button_up"]
 [connection signal="toggled" from="CharacterData/Playable Character" to="." method="updateCameraPosition" flags=3 unbinds=1]
 [connection signal="toggled" from="CharacterData/Playable Character" to="." method="replayCharAnim" flags=3 unbinds=1]
-[connection signal="toggled" from="CharacterData/Playable Character" to="." method="set_character_value" binds= [&"isPlayer"]]
 [connection signal="toggled" from="CharacterData/GF Character" to="." method="updateCameraPosition" flags=3 unbinds=1]
 [connection signal="toggled" from="CharacterData/GF Character" to="." method="set_character_value" binds= [&"isGF"]]
 [connection signal="gui_input" from="CharacterData/New Character Tab" to="." method="_on_new_character_tab_gui_input"]

@@ -9,7 +9,7 @@ class_name SpriteGroup
 
 @export var members: Array ##The members that this group contains.
 
-var x: float: ##position x
+var x: float: ## Position x
 	set(value):
 		if x == value: return
 		var sub = value-x
@@ -17,15 +17,15 @@ var x: float: ##position x
 		x = value
 
 
-var y: float: ##position y
+var y: float: ## Position y
 	set(value):
 		if value == y:return
 		var sub = value-y
 		for member in members:_add_member_position(member,0,sub)
 		y = value
 
-##The [Node] that this group will inherit.
-var camera: Node:
+
+var camera: Node: ##The [Node] that this group will inherit.
 	set(cam):
 		if camera == cam: return
 		if camera: camera.remove_child(self)
@@ -42,8 +42,8 @@ var _parent_camera: Node:
 			if i and i.get_parent():
 				i.set('camera',_parent_camera)
 				i.reparent(self,false)
-##Scroll factor of this group, just works if the member is a [Sprite].
-var scrollFactor: Vector2 = Vector2.ONE
+
+var scrollFactor: Vector2 = Vector2.ONE ##Scroll factor of this group, just works if the member is a [Sprite].
 
 
 ##Add a [Node] to this group. 
@@ -64,33 +64,39 @@ func _add_obj_to_camera(node: Node) -> void:
 func insert(at: int, node: Node) -> void:
 	if !node: return
 	_add_obj_to_camera(node)
-	at = clamp(at,0,members.size())
+	at = clampi(at,0,members.size())
 	members.insert(at,node)
-	move_child(node,min(at,get_child_count()-1))
+	move_child(node,mini(at,get_child_count()-1))
 	
 func replace_at(at: int, node: Node):
-	if ArrayUtils.array_has_index(members,at):
-		remove_at(at)
+	if ArrayUtils.array_has_index(members,at): remove_at(at)
 	insert(at,node)
 
 ##Remove [Node] from the group.
 func remove(node: Object) -> void:
 	if !node or not node in members: return
 	members.erase(node)
-	if node is FunkinSprite: node.groups.erase(self)
 	if node is Node and node.is_inside_tree(): node.reparent(get_parent(),false)
 
-##Remove a [Node] using his [code]index[/code] in the group.
-func remove_at(index: int) -> void:
+
+func remove_at(index: int) -> void: ##Remove a [Node] using his [code]index[/code] in the group.
 	var node = members.get(index)
 	members.remove_at(index)
 	if !node: return
 	if node is Node and node.is_inside_tree(): node.reparent(get_parent(),false)
 
-##Queues all members of this group. See also [method Node.queue_free].
-func queue_free_members() -> void:
+
+func queue_free_members() -> void: ##Queues all members of this group. See also [method Node.queue_free].
 	for i in members: i.queue_free()
 	members.clear()
 
 func _add_member_position(member: Node,_x: float = x, _y: float = y) -> void:
-	if member is Node2D or member is Control: member.set_position(member.get_position() + Vector2(_x,_y))
+	if member is Node2D or member is Control: member.position += Vector2(_x,_y)
+
+
+#region Iter
+var _iter_i: int = 0
+func _iter_get(_i) -> Variant: return members[_iter_i]
+func _iter_init(_i) -> bool: _iter_i = 0; return _iter_i < members.size()
+func _iter_next(_i) -> bool: _iter_i += 1; return _iter_i < members.size()
+#endregion

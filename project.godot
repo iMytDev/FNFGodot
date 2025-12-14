@@ -32,12 +32,12 @@ config/icon="res://icon.png"
 
 [autoload]
 
-Global="*res://source/general/Global.gd"
 InputUtils="*res://source/general/utils/InputUtils.gd"
 Conductor="*res://source/backend/Conductor.gd"
 AnimationService="*res://source/general/animation/AnimationService.gd"
 TweenService="*res://source/TweenService.gd"
 Discord="*res://source/backend/Discord.gd"
+Global="*res://source/general/Global.gd"
 
 [debug]
 
@@ -48,6 +48,7 @@ gdscript/warnings/shadowed_variable=0
 gdscript/warnings/shadowed_variable_base_class=0
 gdscript/warnings/shadowed_global_identifier=0
 gdscript/warnings/static_called_on_instance=0
+gdscript/warnings/missing_tool=0
 gdscript/warnings/integer_division=0
 gdscript/warnings/deprecated_keyword=0
 gdscript/warnings/confusable_local_usage=0
@@ -165,7 +166,4 @@ pointing/emulate_touch_from_mouse=true
 
 renderer/rendering_method="mobile"
 textures/vram_compression/import_s3tc_bptc=true
-textures/default_filters/use_nearest_mipmap_filter=true
 environment/defaults/default_clear_color=Color(0, 0, 0, 1)
-viewport/transparent_background=true
-2d/sdf/scale=0

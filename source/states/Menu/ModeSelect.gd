@@ -101,11 +101,11 @@ func loadModeSelectOptions():
 		var menu: FunkinSprite = FunkinSprite.new(true,'mainmenu/menu_'+menus)
 		menu.name = menus
 		menu.modulate = OptionScroll.UNSELECTED_COLOR
-		menu.animation.addAnimByPrefix('static',menus+' basic',24,true)
-		menu.animation.addAnimByPrefix('selected',menus+' white',24,true)
+		menu.animation.add_animation_by_prefix(&'static',menus+' basic',24,true)
+		menu.animation.add_animation_by_prefix(&'selected',menus+' white',24,true)
 		menu.offset_follow_scale = true
-		menu.addAnimOffset('selected',menu.pivot_offset/3)
-		menu.addAnimOffset('static',Vector2.ZERO)
+		menu.animation.set_anim_offset(&'selected',menu.pivot_offset/3.0)
+		menu.animation.set_anim_offset(&'static',Vector2.ZERO)
 		menu._position = Vector2(menu_pos[0] - menu.pivot_offset.x,menu_pos[1]) - ScreenUtils.screenOffset*0.5
 		option_parent.add_child(menu)
 		option_parent.options.append(menu)

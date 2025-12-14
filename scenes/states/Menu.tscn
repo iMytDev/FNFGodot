@@ -1,6 +1,90 @@
-[gd_scene load_steps=2 format=3 uid="uid://d38t3n5h1bcw"]
+[gd_scene format=3 uid="uid://d38t3n5h1bcw"]
 
 [ext_resource type="Script" uid="uid://bfmpyw1xawxvy" path="res://source/states/Menu/Menu.gd" id="1_m506c"]
+[ext_resource type="Texture2D" uid="uid://11ak4nr2c5oi" path="res://assets/images/bfIdle.png" id="2_dyixs"]
 
-[node name="Menu" type="Node2D"]
+[sub_resource type="Shader" id="Shader_dyixs"]
+code = "shader_type canvas_item;
+
+uniform vec2 light_position;  // Posição da luz
+uniform float light_intensity : hint_range(0.0, 1.0); // Intensidade da luz
+
+void fragment() {
+    vec4 tex_color = texture(TEXTURE, UV);
+    
+    // Calculando a distância entre a luz e a textura
+    float dist = distance(UV, light_position);
+    
+    // Intensificando o efeito com base na distância e na intensidade da luz
+    float light_effect = max(0.0, (1.0 - dist) * light_intensity);
+    
+    // Modificando a cor da textura com o efeito da luz
+    COLOR = tex_color * (1.0 + light_effect);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_g28ea"]
+shader = SubResource("Shader_dyixs")
+shader_parameter/light_position = Vector2(0, 1.22)
+shader_parameter/light_intensity = 0.9050000429875
+
+[sub_resource type="Shader" id="Shader_g28ea"]
+code = "shader_type canvas_item;
+
+uniform vec2 light_pos = vec2(0.5, 0.2);
+uniform float density = 0.8;
+uniform float weight = 0.6;
+uniform float decay = 0.92;
+uniform float exposure = 1.0;
+uniform int samples = 64;
+
+uniform sampler2D screen_texture: hint_screen_texture;
+void fragment() {
+    vec2 uv = SCREEN_UV;
+    vec2 delta = (uv - light_pos) * density / float(samples);
+
+    vec3 result = vec3(0.0);
+    float illumination = 1.0;
+
+    vec2 coord = uv;
+
+    for (int i = 0; i < samples; i++) {
+        coord -= delta - vec2(cos(TIME)*SCREEN_PIXEL_SIZE.x*float(i),0.0);
+        vec3 col = texture(screen_texture, coord).rgb;
+
+        float lum = dot(col, vec3(0.299, 0.587, 0.114));
+        lum = smoothstep(0.2, 1.0, lum);
+
+        result += col * lum * illumination * weight;
+        illumination *= decay;
+    }
+
+    COLOR = vec4(result * exposure, 1.0);
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4hjt4"]
+shader = SubResource("Shader_g28ea")
+shader_parameter/light_pos = Vector2(0.5, 0.5)
+shader_parameter/density = 0.8
+shader_parameter/weight = 0.6
+shader_parameter/decay = 0.92
+shader_parameter/exposure = 1.0
+shader_parameter/samples = 64
+
+[node name="Menu" type="Node2D" unique_id=1494646697]
 script = ExtResource("1_m506c")
+
+[node name="BfIdle" type="Sprite2D" parent="." unique_id=1407658151]
+material = SubResource("ShaderMaterial_g28ea")
+position = Vector2(564, 296)
+texture = ExtResource("2_dyixs")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=167187756]
+material = SubResource("ShaderMaterial_4hjt4")
+offset_left = -2.0
+offset_top = 2.0
+offset_right = 1280.0
+offset_bottom = 720.0
+
+[node name="Node2D" type="Node2D" parent="." unique_id=567195002]

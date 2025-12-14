@@ -36,7 +36,7 @@ static func getNotesFromData(songData: Dictionary = {}) -> Array[Note]:
 			
 			var susLength = note_data.get('l',0.0)
 			if susLength < stepCrochet: continue 
-			for s in _create_note_sustains(note,susLength): _insert_note_to_array(s,_notes,false)
+			for s in _create_note_sustains(note,susLength,stepCrochet): _insert_note_to_array(s,_notes,false)
 			
 		i += 1
 	var type_unique: PackedStringArray
@@ -71,14 +71,15 @@ static func _remove_sustains_from_note(sustains: Array[NoteSustain], array: Arra
 			length -= 1; 
 			if array[length] == i: array.remove_at(length); break
 
-static func _create_note_sustains(note: Note, length: float) -> Array[NoteSustain]:
+static func _create_note_sustains(note: Note, length: float, stepCrochet: float) -> Array[NoteSustain]:
 	var sustainFill: NoteSustain = createSustainFromNote(note,false)
 	var sustainEnd: NoteSustain = createSustainFromNote(note,true)
-	sustainFill.sustainLength = length
+	sustainFill.sustainLength = length - stepCrochet * 0.5
 	sustainFill._end_sustain = sustainEnd
-	sustainEnd.strumTime += length
+	sustainEnd.strumTime += sustainFill.sustainLength
+	sustainEnd.sustainLength = length
 	
-	var susNotes: Array[NoteSustain] =  note.sustainParents
+	var susNotes: Array[NoteSustain] = note.sustainParents
 	susNotes.append(sustainFill)
 	susNotes.append(sustainEnd)
 	return susNotes
@@ -141,4 +142,5 @@ static func sameNote(note1: Note,note2: Note):
 		note1.isSustainNote == note2.isSustainNote and\
 		note1.strumTime == note2.strumTime and\
 		note1.noteData == note2.noteData and\
-		note1.mustPress == note2.mustPress\
+		note1.mustPress == note2.mustPress and\
+		note1.noteType == note2.noteType

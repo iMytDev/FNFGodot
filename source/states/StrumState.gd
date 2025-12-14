@@ -24,8 +24,9 @@ static var week_data: Dictionary
 @export var song_folder: String
 @export var song_json_file: String 
 @export var difficulty: String
+@export var _from_mod: String
 
-var autoStartSong: bool  ##Start the Song when the Song json is loaded. Used in PlayState
+@export var autoStartSong: bool  ##Start the Song when the Song json is loaded. Used in PlayState
 
 ##If this is [code]false[/code], will disable the notes, 
 ##making them stretched and not being created
@@ -81,8 +82,6 @@ var _notes_to_hit: Array[Note]
 
 var canHitNotes: bool = true
 
-
-
 var splashesEnabled: bool = ClientPrefs.data.splashesEnabled
 var opponentSplashes: bool = splashesEnabled and ClientPrefs.data.opponentSplashes
 var grpNoteSplashes: SpriteGroup = SpriteGroup.new() ##Note Splashes Group.
@@ -93,11 +92,7 @@ static var isPixelStage: bool
 @export var splashStyle: StringName = &'NoteSplashes'
 @export var splashHoldStyle: StringName = &'HoldNoteSplashes'
 
-
-
 @export_group("Play Options")
-
-
 ##Play as Opponent, reversing the sides.
 @export var playAsOpponent: bool = ClientPrefs.data.playAsOpponent: set = _set_play_opponent
 
@@ -106,8 +101,9 @@ static var isPixelStage: bool
 
 @export var downScroll: bool = ClientPrefs.data.downscroll: set = _set_downscroll
 @export var middleScroll: bool = ClientPrefs.data.middlescroll: set = _set_middlescroll
-##Android System
-var touch_state
+
+
+var touch_state #Android System
 
 var Inst: AudioStreamPlayer:
 	get(): return ArrayUtils.get_array_index(Conductor.songs,0)
@@ -116,12 +112,9 @@ var vocals: AudioStreamPlayer:
 	get(): return ArrayUtils.get_array_index(Conductor.songs,1)
 
 signal hit_note
-func _init(json_file: StringName = &'', song_difficulty: StringName = &''):
+func _init():
 	add_child(uiGroup)
 	uiGroup.name = &'uiGroup'
-	
-	song_json_file = json_file.get_file()
-	difficulty = song_difficulty
 	
 	uiGroup.add(strumLineNotes)
 	uiGroup.add(playerStrums)
@@ -156,9 +149,20 @@ func createMobileGUI() -> void:
 
 #region Song Methods
 func loadSong(data: String = song_json_file, songDifficulty: String = difficulty):
+	if _from_mod: Paths.curMod = _from_mod
 	if !SONG: Conductor.loadSong(data,songDifficulty)
 	keyCount = SONG.get('keyCount',4)
 	FunkinGD.keyCount = keyCount
+	
+	var arrow_s = SONG.get('arrowStyle')
+	var splash_s = SONG.get('splashStyle')
+	var hold_s = SONG.get('holdSplashStyle')
+	
+	if arrow_s: arrowStyle = arrow_s
+	else: arrowStyle = &'pixel' if isPixelStage else &'funkin'
+	
+	if splash_s: splashStyle = splash_s
+	if hold_s: splashHoldStyle = hold_s
 	
 	if !SONG: return
 	Conductor.loadSongsStreams()
@@ -171,16 +175,6 @@ func loadSong(data: String = song_json_file, songDifficulty: String = difficulty
 
 
 func loadSongObjects(): ##Load song data. Used in PlayState
-	var arrow_s = SONG.get('arrowStyle')
-	var splash_s = SONG.get('splashStyle')
-	var hold_s = SONG.get('holdSplashStyle')
-	
-	if arrow_s: arrowStyle = arrow_s
-	else: arrowStyle = &'pixel' if isPixelStage else &'funkin'
-	
-	if splash_s: splashStyle = splash_s
-	if hold_s: splashHoldStyle = hold_s
-	
 	_setup_hud()
 	
 	_respawnIndex = 0
@@ -194,8 +188,7 @@ func loadNotes():
 	reloadNotes()
 
 func clearSongNotes():
-	for i in notes.members: i.queue_free()
-	notes.members.clear()
+	notes.queue_free_members()
 	_respawnIndex = 0
 	_unspawnIndex = 0
 	
@@ -214,7 +207,7 @@ func seek_to(time: float, kill_notes: bool = true):
 	if !kill_notes: return
 	
 	var time_offset: float = time + 1000
-	for i in notes.members: if i.strumTime < time_offset: i.kill()
+	for i in notes: if i.strumTime < time_offset: i.kill()
 	
 	while _unspawnIndex < _unspawnNotesLength:
 		if unspawnNotes[_unspawnIndex].strumTime > time_offset: break
@@ -276,8 +269,7 @@ func updateStrumsY() -> void:
 
 func _create_strums() -> void:
 	StrumNote.keyCount = keyCount
-	for i in strumLineNotes.members: i.queue_free()
-	
+	strumLineNotes.queue_free_members()
 	strumLineNotes.members.clear()
 	playerStrums.members.clear()
 	opponentStrums.members.clear()
@@ -387,18 +379,18 @@ func addNoteToGroup(note: Note, group: Node) -> void:
 	if note.isSustainNote: group.move_child(note,0)
 
 func updateNote(n: Note) -> bool:
-	if !n or !n._is_processing: return false
+	if !n or !n.is_inside_tree(): return false
 	
 	var isSus: bool = n.isSustainNote
 	var opponentNote: bool = n.autoHit or botplay or !isPlayerNote(n)
 	n.noteSpeed = songSpeed
 	n.updateNote()
 	
-	if !(isSus and n.isBeingDestroyed) and n.distance <= n.missOffset:
-		if not n.missed and !opponentNote and not n.ignoreNote: noteMiss(n) 
-		return true
+	if _is_note_missed(n) and !n.missed and !opponentNote and !n.ignoreNote: noteMiss(n,!isSus); return true
 	
-	if !n.canBeHit or !canHitNotes: return true
+	if isSus and n._sustain_filled: n.kill(); return false
+	
+	if !n.canBeHit or !canHitNotes or n.missed: return true
 	
 	if opponentNote:
 		if not n.ignoreNote and (isSus or n.distance <= 0.0): preHitNote(n)
@@ -406,14 +398,16 @@ func updateNote(n: Note) -> bool:
 	
 	if isSus:
 		var hit_action = n.noteParent.hit_action
-		if Input.is_action_pressed(hit_action): preHitNote(n)
-		elif !n.isEndSustain and Input.is_action_just_released(hit_action): noteMiss(n,false)
+		if Input.is_action_pressed(hit_action): preHitNote(n); return true
+		if !n.isEndSustain and n.isBeingDestroyed: _remove_hold_splash_from_strum(n.strumNote); n.isBeingDestroyed = false
 		return true
 	
 	var l = _notes_to_hit[n.noteData]
 	if !l or absf(n.distance) < absf(l.distance): _notes_to_hit[n.noteData] = n
 	return true
 
+func _is_note_missed(n: Note) -> bool:
+	return not (n.isSustainNote and n.isBeingDestroyed) and n.distance <= n.missOffset
 func preHitNote(note: Note):
 	if !note: return
 	if !note.isSustainNote: note.updateRating()
@@ -424,30 +418,19 @@ func preHitNote(note: Note):
 
 func hitNote(note: Note) -> void: ##Called when the hits a [NoteBase] 
 	if !note: return
-	var playerNote = isPlayerNote(note)
 	var strum: StrumNote = note.strumNote
 	if note.isEndSustain: 
-		if !playerNote: _hide_hold_splash_from_strum(strum)
+		if !isPlayerNote(note): _remove_hold_splash_from_strum(strum)
 		else: 
-			var holdSplash: NoteSplash = grpNoteHoldSplashes.get(strum.get_instance_id()); 
-			if holdSplash: 
-				holdSplash.animation.play(&'end'); 
-				holdSplash.animation.curAnim.animation_finished.connect(
-					_hide_hold_splash_from_strum.bind(strum), CONNECT_ONE_SHOT
-				)
+			var s = _remove_hold_splash_from_strum(strum,false); if s: s.animation.play(&'end')
+	
 	if splashAllowed(note): createSplash(note);
 	note._on_hit()
-	_strum_confirm_from_note(note)
+	if note.strumConfirm: _strum_confirm_from_note(note)
 
 func splashAllowed(n: Note) -> bool:
 	if n.isSustainNote: return !n.splashDisabled and splashesEnabled and n.ratingMod <= 1 and !n.isBeingDestroyed
 	return !n.splashDisabled and splashesEnabled and n.ratingMod <= 1 and (isPlayerNote(n) or opponentSplashes)
-
-func _disable_hold_splash_from_strum(strum: StrumNote):
-	if !strum: return
-	var id = strum.get_instance_id()
-	var splash = grpNoteHoldSplashes.get(id)
-	if splash: splash.visible = false; grpNoteHoldSplashes[id] = null
 #endregion
 
 func isPlayerNote(note: Note) -> bool: return note.mustPress != playAsOpponent
@@ -456,9 +439,9 @@ func noteMiss(note: Note, kill_note: bool = true) -> void: ##Called when the pla
 	if !note:return
 	note.missed = true
 	note.judgementTime = _songPos
-	if note.isSustainNote: _disable_note_sustains(note.noteParent); _hide_hold_splash_from_strum(note.strumNote)
+	if note.isSustainNote: _disable_note_sustains(note.noteParent); _remove_hold_splash_from_strum(note.strumNote)
+	prints(note.isSustainNote,kill_note)
 	if kill_note: note.kill()
-
 func reloadNotes() -> void: 
 	var index: int = unspawnNotes.size()
 	while index: index -= 1; reloadNote(unspawnNotes[index]);
@@ -470,9 +453,7 @@ func reloadNote(note: Note):
 	note.isPixelNote = isPixelStage
 	note.noteGroup = notes
 	note.resetNote()
-	if note.isSustainNote: note.splashStyle = splashHoldStyle
-	else: note.splashStyle = note.splashStyle
-
+	note.splashStyle = splashHoldStyle if note.isSustainNote else splashStyle
 func _disable_note_sustains(note: Note) -> void:
 	if note: for sus in note.sustainParents: sus.blockHit = true; sus.ignoreNote = true; sus.modulate.a = 0.3
 #endregion
@@ -484,6 +465,11 @@ func createSplash(note) -> NoteSplash: ##Create Splash
 	var splash = SplashPool.createSplashFromNote(note)
 	if !splash: return
 	
+	splash.strum = strum
+	if splash.holdSplash: 
+		_remove_hold_splash_from_strum(strum); 
+		grpNoteHoldSplashes[strum.get_instance_id()] = splash
+	
 	var splashParent = note.splashParent
 	if splashParent: 
 		if splash.is_inside_tree(): splash.reparent(splashParent,false)
@@ -491,20 +477,17 @@ func createSplash(note) -> NoteSplash: ##Create Splash
 	else:
 		if splash.is_inside_tree(): splash.reparent(grpNoteSplashes,false)
 		else: grpNoteSplashes.add(splash); 
-	
-	
-	splash.strum = strum
-	if splash.holdSplash: 
-		_hide_hold_splash_from_strum(strum); 
-		grpNoteHoldSplashes[strum.get_instance_id()] = splash
-	
 	splash.isPixelSplash = isPixelStage
 	return 
-func _hide_hold_splash_from_strum(strum: StrumNote):
+
+func _remove_hold_splash_from_strum(strum: StrumNote, hide: bool = true) -> NoteSplash:
 	if !strum: return
 	var id = strum.get_instance_id()
 	var splash = grpNoteHoldSplashes.get(id)
-	if splash: splash.visible = false; grpNoteHoldSplashes[id] = null
+	if !splash: return
+	grpNoteHoldSplashes[id] = null
+	if hide: splash.visible = false; 
+	return splash
 #endregion
 
 func destroy(absolute: bool = true): ##Remove the state

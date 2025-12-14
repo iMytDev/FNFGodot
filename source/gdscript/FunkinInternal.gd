@@ -1,11 +1,13 @@
 extends Object
 
 const Reflect = preload("uid://btume6yjt6ubo")
+const PlayStateBase = preload("uid://dgnunksqrmpbr")
+
 #region Variables
 static var debugMode: bool = OS.is_debug_build()
 
 #region Storage
-static var game: Node
+static var game: PlayStateBase
 static var modVars: Dictionary ##[b]Variables[/b] created using [method setVar] and [method createCamera] methods.
 static var spritesCreated: Dictionary[StringName,Node] ##Sprites created using [method makeSprite] or [method makeAnimatedSprite] methods.
 static var groupsCreated: Dictionary[StringName,SpriteGroup]##Sprite groups created using [method createSpriteGroup] method.
@@ -116,11 +118,13 @@ static func get_arguments(script: Object) -> Dictionary[StringName,Variant]:
 		var f = method_list[i]
 		
 		if f.flags & METHOD_FLAG_STATIC: continue
+		
 		var args = f.args
 		if !args: functions[f.name] = null; continue
 		
-		var index: int = f.default_args.size()
-		while index: index -= 1; args[index].default = f.default_args[index];
+		var default_args = f.default_args
+		var index: int = default_args.size()
+		while index: index -= 1; args[index].default = default_args[index];
 		functions[f.name] = args
 	return functions
 
@@ -154,19 +158,22 @@ static func removeScript(path: Variant):
 		if !script: return
 		
 	scriptsCreated.erase(path)
-	var script_args = arguments.get(script.get_instance_id())
+	var id = script.get_instance_id()
+	var script_args = arguments.get(id)
+	
 	for i in script_args:
 		if method_list[i].size() == 1: method_list.erase(i)
 		else:  method_list[i].erase(script)
+	arguments.erase(id)
 	FunkinGD.callOnScripts(&'onScriptRemoved',[script,path])
 
 static func _clear_scripts(absolute: bool = false):
 	if absolute:
 		for i in spritesCreated.values(): if i: i.queue_free()
+		for i in groupsCreated.values(): i.queue_free()
+		for i in tweensCreated.values(): if i: i.stop()
 		for i in modVars.values(): if i is Node: i.queue_free()
 		for i in timersPlaying.values(): if i: i[0].stop()
-		for i in tweensCreated.values(): if i: i.stop()
-		for i in groupsCreated.values(): i.queue_free()
 	soundsPlaying.clear()
 	method_list.clear()
 	shadersCreated.clear()
@@ -189,8 +196,6 @@ static func _call_script_no_check(script: Object, function: StringName, paramete
 	return script.callv(function,_sign_parameters(args,parameters)) 
 
 static func _sign_parameters(args: Array,parameters: Variant) -> Array:
-	if !args: return args
-	
 	if ArrayUtils.is_array(parameters): return _sign_parameters_array(args,parameters)
 	parameters = [_sign_value(parameters,args[0].type)]
 	var index: int = 1
@@ -202,19 +207,21 @@ static func _sign_parameters(args: Array,parameters: Variant) -> Array:
 	return parameters
 
 static func _sign_parameters_array(args: Array, parameters: Array) -> Array:
-	var index: int = -1
+	var index: int = 0
+	parameters = parameters.duplicate()
 	
-	var args_length = args.size()-1
-	var append: bool = false
-	while index < args_length:
-		index +=1
+	var parms_size = parameters.size()
+	var args_length = args.size()
+	
+	if parms_size > args_length: parameters.resize(args_length); parms_size = args_length
+	while index < parms_size:
 		var i = args[index]
-		if append:
-			if i.has(&'default'): break
-			parameters.append(MathUtils.get_new_value(i.type))
-		else: 
-			append = index == parameters.size()-1
-			parameters[index] = _sign_value(parameters[index],i.type)
+		parameters[index] = _sign_value(parameters[index],i.type)
+		index += 1
+	
+	while index < args_length: 
+		var i = args[index]; parameters.append(i.get('default')); index += 1;
+	
 	return parameters
 
 static func _sign_value(value: Variant, type_to_convert: Variant.Type) -> Variant:
@@ -253,12 +260,3 @@ static func get_game() -> Node:
 #endregion
 
 #endregion
-
-static func _show_property_no_found_error(property: String) -> void:
-	var split = property.split('.')
-	var obj_name = split[0]
-	if split.size() > 1:
-		debug_message('Error on setting property "'+property.right(-obj_name.length()-1)+'": '+obj_name+" not founded")
-	else:
-		debug_message('Error on setting property: '+obj_name+" not founded")
-	return

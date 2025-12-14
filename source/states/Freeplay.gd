@@ -4,13 +4,13 @@ const AlphabetText = preload("res://source/objects/AlphabetText/AlphabetText.gd"
 const BarSize = 70
 const ModInfoScale = Vector2(0.45,0.45)
 const Icon: GDScript = preload('res://source/objects/UI/Icon.gd')
+const PlayState: GDScript = preload("uid://cg2ig10imhwri")
 
 const UNSELECT_COLOR = Color.DIM_GRAY
 const SELECT_COLOR = Color.WHITE
 
 const SongsOffset = 180
 
-var PlayState: GDScript = preload("res://source/states/PlayState.gd")
 var ModeSelect: GDScript = preload("res://source/states/Menu/ModeSelect.gd")
 
 var score_data: Dictionary
@@ -79,9 +79,9 @@ func _ready():
 	
 	for i in [diffiSelectLeft,diffiSelectRight,modSelectLeft,modSelectRight]:
 		i.image.texture = Paths.texture('freeplay/freeplaySelector')
-		i.animation.addAnimByPrefix('anim','arrow pointer loop',24,true)
+		i.animation.add_animation_by_prefix('anim','arrow pointer loop',24,true)
 	
-	diffiSelectLeft._position = -Vector2(80,15)
+	diffiSelectLeft.set(&"position", -Vector2(80,15))
 	difficultySprite.add_child(diffiSelectLeft)
 	
 	diffiSelectRight._position.y = -15
@@ -236,7 +236,11 @@ func load_game(
 	json_name: StringName = &'', 
 	audio_suffix: StringName = &''
 ):
-	Global.swapTree(PlayState.new(song_name,difficulty),true)
+	var playState: PlayState = PlayState.new()
+	playState.song_json_file = song_name
+	playState.difficulty = difficulty
+	playState.song_folder = songFolder
+	Global.swapTree(playState,true)
 	tweenStarted = true
 	if !songFolder: return
 	SongData.set_song_directory(song_name,difficulty,songFolder,json_name,audio_suffix)
@@ -323,7 +327,7 @@ func _load_difficulty_image(texture: Texture):
 	if FileAccess.file_exists(texture.resource_name+'.xml'):
 		difficultySprite._auto_resize_image = false
 		difficultySprite.image.texture = texture
-		difficultySprite.animation.addAnimByPrefix(&'anim','idle',24,true)
+		difficultySprite.animation.add_animation_by_prefix(&'anim','idle',24,true)
 		difficultySprite.animation.play(&'anim')
 	else:
 		difficultySprite.animation.clearLibrary()

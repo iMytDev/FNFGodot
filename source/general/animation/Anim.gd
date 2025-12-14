@@ -36,9 +36,9 @@ var frameName: StringName: get = get_frame_name
 ##with "-loop" at the end, that animation will be played.[br][br]
 ##Example:[codeblock]
 ##var animation = Anim.new()
-##animation.addAnimByPrefix(&'idle',&'prefix1',24,false)
+##animation.add_animation_by_prefix(&'idle',&'prefix1',24,false)
 ###When the "idle" animation ends, "idle-loop" will be played automatically
-##animation.addAnimByPrefix(&'idle-loop',&'prefix2',24,true,[5,6,7])
+##animation.add_animation_by_prefix(&'idle-loop',&'prefix2',24,true,[5,6,7])
 ##[/codeblock]
 @export var auto_loop: bool = false: set = _set_auto_loop
 signal animation_added(anim_name) ##Emiited when a animation is added to [member animations_array] using [method insertAnim]
@@ -59,9 +59,11 @@ signal image_animation_enabled(enabled: bool) ##Emitted when image animation is 
 
 
 func _init() -> void: curAnim.animation_finished.connect(func(): animation_finished.emit(current_animation))
+
 #region Player Methods
 func can_play(anim: StringName, force: bool = false) -> bool:
-	return anim in animationsArray and (force or !curAnim.playing or current_animation != anim)
+	if !anim in animationsArray: return false
+	return force or !curAnim.playing or current_animation != anim
 
 ##Play animation.[br][br]
 ##Returns [code]true[/code] if the animation starts.[br][br]
@@ -69,7 +71,7 @@ func can_play(anim: StringName, force: bool = false) -> bool:
 ##See also [method play_reverse].
 func play(anim: StringName = current_animation, force: bool = false) -> bool:
 	if !can_play(anim,force): return false
-	if anim != current_animation: update_anim(anim)
+	update_anim(anim)
 	curAnim.play()
 	animation_started.emit(anim)
 	return true
@@ -80,28 +82,24 @@ func play_random(force: bool = false):
 
 func play_reverse(anim: StringName, force: bool = false) -> void: ##Plays the animation from end to beggining. See also [method play]
 	if !can_play(anim,force): return
-	if anim != current_animation: update_anim(anim)
+	update_anim(anim)
 	curAnim.play_reverse()
 	animation_started.emit(anim)
 	
 func stop() -> void: curAnim.stop() ##Stops the current animation.
 
-func _verify_loop(anim): if !play(anim+'-loop',true): play(anim+'-hold',true);
+func _verify_loop(anim: String): if !play(anim+'-loop',true): play(anim+'-hold',true);
 #endregion
-
-##Returns a [Dictionary] with the data of the animation created. If don't exists, return a empty [Dictionary].
-func getAnimData(animName: StringName) -> Dictionary: return animationsArray.get(animName,{})
-
 
 ##Set a property from the anim data set in [param animationsArray].[br]
 ##[b]OBS:[/b] If the [param animName] as the same from the current animation,
 ##use [method update_anim] to update the property changed.
-func setAnimDataValue(animName: String, property: StringName, value: Variant):
+func setAnimDataValue(animName: StringName, property: StringName, value: Variant):
 	var data = animationsArray.get(animName); 
 	if data: data[property] = value
 
 func update_anim(anim: StringName = current_animation):
-	var animData = animationsArray[anim]
+	var animData = animationsArray.get(anim); if !animData: return
 	if animations_use_textures and animData.asset: image.texture = animData.asset
 	curAnim.frames = animData.frames
 	curAnim.frameRate = animData.fps
@@ -109,19 +107,25 @@ func update_anim(anim: StringName = current_animation):
 	curAnim.loop_frame = animData.loop_frame
 	curAnim.speed_scale = animData.speed_scale * speed_scale
 	prefix = animData.prefix
-	animation_changed.emit(current_animation,anim)
+	
+	var old_anim = current_animation
 	current_animation = anim
+	
+	# Set Sprite Offset
+	var offsets = animData.get(&'offset')
+	if image_parent and offsets != null: image_parent.set(&'offset',offsets)
+	animation_changed.emit(old_anim,anim)
 
 #region Add Animation Methods
 ##Add Animation from [u]Sparrow[/u]. Returns [code]true[/code] if the animation as added, [code]false[/code] otherwise.[br][br]
 ##To make the animation play specific frames, you can use [param indices], can be set as a [String] or a [Array]:[codeblock]
 ##var animation = Anim.new()
 ##animation.image = self
-##animation.addAnimByPrefix('indices_array','prefix',24.0,false,[0,1,2,5,6]) #Using Array
-##animation.addAnimByPrefix('indices_string','prefix',24,false,"0,1,2,3,4,5") #Using String
+##animation.add_animation_by_prefix('indices_array','prefix',24.0,false,[0,1,2,5,6]) #Using Array
+##animation.add_animation_by_prefix('indices_string','prefix',24,false,"0,1,2,3,4,5") #Using String
 ##[/codeblock]
-func addAnimByPrefix(animName: StringName, prefix: StringName, fps: float = 24.0, loop: bool = false, indices: PackedInt32Array = PackedInt32Array()) -> Dictionary:
-	var anim_frames = getFramesFromPrefix(prefix,indices)
+func add_animation_by_prefix(animName: StringName, prefix: StringName, fps: float = 24.0, loop: bool = false, indices: PackedInt32Array = PackedInt32Array()) -> Dictionary:
+	var anim_frames = get_frames_from_prefix(prefix,indices)
 	if !anim_frames: return {}
 	var anim_data: Dictionary[StringName, Variant] = {
 		&'looped': loop,
@@ -132,18 +136,10 @@ func addAnimByPrefix(animName: StringName, prefix: StringName, fps: float = 24.0
 	insertAnim(animName,anim_data)
 	return anim_data
 
-func getFramesFromPrefix(prefix: StringName, indices: Variant = PackedInt32Array(), animation_file: StringName = _animFile) -> Array:
+func get_frames_from_prefix(prefix: StringName, indices: Variant = PackedInt32Array(), animation_file: StringName = _animFile) -> Array:
 	if indices is String: indices = get_indices_by_str(indices)
 	if !indices: return AnimationService.getAnimFrames(prefix,animation_file)
 	return AnimationService.getAnimFramesIndices(prefix,animation_file,indices)
-	
-func addAnimation(animName: StringName, frames: Array, fps: float = 24.0, loop: bool = false) -> Dictionary:
-	if !frames: return {}
-	return insertAnim(
-		animName,
-		{&'looped': loop,&'fps': fps,&'frames': frames}
-	)
-
 
 ##Add frame animation.
 ##To works, the [param region_rect.size] of the [member image] have to be defined, 
@@ -155,7 +151,7 @@ func addAnimation(animName: StringName, frames: Array, fps: float = 24.0, loop: 
 func addFrameAnim(animName: StringName, indices: PackedInt32Array = [], fps: float = 24.0, loop: bool = false) -> Dictionary:
 	if !indices or !image or !image.texture: return {}
 	var animData: Dictionary[StringName,Variant] = {
-		&'frames': Array([],TYPE_DICTIONARY,'',null),
+		&'frames': [],
 		&'fps': fps,
 		&'looped': loop
 	}
@@ -181,7 +177,7 @@ func insertAnim(animName: StringName, animData: Dictionary[StringName,Variant] =
 	
 	if !_midpoint_set: update_midpoint_from_frame(animData.frames[0])
 	
-	animData.frames = adjustAnimationFramesToNode(animData.frames,image)
+	animData.frames = _adjust_anim_frames_to_node(animData.frames,image)
 	animationsArray[animName] = animData
 	
 	if !current_animation: play(animName)
@@ -215,12 +211,17 @@ func has_any_animations(anims: Array) -> bool: ##Returns [code]true[/code] if th
 	return false
 
 ##Clear Library, removing all the Animations from the Node.
-func clearLibrary() -> void: stop(); animationsArray.clear(); _midpoint_set = false
+func clearLibrary() -> void: 
+	stop(); 
+	animationsArray.clear(); 
+	_midpoint_set = false
 #endregion
 
 func update_midpoint_from_frame(frame: Dictionary) -> void:
 	var size = frame.get(&'frameSize')
-	if !size: size = frame.get(&'size'); if !size: return
+	if !size: 
+		size = frame.get(&'region_rect'); if !size: return
+		size = size.size
 	
 	_set_midpoint(size)
 
@@ -251,6 +252,7 @@ func _verify_anim_file() -> void:
 
 #region Setters
 func set_speed_scale(scale: float) -> void: speed_scale = scale;update_anim()
+
 func set_image(_image: CanvasItem) -> void:
 	if image and image.texture_changed.is_connected(_verify_anim_file): image.texture_changed.disconnect(_verify_anim_file)
 	image = _image
@@ -259,12 +261,18 @@ func set_image(_image: CanvasItem) -> void:
 	_verify_anim_file()
 	if curAnim: curAnim.node_to_animate = image
 	if !image: return
+	
 func _set_auto_loop(loop: bool):
 	if auto_loop == loop: return
 	if loop: animation_finished.connect(_verify_loop)
 	else: animation_finished.disconnect(_verify_loop)
 	auto_loop = loop
 
+func set_anim_offset(anim: StringName, offset: Vector2):
+	var data = animationsArray.get(anim)
+	if !data: return
+	data.offset = offset
+	if anim == current_animation and image_parent: image_parent.set(&'offset',offset)
 #endregion
 
 #region Getters
@@ -290,7 +298,7 @@ static func get_indices_by_str(indices: String) -> PackedInt32Array:
 	return PackedInt32Array(Array(indices.split(',')))
 
 
-static func adjustAnimationFramesToNode(anim_data: Array, node: Object) -> Array:
+static func _adjust_anim_frames_to_node(anim_data: Array, node: Object) -> Array:
 	var has_offset = node.get(&'_frame_offset') != null
 	var has_angle = node.get(&'_frame_angle') != null
 	

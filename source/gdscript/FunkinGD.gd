@@ -1,5 +1,4 @@
-extends "res://source/gdscript/FunkinInternal.gd"
-class_name FunkinGD
+class_name FunkinGD extends "res://source/gdscript/FunkinInternal.gd"
 
 #region Variables
 const TweenerObject = preload("uid://b3wombi1g7mtv")
@@ -11,12 +10,9 @@ const Bar = preload("uid://cesg7bsxvgdcm")
 const EventNoteUtils = preload("uid://dqymf0mowy0dt")
 const Note = preload("uid://deen57blmmd13")
 const NoteHit = preload("uid://dx85xmyb5icvh")
-const NoteStyleData = preload("uid://by78myum2dx8h")
 const StrumNote = preload("uid://coipwnceltckt")
 
 const Stage = preload("uid://dh7syegxufdht")
-
-const PlayStateBase = preload("uid://dgnunksqrmpbr")
 
 const Character = preload("uid://gou2lt74gx0i")
 const Icon = preload("uid://bgqwitowtypkw")
@@ -285,24 +281,26 @@ static func getRandomBool(chance: int = 50) -> bool: return randi_range(0,100) <
 
 #region Sprite Methods
 static func makeSprite(tag: StringName, path: Variant = null, x: float = 0, y: float = 0) -> FunkinSprite:  ##Creates a [Sprite].
-	var sprite = FunkinSprite.new(false,path); sprite.set_position_xy(x,y)
+	var sprite = FunkinSprite.new(false,path); 
+	sprite.set(&"position",Vector2(x,y))
 	if tag: sprite.name = tag; _insert_sprite(tag,sprite)
 	return sprite
 
 
 static func makeAnimatedSprite(tag: StringName, path: Variant = null, x: float = 0, y: float = 0) -> FunkinSprite: ##Creates a animated [Sprite].
-	var sprite = FunkinSprite.new(true,path); sprite.set_position_xy(x,y)
+	var sprite = FunkinSprite.new(true,path); 
+	sprite.set(&"position",Vector2(x,y))
 	if tag: sprite.name = tag; _insert_sprite(tag,sprite)
 	return sprite
  
 	
 
-static func addSprite(object: Variant, front: bool = false) -> void: ##Add [Sprite] to game.
+static func addSprite(object: Variant, front: bool = false, camera: Variant = camGame) -> void: ##Add [Sprite] to game.
 	object = Reflect._find_object(object)
 	if !object: return
-	var cam: FunkinCamera = object.get('camera'); if !cam: cam = game.get('camGame')
-	if !cam: return
-	cam.add(object,front)
+	camera = getCamera(camera)
+	if !camera: return
+	camera.add(object,front)
 
 static func addSpriteToCamera(object: Variant, camera: Variant, front: bool = false) -> void: ##Add a [Sprite] to a [param camera].
 	object = Reflect._find_object(object); if !object: return
@@ -313,6 +311,11 @@ static func insertSpriteToCamera(object: Variant, camera: Variant, at: int): ##I
 	object = Reflect._find_object(object); if !object: return
 	camera = getCamera(camera)
 	if camera: camera.insert(at, object)
+
+static func insertSpriteToGroup(object: Variant, group: Variant, at: int): ##Insert a [Sprite] to a [param camera] in a specific position.
+	object = Reflect._find_object(object); if !object: return
+	group = Reflect._find_object(group)
+	if group: group.insert(at, object)
 
 ##Remove [Sprite] of the game. When [code]delete[/code] is true, the sprite will be remove completely.
 static func removeSprite(object: Variant, delete: bool = false) -> void:
@@ -345,6 +348,7 @@ static func _make_graphic_no_check(object: Node, width: float = 0.0, height: flo
 	object.image.set_solid()
 	object.image.modulate = _get_color(color)
 	object.image.region_rect.size = Vector2(width,height)
+
 ##Load image in the sprite.
 static func loadGraphic(object: Variant, image: String, width: float = -1, height: float = -1) -> Texture:
 	object = Reflect._find_object(object); if !object: return
@@ -358,17 +362,22 @@ static func loadGraphic(object: Variant, image: String, width: float = -1, heigh
 	return tex
 
 
-##Changes the image size of the sprite.[br]
-##[b]Note:[/br] Just works if the sprite is not animated.
+##Changes the image region size of the sprite.[br]
 static func setGraphicSize(object: Variant, sizeX: float = -1, sizeY: float = -1) -> void:
 	object = Reflect._find_object(object); if !object: return
 	
-	if object is FunkinSprite: object.setGraphicSize(sizeX,sizeY)
-	elif object is NinePatchRect:
-		object.size = Vector2(
-			object.image.size.x if sizeX == -1 else sizeX,
-			object.image.size.y if sizeY == -1 else sizeY
-		)
+	if object is FunkinSprite: object = object.image
+	
+	if !object is Sprite2D and !object is NinePatchRect or !object.texture: return
+	object.set(&"region_enabled", true)
+	
+	var tex_size = object.texture.get_size()
+	var size = Vector2(
+		tex_size.x if sizeX == -1 else sizeX,
+		tex_size.y if sizeY == -1 else sizeY
+	)
+	object.region_rect.size = size
+
 ##Move the [param object] to the center of his camera.[br]
 ##[param type] can be: [code]""xy,x,y[/code]
 static func screenCenter(object: Variant, type: String = &'xy') -> void:
@@ -376,15 +385,15 @@ static func screenCenter(object: Variant, type: String = &'xy') -> void:
 	var center = (object.get_viewport().size*0.5 if object.is_inside_tree() else ScreenUtils.screenCenter)
 	if object is FunkinSprite: center -= object.image.pivot_offset
 	else:
-		var tex = object.get('texture')
-		var size = tex.get_size() if tex else object.get('size')
+		var tex = object.get(&'texture')
+		var size = tex.get_size() if tex else object.get(&'size')
 		if size: center += size*0.5
 	
-	var obj_pos = object.call('get_position'); if !obj_pos: return
+	var obj_pos = object.call(&'get_position'); if !obj_pos: return
 	match type:
-		&'x': object.set_position(center.x,obj_pos.y)
-		&'y': object.set_position(obj_pos.x,center.y)
-		_: object.set_position(center)
+		&'x': object.set(&"position",Vector2(center.x,obj_pos.y))
+		&'y': object.set(&"position",Vector2(obj_pos.x,center.y))
+		_: object.set(&"position",center)
 
 ##Scale object.
 ##If not [param centered], the sprite will scale from his top left corner.
@@ -398,11 +407,12 @@ static func scaleObject(object: Variant,x: float = 1.0,y: float = 1.0, centered:
 static func setScrollFactor(object: Variant, x: float = 1, y: float = 1) -> void:
 	object = Reflect._find_object(object); if object: object.set(&'scrollFactor',Vector2(x,y))
 
-##Set the order of the object in the screen.
-static func setObjectOrder(object: Variant, order: int)  -> void:
-	object = Reflect._find_object(object); if !object: return
-	var parent = object.get_parent(); if parent: parent.move_child(object,clampi(order,0,parent.get_child_count()))
 
+static func setObjectOrder(object: Variant, order: int)  -> void: ##Set the order of the object in the screen.
+	object = Reflect._find_object(object); if !object: return
+	var parent = object.get_parent(); 
+	var count = parent.call(&"get_child_count")
+	parent.call(&"move_child",object,clampi(order,-count,count))
 
 static func getObjectOrder(object: Variant) -> int: ##Returns the object's order.
 	object = Reflect._find_object(object); if !object: return 0
@@ -428,13 +438,13 @@ static func addAnimation(object: Variant, animName: StringName, frames: Array = 
 ##Add animation to a [Sprite] using the prefix of his image.
 static func addAnimationByPrefix(object: Variant, animName: StringName, xmlAnim: StringName, frameRate: float = 24, loop: bool = false) -> Dictionary:
 	object = Reflect._find_object(object); if !object or !object.get('animation'): return {}
-	var frames = object.animation.addAnimByPrefix(animName,xmlAnim,frameRate,loop)
+	var frames = object.animation.add_animation_by_prefix(animName,xmlAnim,frameRate,loop)
 	return frames
 
 ##Add [Animation] using the preffix of the sprite, can set the frames that will be played
 static func addAnimationByIndices(object: Variant, animName: StringName, xmlAnim: StringName, indices: Variant = [], frameRate: float = 24, loop: bool = false) -> Dictionary:
 	object = Reflect._find_object(object); if !object or !object.get('animation'): return {}
-	return object.animation.addAnimByPrefix(animName,xmlAnim,frameRate,loop,indices)
+	return object.animation.add_animation_by_prefix(animName,xmlAnim,frameRate,loop,indices)
 
 
 ##Makes the [param object] play a animation, if exists. If [param force] and the current anim as the same name, that anim will be restarted.
@@ -445,7 +455,14 @@ static func playAnim(object: Variant, anim: StringName, force: bool = false, rev
 
 ##Add offset for the animation of the sprite.
 static func addOffset(object: Variant, anim: StringName, offsetX: float, offsetY: float)  -> void:
-	object = Reflect._find_object(object); if object is FunkinSprite: object.addAnimOffset(anim,offsetX,offsetY)
+	var obj = Reflect._find_object(object);
+	if !object: 
+		if obj is String: debug_message("Error on add animation offset: "+object.name+" don't exists.")
+		else: debug_message("Error on add animation offset: Sprite is not valid.")
+		return
+	var animation = obj.get('animation')
+	if !animation: debug_message("Error on add animation offset: "+obj.name+" are not animated.")
+	animation.set_anim_offset(anim,Vector2(offsetX,offsetY))
 
 #endregion
 
@@ -454,7 +471,7 @@ static func addOffset(object: Variant, anim: StringName, offsetX: float, offsetY
 ##Creates a Text
 static func makeText(tag: StringName,text: Variant = '', width: float = 500, x: float = 0, y:float = 0) -> FunkinText:
 	var newText = FunkinText.new(str(text),width)
-	newText.set_position(Vector2(x,y))
+	newText.set(&"position",Vector2(x,y))
 	if !tag: return newText
 	removeText(tag)
 	newText.name = tag
@@ -462,16 +479,16 @@ static func makeText(tag: StringName,text: Variant = '', width: float = 500, x: 
 	return newText
 
 
-##Set the text string
-static func setTextString(tag: Variant, text: Variant = '') -> void:
+
+static func setTextString(tag: Variant, text: Variant = '') -> void: ##Set the text string
 	tag = Reflect._find_object(tag); if tag is Label: tag.text = str(text)
 
 ##Set the color from the text
 static func setTextColor(text: Variant, color: Variant) -> void:
 	text = Reflect._find_object(text); if text is Label: text.set(&"theme_override_colors/font_color",_get_color(color))
 
-##Set Text Border
-static func setTextBorder(text: Variant, border: float, color: Color = Color.BLACK) -> void:
+
+static func setTextBorder(text: Variant, border: float, color: Color = Color.BLACK) -> void: ##Set Text Border
 	text = Reflect._find_object(text); if !text is Label: return
 	text.set(&"theme_override_colors/font_outline_color",color)
 	text.set(&"theme_override_constants/outline_size",border)
@@ -523,9 +540,6 @@ static func addText(text: Variant, front: bool = false) -> void:
 	if cam is FunkinCamera: cam.add(text,front)
 	else: cam.add_child(text)
 
-static func getTextString(tag: String) -> String: ##Returns the string of the Text
-	return textsCreated[tag].text if tag in textsCreated else ''
-
 ##Remove Text from the game, if [code]delete[/code] is [code]true[/code], the text will be removed from the memory.
 static func removeText(text: Variant,delete: bool = false) -> void:
 	text = Reflect._find_object(text)
@@ -546,7 +560,9 @@ static func startTween(tag: String, object: Variant, what: Dictionary,time: Vari
 		var split = Reflect._find_object_with_split(object)
 		object = split[0]
 		if !object: return
-		if split[1]: var split_join = ":".join(split[1]); for i in what.keys(): DictUtils.rename_key(what,i,split_join+':'+i)
+		if split[1]: 
+			var split_join = ":".join(split[1]); 
+			for i in what.keys(): DictUtils.rename_key(what,i,NodePath(split_join+':'+i))
 	
 	if !object: return
 	for property in what:
@@ -767,7 +783,9 @@ static func removeShaderCamera(camera: Variant, shader: Variant) -> void:
 
 ##Set the sprite's shader, [code]shader[/code] can be a [ShaderMaterial] or a [String].
 ##[br][br]See also [method addShaderCamera].
-static func setSpriteShader(object: Variant, shader: Variant) -> void: object = Reflect._find_object(object); if object: object.set(&'material',_find_shader_material(shader))
+static func setSpriteShader(object: Variant, shader: Variant) -> void: 
+	object = Reflect._find_object(object); 
+	if object: object.set(&'material',_find_shader_material(shader))
 
 static func removeSpriteShader(object: Variant) -> void: object = Reflect._find_object(object); if object: object.set(&'material',null) ##Remove the current shader from the object
 
@@ -816,8 +834,8 @@ static func cameraFade(cam: Variant, color: Variant = Color.BLACK, time: Variant
 ##Move the game camera for the [code]target[/code].
 static func cameraSetTarget(target: String = 'boyfriend') -> void: game.moveCamera(target)
 	
-##Set the object camera.
-static func setObjectCamera(object: Variant, camera: Variant = 'game'):
+
+static func setObjectCamera(object: Variant, camera: Variant = 'game'):##Set the object camera.
 	object = Reflect._find_object(object); if !object: return
 	var cam: Node = getCamera(camera); if !cam: return
 	if object is FunkinSprite: object.set(&'camera',cam)
@@ -833,8 +851,8 @@ static func getCenterBetween(object1: Variant, object2: Variant) -> Vector2:
 
 
 
-##Detect the camera name using a String.
-static func cameraAsString(string: StringName) -> StringName:
+
+static func cameraAsString(string: StringName) -> StringName:##Detect the camera name using a String.
 	match StringName(string.to_lower()):
 		&'hud', &'camhud': return &'camHUD'
 		&'other', &'camother': return &'camOther'
@@ -844,7 +862,7 @@ static func cameraAsString(string: StringName) -> StringName:
 static func getCharacterCamPos(char: Variant): ##Returns the camera position from [param char].
 	if char is String: char =  Reflect._find_object(char)
 	if !char: return Vector2.ZERO
-	if game: return game.getCameraPos(char)
+	if game: return game.get_focus_position(char)
 	if char is String: char = getProperty(char)
 	if char is Character: return char.getCameraPosition()
 	if char is FunkinSprite: return char.getMidpoint()
@@ -852,13 +870,14 @@ static func getCharacterCamPos(char: Variant): ##Returns the camera position fro
 	return char.position
 
 
-static func getCamera(camera: Variant) -> FunkinCamera: ##Returns a [FunkinCamera] created using [method createCamera] or the game's camera named with [param camera]
+static func getCamera(camera: Variant) -> Node: ##Returns a [FunkinCamera] created using [method createCamera] or the game's camera named with [param camera]
 	return camera if camera is Node else getProperty(cameraAsString(camera))
 #endregion
 
 
 #region Game Methods
-static func startCountdown() -> void: game.startCountdown() ##Starts the song count down.
+##Starts the song count down.
+static func startCountdown() -> void: callScript("scripts/Countdown",&"start_count_down")
 static func endSong(skip_transition: bool = false) -> void: game.endSound(skip_transition) ##Ends the game song.
 static func setHealth(value: float) -> void: game.health = value ##Sets the player health.
 static func getHealth() -> float: return game.health ##Returns the player health.
@@ -951,6 +970,7 @@ static func addScript(path: String) -> Object:
 	if script: return script
 	
 	var absl_path = Paths.detectFileFolder(path)
+	#prints('Adding ',path,' script')
 	if !absl_path: return
 	
 	script = _load_script_no_check(absl_path)
@@ -972,7 +992,7 @@ static func registerCallback(script: Object, function: StringName) -> void:
 		return
 	
 	var list = method_list.get(function)
-	if list and function in list:  
+	if list and script in list:  
 		debug_message("Error on Register Callback: Callback already registred in this script.");
 		return
 	_register_callback_no_check(script,function)
@@ -1035,16 +1055,19 @@ func close() -> void: removeScript(self)
 ##triggerEvent('Change Character','gf','gf-dead')
 ##triggerEvent('UIFade',0.0,1.0,true)
 ##[/codeblock]
-static func triggerEvent(event: StringName,...args: Array):
+static func triggerEvent(event: StringName,...args: Array) -> void:
 	var default_values: Dictionary = EventNoteUtils.get_event_variables(event)
 	var keys: Array = default_values.keys()
 	
+	var parameters: Dictionary[StringName, Variant]
 	if !args: 
 		var i = default_values.size()
-		while i: i -= 1; var key = keys[i]; default_values[key] = default_values[keys].default_value
-		return game.triggerEvent(event,default_values)
-	
-	var parameters: Dictionary[StringName, Variant]
+		while i: 
+			i -= 1; 
+			var key = keys[i]; 
+			parameters[key] = default_values[key].default_value
+		game.triggerEvent(event,parameters)
+		return
 	var index = 0
 	var keys_length = keys.size()
 	var args_length = minf(args.size(),keys_length)
@@ -1054,18 +1077,18 @@ static func triggerEvent(event: StringName,...args: Array):
 		index += 1
 	
 	while index < keys_length: var key = keys[index]; parameters[key] = default_values[key].default_value; index += 1
-	return game.triggerEvent(event,parameters)
+	game.triggerEvent(event,parameters)
 
 ##Trigger Event using [Dictionary].
 ##triggerEvent('UIFade',{"alpha": 0.0, "time": 1.0,"strums": true)
 ##triggerEvent('Change Character',{"char": "bf", "json": "bf-dead"})
 ##[/codeblock]
-static func triggerEventData(event: StringName, variables: Dictionary):
+static func triggerEventData(event: StringName, variables: Dictionary) -> void:
 	var default_values: Dictionary = EventNoteUtils.get_event_variables(event)
 	for i in default_values: 
 		var val = default_values[i]
 		variables[i] = type_convert(variables[i],val.type) if i in variables else val.default_value
-	return game.triggerEvent(event,variables)
+	game.triggerEvent(event,variables)
 #endregion
 
 #region Color Methods

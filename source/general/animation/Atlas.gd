@@ -1,13 +1,13 @@
+class_name Atlas extends Object
 static var atlas_loaded: Dictionary[String,Dictionary]
 static func loadAtlas(file: String) -> Dictionary[StringName, Array]:
 	if !file.ends_with('.txt'): file += '.txt'
 	
 	if atlas_loaded.get(file): return atlas_loaded[file]
-	var data: Dictionary[StringName, Array] = {}
+	var data: Dictionary[StringName, Array]
 	
 	for i in FileAccess.get_file_as_string(file).split('\n'):
-		if not i: continue
-			
+		if !i: continue
 		var find_equals = i.find('=')
 		if find_equals == -1: continue
 		

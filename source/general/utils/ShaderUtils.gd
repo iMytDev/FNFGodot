@@ -10,19 +10,20 @@ const replace_frag: Dictionary = {
 	'gl_FragColor': 'COLOR'
 }
 
-static var _blends_created: Dictionary[String,Material] = {}
+static var _blends_created: Dictionary[String,Material]
 
 static func fragToGd(shaderCode: String) -> String:
 	for r in replace_frag: shaderCode = shaderCode.replace(r,replace_frag[r])
-	if not 'shader_type canvas_item;' in shaderCode: shaderCode = 'shader_type canvas_item;\n'+shaderCode
 	
 	shaderCode = shaderCode.replace('openfl_TextureCoordv','UV').replace('bitmap','TEXTURE')
 	shaderCode = shaderCode.replace('texture(TEXTURE,UV)','COLOR').replace('texture(TEXTURE, UV)','COLOR')
+	
+	if not 'shader_type canvas_item;' in shaderCode: shaderCode = 'shader_type canvas_item;\n'+shaderCode
+	
 	return shaderCode
 	
 #region Blend Methods
 static func get_blend(blend: StringName) -> Material:
-	blend = blend.to_lower()
 	if _blends_created.has(blend): return _blends_created[blend]
 	
 	var canvas: Material
@@ -48,14 +49,15 @@ static func get_blend(blend: StringName) -> Material:
 	_blends_created[blend] = canvas
 	return canvas
 
-static func set_object_blend(object,blendMode: Variant) -> void:
+static func set_object_blend(object: CanvasItem,blendMode: Variant) -> void:
 	if !object: return
 	var material: CanvasItemMaterial
 	if blendMode is CanvasItemMaterial.BlendMode: material = CanvasItemMaterial.new(); material.blend_mode = blendMode
 	else: material = get_blend(blendMode)
 	
 	object.set('material',material)
-	
+
+
 """
 static func set_texture_hue(texture: ImageTexture, hue_shift: float):
 	if !texture: return

@@ -95,13 +95,7 @@ func update_letters_position(h_aligment: HorizontalAlignment = horizontal_alignm
 			if !letter: 
 				curTextPos += 15 + letters_space
 				continue
-			
-			
-			
-			letter._position = Vector2(
-				curTextPos,
-				offset_y
-			)
+			letter._position = Vector2(curTextPos,offset_y)
 			
 			var letter_size = letter.pivot_offset*2.0
 			curTextPos += letter_size.x + letters_space

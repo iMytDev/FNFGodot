@@ -23,10 +23,10 @@ static var defaultScaleMode: Window.ContentScaleMode = getScreenScaleModeViaStri
 static var main_window: Window
 
 static func _init() -> void:
+	_set_window.call_deferred()
 	defaultSize.x = ProjectSettings.get_setting('display/window/size/viewport_width')
 	defaultSize.y = ProjectSettings.get_setting('display/window/size/viewport_height')
 	defaultSizeCenter = defaultSize*0.5
-	_set_window.call_deferred()
 	updateScreenData()
 
 static func _set_window():

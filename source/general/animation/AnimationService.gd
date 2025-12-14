@@ -1,15 +1,13 @@
 extends Node
-const Sparrow = preload("res://source/general/animation/Sparrow.gd")
-const Atlas = preload("res://source/general/animation/Atlas.gd")
 const Map = preload("res://source/general/animation/Map.gd")
 
 const AnimationController = preload("res://source/general/animation/AnimationController.gd")
 const formats: PackedStringArray = ['xml','json','txt']
 
 ##Will store the created animations, containing the name and an array with its frames
-static var animations_loaded: Dictionary[StringName,Array] = {}
+static var animations_loaded: Dictionary[StringName,Array]
 static var _anims_created: Dictionary = {}
-static var _anims_file_founded: Dictionary[String,String] = {}
+static var _anims_file_founded: Dictionary[String,String]
 
 const animation_formats: PackedStringArray = ['.xml','.txt','.json']
 
@@ -57,13 +55,10 @@ static func getAnimFramesIndices(prefix: String, file: String, indices: PackedIn
 
 static func findAnimFile(tex: String):
 	if _anims_file_founded.has(tex): return _anims_file_founded[tex]
-	
 	for formats in animation_formats:
 		if tex.ends_with(formats): return tex
 		var file = tex+formats
-		if FileAccess.file_exists(file): 
-			_anims_file_founded[tex] = file
-			return file
+		if FileAccess.file_exists(file): _anims_file_founded[tex] = file; return file
 	return ''
 
 static func _clearAnims() -> void:

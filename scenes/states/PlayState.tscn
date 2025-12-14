@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://b1bt7kv7oej7w"]
+
+[ext_resource type="PackedScene" uid="uid://drn03gpp4aigt" path="res://assets/models/roblox_noob_rig/roblox_model.tscn" id="1_62g68"]
+[ext_resource type="Script" uid="uid://cwujhkx4rf26u" path="res://source/states/StrumState.gd" id="1_htwxl"]
+[ext_resource type="Texture2D" uid="uid://bkdjym6wnha35" path="res://assets/images/skys/_0005_AllSkyFree_Screen_05.jpg" id="2_65dsp"]
+
+[sub_resource type="Shader" id="Shader_htwxl"]
+code = "shader_type sky;
+
+uniform sampler2D sky_texture;
+
+vec2 repeat(vec2 uv){
+	uv = mod(uv,vec2(2.0));
+	uv = abs(uv - floor(uv)*2.0);
+	return uv - floor(uv);
+}
+void sky(){
+	COLOR = texture(sky_texture,repeat(vec2(SKY_COORDS.x*2.0,SKY_COORDS.y))).rgb;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_htwxl"]
+shader = SubResource("Shader_htwxl")
+shader_parameter/sky_texture = ExtResource("2_65dsp")
+
+[sub_resource type="Sky" id="Sky_65dsp"]
+sky_material = SubResource("ShaderMaterial_htwxl")
+
+[sub_resource type="Environment" id="Environment_411k6"]
+background_mode = 2
+sky = SubResource("Sky_65dsp")
+ambient_light_source = 3
+ssao_enabled = true
+sdfgi_enabled = true
+glow_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_htwxl"]
+
+[node name="PlayState" type="Node" unique_id=462075853]
+script = ExtResource("1_htwxl")
+song_json_file = "killer-attraction"
+difficulty = "hard"
+_from_mod = "Fnif3"
+autoStartSong = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=521038349]
+environment = SubResource("Environment_411k6")
+
+[node name="Roblox" parent="." unique_id=1274231716 instance=ExtResource("1_62g68")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.4720345, 0.6294365, -5.9444027)
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=427865709]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.0554714, 11.683664, -1.2939711)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1252827536]
+transform = Transform3D(-318.08597, 0, 0, 0, 1.0000002, 0, 0, 0, -18536.992, 0, 0, 0)
+mesh = SubResource("BoxMesh_htwxl")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=262247947]
+transform = Transform3D(1, 0, 0, 0, -0.3808122, 0.9246524, 0, -0.9246524, -0.3808122, 0, 16.016785, 0)

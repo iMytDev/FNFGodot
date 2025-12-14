@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=3 uid="uid://sy6dvoqbgemm"]
+[gd_scene load_steps=17 format=3 uid="uid://sy6dvoqbgemm"]
 
 [ext_resource type="Texture2D" uid="uid://0s5mjauudmx5" path="res://icons/float.svg" id="1_mpvlj"]
 [ext_resource type="Texture2D" uid="uid://da5srva8il7lx" path="res://icons/String.svg" id="2_vgfox"]
@@ -10,6 +10,9 @@
 [ext_resource type="Texture2D" uid="uid://f2q3yboqpmvk" path="res://icons/bool.svg" id="6_igspc"]
 [ext_resource type="Texture2D" uid="uid://p2u334l5qsi6" path="res://icons/Vector3.svg" id="7_apu2u"]
 [ext_resource type="Texture2D" uid="uid://cqkrggmr3gj4a" path="res://icons/Vector3i.svg" id="8_0n2xo"]
+[ext_resource type="Texture2D" uid="uid://ooqxgcvmkeny" path="res://icons/EditBezier.svg" id="11_dxt6o"]
+[ext_resource type="Texture2D" uid="uid://bwgxunp3wxpsd" path="res://icons/Enum.svg" id="12_apu2u"]
+[ext_resource type="Texture2D" uid="uid://d10eacn2cxwej" path="res://icons/Load.svg" id="13_0n2xo"]
 
 [sub_resource type="GDScript" id="GDScript_mpvlj"]
 script/source = "@tool
@@ -19,81 +22,169 @@ const NumberRangeScript = preload(\"uid://bscbt2dibch22\")
 
 const VariableScene = preload(\"uid://sy6dvoqbgemm\")
 
-var data: Dictionary = {
+var data: Dictionary[StringName, Variant] = {
 	&\"default_value\": 0,
-	&\"type\": TYPE_INT,
-	&\"options\": [],
+	&\"type\": TYPE_INT
 }
 
+var look_at: Dictionary[StringName, Variant] = {
+	&'directory': '',
+	&'extension': '',
+	&'separate_mods': true
+}
 
 @onready var default_value_parent = $\"Container/Default Value\"
 @onready var container = $\"Container\"
 @onready var type_menu: MenuButton = $Container/Type/Menu
-var default_value_node: Control:
-	set(val): 
-		if default_value_node: default_value_node.queue_free()
-		default_value_node = val
-	
+@onready var type_menu_popup: PopupMenu = type_menu.get_popup()
+var separator: HSeparator = HSeparator.new()
+
 func _ready() -> void:
 	_on_type_changed()
 	renamed.connect(_renamed)
 	_renamed()
+	add_child(separator)
+	resized.connect(_resized)
+	_resized()
+	
+	if data.get(&'options'): type_menu.icon = load(\"uid://bwgxunp3wxpsd\")
+	elif data.get(&'look_at'): type_menu.icon = load(\"uid://d10eacn2cxwej\")
+	else:
+		match data.get('type'):
+			\"EasingType\": type_menu.icon = load(\"uid://ooqxgcvmkeny\")
+			_: type_menu.icon = load(\"res://icons/\"+type_string(data.get('type',''))+\".svg\")
+
+func _value_changed(v: Variant): data.default_value = v
+
+func _vector_value_changed(value: Variant, index: Variant): data.default_value[index] = value
+
+func _enum_text_changed(new_text: String): 
+	var options: Array
+	for i in new_text.split(','):
+		i = i.strip_edges()
+		if i.is_valid_int(): options.append(i.to_int());
+		elif i.is_valid_float(): options.append(i.to_float());
+		else: options.append(i);
+	data.options = options
+	
+func _resized(): separator.position.y = size.y
 
 func _renamed(): text = '--- '+name+' ---'
 
-func _on_container_minimum_size_changed() -> void: custom_minimum_size.y = container.size.y + container.position.y
-
+func _on_container_minimum_size_changed() -> void: 
+	custom_minimum_size.y = container.size.y + container.position.y
 
 func _on_type_changed():
-	var type = data.get(&'type')
-	type = type_string(type) if type else 'String'
-	type_menu.icon = load(\"res://icons/\"+type+'.svg')
+	type_menu.icon = type_menu_popup.get_item_icon(type_menu.index)
 	_create_value_node()
 
 func _create_value_node():
-	match data.get(&'type'):
-		TYPE_INT:_create_range_number(true)
-		TYPE_FLOAT: _create_range_number()
-		TYPE_COLOR: _create_color_range()
-		TYPE_BOOL: _create_bool()
-		TYPE_STRING_NAME,TYPE_STRING: _create_line_edit()
-	default_value_parent.add_child(default_value_node)
-	default_value_node.position = Vector2(130,-default_value_node.size.y/4.0)
+	for i in default_value_parent.get_children(): i.queue_free()
+	default_value_parent.custom_minimum_size.y = 0
+	if data.get(&'options'): _create_enum()
+	elif data.has(&'look_at'): _create_files_nodes()
+	else:
+		match data.get(&'type'):
+			TYPE_INT:_create_range_number(true)
+			TYPE_FLOAT: _create_range_number()
+			TYPE_COLOR: _create_color_range()
+			TYPE_BOOL: _create_bool()
+			TYPE_VECTOR2: _create_range_vector_number(2)
+			TYPE_VECTOR3: _create_range_vector_number(3)
+			TYPE_VECTOR2I: _create_range_vector_number(2,true)
+			TYPE_VECTOR3I: _create_range_vector_number(3,true)
+			TYPE_STRING_NAME,TYPE_STRING: _create_line_edit()
 
-func _changed_type(type: Variant.Type) -> void:
-	if data.type == type: return
+func _changed_type(type: Variant) -> void:
+	match data.type:
+		\"Enum\": data.erase(&\"options\")
+		\"Files\": data.erase(&\"look_at\")
+	
 	data.type = type
-	data.default_value = type_convert(data.default_value,type)
+	match type:
+		\"EasingType\": data.default_value = \"Linear\"
+		\"Enum\": data.options = []
+		\"Files\": data.look_at = look_at.duplicate()
+		_: data.default_value = type_convert(data.default_value,type)
 	_on_type_changed()
 
+func _create_range_number_no_connect(is_int: bool) -> NumberRangeScript:
+	var val = NumberRangeScene.instantiate()
+	val.int_value = is_int
+	return val
+
+func _create_range_number(is_int: bool = false) -> NumberRangeScript:
+	var val = _create_range_number_no_connect(is_int)
+	val.value_changed.connect(_value_changed)
+	_add_value_node(val)
+	return val
+
+func _create_range_vector_number(vector_count: int,is_int: bool = false) -> void:
+	for i in vector_count:
+		var val = _create_range_number_no_connect(is_int)
+		val.value = data.default_value[i]
+		val.value_changed.connect(_vector_value_changed.bind(i))
+		val.position += Vector2(20,val.size.y*i)
+		val.text = VectorUtils.vectors_index[i]+': '
+		_add_value_node(val)
+
+func _create_line_edit_no_connect() -> LineEditAutoUnfocus:
+	var val = LineEditAutoUnfocus.new()
+	val.size = Vector2(160,30)
+	val.unfocus_on_submit = true
+	_add_value_node(val)
+	return val
+
+func _create_line_edit() -> LineEditAutoUnfocus:
+	var val = _create_line_edit_no_connect()
+	val.text = str(data.get('default_value',''))
+	val.text_changed.connect(_value_changed)
+	return val
 
 
 
-func _value_changed(v: Variant): data.default_value = v
-func _create_range_number(is_int: bool = false) -> void:
-	if default_value_node is NumberRangeScript: default_value_node.int_value = is_int; return
-	default_value_node = NumberRangeScene.instantiate()
-	default_value_node.value_changed.connect(_value_changed)
-	default_value_node.int_value = is_int
+func _create_enum() -> LineEditAutoUnfocus:
+	var val = _create_line_edit_no_connect()
+	val.text = ', '.join(data.get('options',[]))
+	val.text_submitted.connect(_enum_text_changed)
+	return val
 
-func _create_line_edit() -> void:
-	if default_value_node is LineEdit: default_value_node.text = data.default_value; return
-	default_value_node = LineEdit.new()
-	default_value_node.size = Vector2(160,30)
-	default_value_node.text = data.get('default_value','')
-	default_value_node.text_changed.connect(_value_changed)
+func _create_color_range() -> ColorPickerButton:
+	var val = ColorPickerButton.new()
+	val.size = Vector2(160,30)
+	val.color_changed.connect(_value_changed)
+	_add_value_node(val)
+	return val
 
-func _create_color_range() -> void:
-	default_value_node = ColorPickerButton.new()
-	default_value_node.size = Vector2(160,30)
-	default_value_node.color_changed.connect(_value_changed)
+func _create_files_nodes():
+	var look_at = data.get('look_at',{})
+	var lineEdit = _create_line_edit_no_connect()
+	lineEdit.text = look_at.get('directory','')
+	_add_value_node(lineEdit)
+	
+	var extension = _create_line_edit_no_connect()
+	extension.text = look_at.get('extension','.json')
+	extension.position.y += lineEdit.size.y
+	_add_value_node(extension)
+	
+	var separate_mods: CheckBox = CheckBox.new()
+	separate_mods.set_pressed_no_signal(look_at.get('separate_mods',false))
+	separate_mods.position += Vector2(130,extension.position.y + extension.size.y)
+	_add_value_node(separate_mods)
+	
+func _add_value_node(node: Control):
+	default_value_parent.add_child(node)
+	default_value_parent.custom_minimum_size.y = node.position.y + node.size.y
+	node.position.x += 130
 
-
-func _create_bool():
-	default_value_node = CheckButton.new()
-	default_value_node.alignment = HORIZONTAL_ALIGNMENT_LEFT
-	default_value_node.size = Vector2(10,30)
-	default_value_node.toggled.connect(_value_changed)
+func _create_bool() -> CheckButton:
+	var b = CheckButton.new()
+	b.focus_mode = FOCUS_NONE
+	b.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	b.size = Vector2(10,30)
+	b.toggled.connect(_value_changed)
+	_add_value_node(b)
+	return b
 "
 
 [sub_resource type="GDScript" id="GDScript_igspc"]
@@ -102,10 +193,18 @@ extends MenuButton
 var popup = get_popup()
 
 @onready var parent = $\"../../..\"
+var index: int = 0
+func _init() -> void: 
+	popup.index_pressed.connect(_checked)
+	popup.add_theme_constant_override(\"icon_max_width\",20)
 
-func _init() -> void: popup.index_pressed.connect(_checked)
-func _checked(index: int) -> void: 
-	parent._changed_type(popup.get_item_id(index))
+func _checked(i: int) -> void: 
+	if i == index: return
+	index = i
+	var item_t = popup.get_item_text(i)
+	match StringName(item_t):
+		&\"EasingType\",&\"Enum\",&\"Files\": parent._changed_type(item_t)
+		_: parent._changed_type(popup.get_item_id(i))
 	
 "
 
@@ -129,17 +228,17 @@ func _update_size():
 "
 
 [node name="Variable" type="Label" unique_id=297907093]
-custom_minimum_size = Vector2(0, 125)
-offset_right = 40.0
-offset_bottom = 15.0
+custom_minimum_size = Vector2(0, 149)
+offset_right = 369.0
+offset_bottom = 139.0
 text = "--- Variable ---"
 script = SubResource("GDScript_mpvlj")
 
 [node name="Container" type="VBoxContainer" parent="." unique_id=853001189]
 layout_mode = 0
 offset_top = 16.0
-offset_right = 132.0
-offset_bottom = 104.0
+offset_right = 368.0
+offset_bottom = 139.0
 theme_override_constants/separation = 10
 
 [node name="Type" type="Label" parent="Container" unique_id=1830748833]
@@ -154,10 +253,12 @@ offset_left = 47.0
 offset_top = 2.0
 offset_right = 121.0
 offset_bottom = 30.0
+theme_override_constants/icon_max_width = 30
+icon = ExtResource("3_igspc")
 flat = false
 icon_alignment = 1
 expand_icon = true
-item_count = 10
+item_count = 13
 popup/item_0/text = "Bool"
 popup/item_0/icon = ExtResource("6_igspc")
 popup/item_0/id = 1
@@ -188,12 +289,22 @@ popup/item_8/id = 20
 popup/item_9/text = "StringName"
 popup/item_9/icon = ExtResource("4_pnupp")
 popup/item_9/id = 21
+popup/item_10/text = "EasingType"
+popup/item_10/icon = ExtResource("11_dxt6o")
+popup/item_10/id = 10
+popup/item_11/text = "Enum"
+popup/item_11/icon = ExtResource("12_apu2u")
+popup/item_11/id = 11
+popup/item_12/text = "Files"
+popup/item_12/icon = ExtResource("13_0n2xo")
+popup/item_12/id = 12
 script = SubResource("GDScript_igspc")
 
 [node name="Default Value" type="Label" parent="Container" unique_id=698784963]
-custom_minimum_size = Vector2(0, 30)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 text = "Default Value: "
+vertical_alignment = 1
 
 [node name="Description" type="Label" parent="Container" unique_id=1677123546]
 custom_minimum_size = Vector2(0, 29)
@@ -214,4 +325,8 @@ text_direction = 1
 script = SubResource("GDScript_vgfox")
 metadata/_custom_type_script = "uid://dugs5fa627cfl"
 
+[node name="HSeparator" type="HSeparator" parent="Container" unique_id=1473374688]
+layout_mode = 2
+
 [connection signal="minimum_size_changed" from="Container" to="." method="_on_container_minimum_size_changed"]
+[connection signal="minimum_size_changed" from="Container/Default Value/ButtonRange" to="Container/Default Value/ButtonRange" method="_on_minimum_size_changed"]

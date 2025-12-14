@@ -34,7 +34,7 @@ func loadFromStyle(noteStyle: String,prefix: String = stylePrefix):
 	if !styleData: return
 	isPixelNote = styleData.get(&'isPixel',false)
 	texture = styleData.assetPath
-	
+ 
 func _update_style_data() -> void: styleData = NoteStyleData.getStyleData(styleName,&'notes')
 
 ##Reload the Note animation and his texture.
@@ -58,7 +58,7 @@ func setTexture(_new_texture: String) -> void:
 	image.texture = Paths.texture(texture)
 	reloadNote()
 
-func _on_texture_changed() -> void: super._on_texture_changed(); animation.clearLibrary(); _animOffsets.clear()
+func _on_texture_changed() -> void: super._on_texture_changed(); animation.clearLibrary();
 
 
 #region Static Funcs

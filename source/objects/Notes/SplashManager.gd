@@ -1,6 +1,7 @@
 extends Node
 const Note = preload("uid://deen57blmmd13")
 const NoteSplash = preload("uid://cct1klvoc2ebg")
+const StrumNote = preload("uid://coipwnceltckt")
 
 static var splashes_loaded: Dictionary
 static func createSplashFromNote(note: Note):
@@ -20,7 +21,7 @@ static func _get_splash_storage(style: StringName, name: StringName, prefix: Str
 
 static func _check_splash_from_note(note: Note) -> NoteSplash:
 	return _check_splash(note.splashStyle,note.splashName,note.splashPrefix)
-
+	
 static func _check_splash(style: StringName, splash_name: StringName, prefix: StringName) -> NoteSplash:
 	var storage = _get_splash_storage(style,splash_name,prefix)
 	var length = storage.size()

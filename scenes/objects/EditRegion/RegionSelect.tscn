@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://dkx5dkwa42rdt"]
 
-[ext_resource type="StyleBox" uid="uid://bp0u0tev07acf" path="res://scenes/objects/EditRegion/SelectButton.tres" id="1_r0tiu"]
+[ext_resource type="Texture2D" uid="uid://de70xos7lruhv" path="res://icons/EditorHandle.svg" id="1_cufxy"]
 
 [sub_resource type="GDScript" id="GDScript_r0tiu"]
 script/source = "@tool
@@ -129,83 +129,118 @@ func _button_center_events(input: InputEvent, button: Button):
 				size.x = absf(offset)
 "
 
-[node name="RegionSelect" type="ReferenceRect"]
+[node name="RegionSelect" type="ReferenceRect" unique_id=1498832253]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 500.0
-offset_top = 500.0
-offset_right = -701.0
-offset_bottom = -184.34497
+offset_left = 75.0
+offset_right = -759.0
+offset_bottom = -273.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+border_color = Color(1, 0.37254903, 0.37254903, 1)
 border_width = 3.0
 editor_only = false
 script = SubResource("GDScript_r0tiu")
 
-[node name="TopLeft" type="Button" parent="."]
+[node name="TopLeft" type="Button" parent="." unique_id=1294336731]
 layout_mode = 0
 offset_left = -10.0
-offset_top = -10.0
+offset_top = -48.0
+offset_right = 38.0
+scale = Vector2(0.6, 0.6)
 focus_mode = 0
-theme_override_styles/normal = ExtResource("1_r0tiu")
+icon = ExtResource("1_cufxy")
+flat = true
+icon_alignment = 2
+metadata/_edit_lock_ = true
 
-[node name="TopCenter" type="Button" parent="."]
+[node name="TopCenter" type="Button" parent="." unique_id=1394821872]
 layout_mode = 0
-offset_left = 34.5
-offset_top = -10.0
-offset_right = 44.5
+offset_left = 199.0
+offset_top = -48.0
+offset_right = 247.0
+scale = Vector2(0.6, 0.6)
 focus_mode = 0
-theme_override_styles/normal = ExtResource("1_r0tiu")
+icon = ExtResource("1_cufxy")
+flat = true
+icon_alignment = 2
+metadata/_edit_lock_ = true
 
-[node name="TopRight" type="Button" parent="."]
+[node name="TopRight" type="Button" parent="." unique_id=1519712852]
 layout_mode = 0
-offset_left = 79.0
-offset_top = -10.0
-offset_right = 89.0
+offset_left = 446.0
+offset_top = -48.0
+offset_right = 494.0
+scale = Vector2(0.6, 0.6)
 focus_mode = 0
-theme_override_styles/normal = ExtResource("1_r0tiu")
+icon = ExtResource("1_cufxy")
+flat = true
+icon_alignment = 2
+metadata/_edit_lock_ = true
 
-[node name="BottomLeft" type="Button" parent="."]
-layout_mode = 0
-offset_left = -10.0
-offset_top = 35.65503
-offset_bottom = 45.65503
-focus_mode = 0
-theme_override_styles/normal = ExtResource("1_r0tiu")
-
-[node name="BottomCenter" type="Button" parent="."]
-layout_mode = 0
-offset_left = 34.5
-offset_top = 35.65503
-offset_right = 44.5
-offset_bottom = 45.65503
-focus_mode = 0
-theme_override_styles/normal = ExtResource("1_r0tiu")
-
-[node name="BottomRight" type="Button" parent="."]
-layout_mode = 0
-offset_left = 79.0
-offset_top = 35.65503
-offset_right = 89.0
-offset_bottom = 45.65503
-focus_mode = 0
-theme_override_styles/normal = ExtResource("1_r0tiu")
-
-[node name="Left" type="Button" parent="."]
+[node name="BottomLeft" type="Button" parent="." unique_id=1573432706]
 layout_mode = 0
 offset_left = -10.0
-offset_top = 12.827515
-offset_bottom = 22.827515
+offset_top = 447.0
+offset_right = 38.0
+offset_bottom = 495.0
+scale = Vector2(0.6, 0.6)
 focus_mode = 0
-theme_override_styles/normal = ExtResource("1_r0tiu")
+icon = ExtResource("1_cufxy")
+flat = true
+icon_alignment = 2
+metadata/_edit_lock_ = true
 
-[node name="Right" type="Button" parent="."]
+[node name="BottomCenter" type="Button" parent="." unique_id=1288992932]
 layout_mode = 0
-offset_left = 79.0
-offset_top = 12.827515
-offset_right = 89.0
-offset_bottom = 22.827515
+offset_left = 199.0
+offset_top = 447.0
+offset_right = 247.0
+offset_bottom = 495.0
+scale = Vector2(0.6, 0.6)
 focus_mode = 0
-theme_override_styles/normal = ExtResource("1_r0tiu")
+icon = ExtResource("1_cufxy")
+flat = true
+icon_alignment = 2
+metadata/_edit_lock_ = true
+
+[node name="BottomRight" type="Button" parent="." unique_id=1041323054]
+layout_mode = 0
+offset_left = 446.0
+offset_top = 447.0
+offset_right = 494.0
+offset_bottom = 495.0
+scale = Vector2(0.6, 0.6)
+focus_mode = 0
+icon = ExtResource("1_cufxy")
+flat = true
+icon_alignment = 2
+metadata/_edit_lock_ = true
+
+[node name="Left" type="Button" parent="." unique_id=979840864]
+layout_mode = 0
+offset_left = -10.0
+offset_top = 199.5
+offset_right = 38.0
+offset_bottom = 247.5
+scale = Vector2(0.6, 0.6)
+focus_mode = 0
+icon = ExtResource("1_cufxy")
+flat = true
+icon_alignment = 2
+metadata/_edit_lock_ = true
+
+[node name="Right" type="Button" parent="." unique_id=838580937]
+layout_mode = 0
+offset_left = 446.0
+offset_top = 199.5
+offset_right = 494.0
+offset_bottom = 247.5
+scale = Vector2(0.6, 0.6)
+focus_mode = 0
+icon = ExtResource("1_cufxy")
+flat = true
+icon_alignment = 2
+metadata/_edit_lock_ = true

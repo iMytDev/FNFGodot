@@ -1,6 +1,11 @@
 @icon("res://icons/icon.svg")
 extends FunkinSprite
 
+enum State{
+	NORMAL,
+	LOSING,
+	WINNING
+}
 var animated: bool
 var hasWinningIcon: bool
 
@@ -29,29 +34,31 @@ func changeIcon(icon: StringName = "icon-face"):
 	animated = FileAccess.file_exists(image.texture.resource_name+'.xml')
 	
 	if animated:
-		animation.addAnimByPrefix(&'normal',&'Default',24,true)
-		animation.addAnimByPrefix(&'losing',&'Losing',24,true)
-		animation.addAnimByPrefix(&"winning",&'Winning',24,true)
-		
-	elif hasWinningIcon:
-		setGraphicSize(imageSize.x/3.0,imageSize.y)
+		animation.add_animation_by_prefix(&'normal',&'Default',24,true)
+		animation.add_animation_by_prefix(&'losing',&'Losing',24,true)
+		animation.add_animation_by_prefix(&"winning",&'Winning',24,true)
+		return
+	
+	var size: Vector2
+	if hasWinningIcon:
+		image.region_rect.size = Vector2(imageSize.x/3.0,imageSize.y)
 		animation.addFrameAnim(&'normal',[0])
 		animation.addFrameAnim(&'losing',[1])
 		animation.addFrameAnim(&'winning',[2])
 		
 	else:
-		setGraphicSize(imageSize.x*0.5,imageSize.y)
+		image.region_rect.size = Vector2(imageSize.x*0.5,imageSize.y)
 		animation.addFrameAnim(&'normal',[0])
 		animation.addFrameAnim(&'losing',[1])
 	
 
 func reloadIconFromCharacterJson(json: Dictionary): 
-	json = json.get('healthIcon',{})
-	changeIcon(json.get('id','icon-face')); 
-	set_pixel(json.get('isPixel',false),json.get('canScale',false))
+	json = json.get(&'healthIcon',{})
+	changeIcon(json.get(&'id',&'icon-face')); 
+	set_pixel(json.get(&'isPixel',false),json.get(&'canScale',false))
 	
 func _process(delta: float) -> void:
-	if scale_lerp: scale = scale.lerp(default_scale,delta*scale_lerp_time)
+	if scale_lerp and scale != default_scale: scale = scale.lerp(default_scale,delta*scale_lerp_time)
 	super._process(delta)
 	
 

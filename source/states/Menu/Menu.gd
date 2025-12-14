@@ -47,14 +47,14 @@ func _ready():
 	add_child(pressStart)
 	add_child(logoBomping)
 	add_child(flash)
-	logoBomping.animation.addAnimByPrefix('logo','logo bumpin')
+	logoBomping.animation.add_animation_by_prefix('logo','logo bumpin')
 	logoBomping.visible = false
 	logoBomping._position = Vector2(bpm_data.get('titlex',-150),bpm_data.get('titley',-100))
 	logoBomping.name = &'logoBomping'
 	
 	gfBeating.image.texture = Paths.texture('gfDanceTitle')
-	gfBeating.animation.addAnimByPrefix('danceLeft','gfDance',24,false,range(15))
-	gfBeating.animation.addAnimByPrefix('danceRight','gfDance',24,false,range(15,30))
+	gfBeating.animation.add_animation_by_prefix('danceLeft','gfDance',24,false,range(15))
+	gfBeating.animation.add_animation_by_prefix('danceRight','gfDance',24,false,range(15,30))
 	gfBeating.visible = false
 	
 	gfBeating._position = Vector2(bpm_data.get('gfx',600),bpm_data.get('gfy',40))
@@ -62,8 +62,8 @@ func _ready():
 	bpm = bpm_data.get('bpm',102)
 	
 	pressStart.image.texture = Paths.texture('titleEnter')
-	pressStart.animation.addAnimByPrefix('idle','ENTER IDLE',24,true)
-	pressStart.animation.addAnimByPrefix('pressed','ENTER PRESSED',24,true)
+	pressStart.animation.add_animation_by_prefix('idle','ENTER IDLE',24,true)
+	pressStart.animation.add_animation_by_prefix('pressed','ENTER PRESSED',24,true)
 	pressStart.visible = false
 	pressStart._position = Vector2(bpm_data.get('startx',100),bpm_data.get('starty',ScreenUtils.screenHeight - 150))
 	pressStart.name = &'pressStart'

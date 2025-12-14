@@ -40,8 +40,8 @@ func _init():
 			&'selection': offset = Vector2(10,90)
 			_: offset = Vector2.ZERO
 	)
-	animation.addAnimByPrefix(&'unselected',&'Check Box unselected')
-	animation.addAnimByPrefix(&'selection',&'Check Box selecting animation')
-	animation.addAnimByPrefix(&'selected',&'Check Box selected')
+	animation.add_animation_by_prefix(&'unselected',&'Check Box unselected')
+	animation.add_animation_by_prefix(&'selection',&'Check Box selecting animation')
+	animation.add_animation_by_prefix(&'selected',&'Check Box selected')
 	
 	animation.curAnim.curFrame = animation.curAnim.maxFrames

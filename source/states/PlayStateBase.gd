@@ -10,13 +10,9 @@ const Stage = preload("uid://dh7syegxufdht")
 const CharacterEditor = preload("uid://droixhbemd0xd")
 const ChartEditorScene = preload("uid://eonsf5cks44n")
 
-const FunkinVideo = preload("uid://w8ju6w7jofop")
-
-
 static var back_state = preload("uid://dbcawd2so03ht")
 
-enum IconState{NORMAL,LOSING,WINNING}
-
+#region Camera Properties
 @export_group('Camera')
 var camHUD: FunkinCamera = FunkinCamera.new()
 var camOther: FunkinCamera = FunkinCamera.new()
@@ -26,6 +22,7 @@ var zoomSpeed: float = 1.0
 
 var isCameraOnForcedPos: bool = false
 var defaultCamZoom: float = 1.0: set = set_default_zoom
+#endregion
 
 @export_group('Play Options')
 var altSection: bool = false
@@ -44,10 +41,10 @@ var onPause: bool
 var inGameOver: bool
 var camZooming: bool ##If [code]true[/code], the camera make a beat effect every [member bumpStrumBeat] beats and the zoom will back automatically.
 
-#region Scripts
+#region Scripts Properties
 var curStage: StringName
 var stageJson: Dictionary = Stage.getStageBase()
-
+var stageDanceSprites: Array[Array]
 @export_subgroup('Scripts')
 @export var loadScripts: bool = true
 @export var loadStageScript: bool = true
@@ -56,23 +53,18 @@ var stageJson: Dictionary = Stage.getStageBase()
 @export_subgroup('Events')
 @export var loadEvents: bool = true
 @export var generateEvents: bool = true
+
 static var eventNotes: Array[Dictionary]
-var eventIndex: int = 0
-static var _is_first_event_load: bool = true
+var _event_index: int = 0
+var _is_first_event_load: bool = true
 #endregion
 
-@export_group("Countdown Options")
-@export var countDownEnabled: bool = true
-@export var countSounds = ['introTHREE','introTWO','introONE','introGO']
-@export var countDownImages = ['','ready','set','go']
-var _countdown_started: bool
-var skipCountdown: bool
 
 #region Gui
 @export_group("Hud Elements")
 @export var hideHud: bool = ClientPrefs.data.hideHud: set = _set_hide_hud
 
-var _healthBar_State: IconState = IconState.NORMAL
+var _healthBar_State: Icon.State = Icon.State.NORMAL
 var healthBar: Bar = Bar.new('healthBar')
 
 #region Icons
@@ -105,8 +97,6 @@ var skipCutscene: bool = true
 var inCutscene: bool
 var videoPlayer: VideoStreamPlayer
 
-var introSoundsSuffix: StringName
-
 var stateLoaded: bool #Used in FunkinGD
 func _ready():
 	Global.onSwapTree.connect(destroy,CONNECT_ONE_SHOT)
@@ -131,18 +121,16 @@ func _ready():
 	Conductor.section_hit_once.connect(onSectionHitOnce)
 	FunkinGD.callOnScripts(&'onCreatePost')
 	stateLoaded = true
-	startCountdown()
 
 func _process(delta: float) -> void:
 	if camZooming: camHUD.zoom = lerpf(camHUD.zoom,camHUD.defaultZoom,delta*3*zoomSpeed)
 	
-	_check_count_down_pos(delta)
 	FunkinGD.callOnScripts(&'onUpdate',[delta])
 	
 	super._process(delta)
 	
 	for icon in icons: updateIconPos(icon)
-
+	
 	FunkinGD.callOnScripts(&'onUpdatePost',[delta])
 
 #region Gui
@@ -188,21 +176,22 @@ func createMobileGUI():
 	add_child(button)
 
 #region Icon Methods
-func updateIconsImage(state: IconState = _healthBar_State):
+func updateIconsImage(state: Icon.State = _healthBar_State):
 	var player_icon = iconP1
 	var opponent_icon = iconP2
 	if playAsOpponent:
 		player_icon = iconP2
 		opponent_icon = iconP1
 	match state:
-		IconState.NORMAL:
+		Icon.State.NORMAL:
 			player_icon.animation.play(&'normal')
 			opponent_icon.animation.play(&'normal')
-		IconState.LOSING:
+		Icon.State.LOSING:
 			if opponent_icon.hasWinningIcon: opponent_icon.animation.play(&'winning')
 			else: opponent_icon.animation.play(&'normal')
 			player_icon.animation.play(&'losing')
-		IconState.WINNING:
+			
+		Icon.State.WINNING:
 			if player_icon.hasWinningIcon: player_icon.animation.play(&'winning')
 			else: player_icon.animation.play(&'normal')
 			opponent_icon.animation.play(&'losing')
@@ -210,9 +199,8 @@ func updateIconsImage(state: IconState = _healthBar_State):
 
 func updateIconPos(icon: Icon) -> void:
 	var icon_pos: Vector2 
-	if icon.flipX: icon_pos = healthBar.get_process_position(healthBar.progress - 0.03)
-	else: icon_pos = healthBar.get_process_position(healthBar.progress)
-	icon._position = icon_pos + healthBar.position - icon.pivot_offset
+	icon_pos = healthBar.get_process_position(healthBar.progress - (0.03 if icon.image.flip_h else - 0.03))
+	icon.position = icon_pos + healthBar.position - icon.pivot_offset
 
 func updateIconsPivot() -> void: for i in icons: _update_icon_pivot(i,healthBar.rotation)
 
@@ -244,11 +232,12 @@ func iconBeat() -> void:
 func screenBeat(multi: float = 1.0) -> void: camHUD.zoom += 0.03 * multi 
 
 
-func onBeatHit(beat: int = Conductor.beat) -> void:
+func onBeatHit() -> void:
 	if !can_process(): return
-	if camZooming and !fmod(beat,bumpStrumBeat): screenBeat()
-	if beat < 0: countDownTick(beat)
+	if camZooming and !fmod(Conductor.beat,bumpStrumBeat): screenBeat()
 	iconBeat()
+
+
 #endregion
 
 #region Note Methods
@@ -303,10 +292,10 @@ func updateNote(note: Note) -> bool:
 func updateNotes() -> void: #Function from StrumState
 	super.updateNotes()
 	if !generateEvents: return
-	while eventIndex < eventNotes.size():
-		var event = eventNotes[eventIndex]
+	while _event_index < eventNotes.size():
+		var event = eventNotes[_event_index]
 		if event.t > _songPos: break
-		eventIndex += 1
+		_event_index += 1
 		if event.trigger_when_opponent and playAsOpponent or event.trigger_when_player and !playAsOpponent: 
 			triggerEvent(event.e,event.v)
 
@@ -321,16 +310,17 @@ func preHitNote(note: Note, character: Variant = null):
 			&'onPreHitThisNote',
 			[note,character]
 		)
+	
 	if isPlayerNote(note): FunkinGD.callOnScripts(&'onPlayerPreHitNote',[note,character])
 	FunkinGD.callOnScripts(&'goodNoteHitPre' if note.mustPress else &'opponentNoteHitPre',[note])
 	FunkinGD.callOnScripts(&'onPreHitNote',[note,character])
 	super.preHitNote(note)
 	
-func hitNote(note: Note, character: Variant = null) -> void:
+func hitNote(note: Note) -> void:
 	if !note: return
 	if note.mustPress != playAsOpponent: health += note.hitHealth
 	
-	if character and !note.noAnimation: signCharacter(character,note)
+	if !note.noAnimation: signCharacterFromNote(note)
 	
 	var audio: AudioStreamPlayer = Conductor.get_node_or_null("PlayerVoice" if note.mustPress else "OpponentVoice")
 	if !audio: audio = Conductor.get_node_or_null("Voice")
@@ -340,14 +330,18 @@ func hitNote(note: Note, character: Variant = null) -> void:
 		FunkinGD.callScript(
 			'custom_notetypes/'+note.noteType+'.gd',
 			&'onHitThisNote',
-			[note,character]
+			[note]
 		)
-	if isPlayerNote(note): FunkinGD.callOnScripts(&'onPlayerHitNote',[note,character])
+	if isPlayerNote(note): FunkinGD.callOnScripts(&'onPlayerHitNote',[note])
 	FunkinGD.callOnScripts(&'goodNoteHit' if note.mustPress else &'opponentNoteHit',[note])
-	FunkinGD.callOnScripts(&'onHitNote',[note,character])
+	FunkinGD.callOnScripts(&'onHitNote',[note])
 	super.hitNote(note)
 
-func signCharacter(_character: Character, _note: Note): pass
+@abstract func signCharacterFromNote(_note: Note) -> void
+@abstract func signMissCharacterFromNote(_note: Note) -> void
+@abstract func signCharacter(character, anim_name: StringName) -> void
+
+@abstract func get_focus_position(char: Node)
 
 func noteMiss(note, character: Variant = null) -> void:
 	health -= note.missHealth
@@ -380,25 +374,16 @@ func triggerEvent(event: StringName,variables: Variant) -> void:
 #endregion
 
 #region Song Methods
-func startCountdown():
-	if _countdown_started: return
-	_countdown_started = true
-	
-	Conductor.songPosition = -Conductor.stepCrochet*24.0
-	var results = FunkinGD.callOnScriptsWithReturn("onStartCountdown")
-	if FunkinGD.Function_Stop in results: return
-	
-	if skipCountdown: startSong()
 
 func loadSong(data: String = song_json_file, songDifficulty: String = difficulty):
 	super.loadSong(data,songDifficulty)
-	loadStage(SONG.get('stage',''),false)
+	loadStage(SONG.get('stage',''))
 	
 func loadSongObjects() -> void:
 	camHUD.removeFilters()
 	camOther.removeFilters()
 	
-	Stage.loadSprites(); #print('Loading Stage')
+	loadStageSprites(); #print('Loading Stage')
 	
 	_load_song_scripts(); #print('Loading Scripts')
 	
@@ -440,9 +425,7 @@ func loadNextSong():
 	story_songs.remove_at(0)
 	if !story_song_notes.has(newSong): newSong = loadSong()
 
-func seek_to(time: float, kill_notes: bool = true):
-	skipCountdown = true
-	super.seek_to(time,kill_notes)
+func seek_to(time: float, kill_notes: bool = true):super.seek_to(time,kill_notes)
 
 #region Resume/Pause/End Song Methods
 func resumeSong() -> void:
@@ -497,56 +480,21 @@ func endSound(skip_transition: bool = false) -> void:
 #endregion
 
 
-#region Countdown Methods
-func countDownTick(beat: int) -> void:
-	if beat > 0: return
-	elif !beat: startSong(); return
-	
-	var tick: int = countSounds.size() - absi(beat)
-	if tick < 0 or tick >= countSounds.size(): return
-	
-	var folder: String = 'gameplay/countdown/'+('pixel/' if isPixelStage else 'funkin/')
-	FunkinGD.playSound(folder+countSounds[tick]+introSoundsSuffix)
-	FunkinGD.callOnScripts(&'onCountdownTick',[tick])
-	
-	if !countDownEnabled or !countDownImages[tick]: return
-	
-	var sprite = _create_countdown_sprite(countDownImages[tick])
-	if !sprite.texture: return
-	
-	camHUD.add(sprite)
 
-func _check_count_down_pos(delta: float) -> void:
-	if Conductor.songPosition >= 0: return
-	Conductor.songPosition += delta * 1000.0 * Conductor.music_pitch
-	if Conductor.songPosition >= 0: startSong()
+const CopyThisValues = [
+	&"seenCutscene",&"playAsOpponent",
+	&"song_folder", &"song_json_file",
+	&"difficulty",&"_from_mod"
+]
 
-func _create_countdown_sprite(sprite_name: String, is_pixel: bool = isPixelStage) -> Sprite2D:
-	var sprite = Sprite2D.new()
-	if is_pixel:
-		sprite.texture = Paths.texture('ui/countdown/pixel/'+sprite_name)
-		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		sprite.scale = Vector2(6,6)
-	else:
-		sprite.texture = Paths.texture('ui/countdown/funkin/'+sprite_name)
-		sprite.scale = Vector2(0.7,0.7)
-	
-	sprite.position = ScreenUtils.screenSize*0.5
-	var tween = sprite.create_tween()
-	tween.tween_property(sprite,'modulate:a',0.0,Conductor.stepCrochet*0.004)
-	tween.tween_callback(sprite.queue_free)
-	return sprite
-#endregion
-
-##Called when the game gonna restart the song
-func reloadPlayState():
+func reloadPlayState(): ##Called when the game gonna restart the song
 	for n in notes.members: n.kill()
-	var state = get_script().duplicate().new(song_json_file,difficulty)
+	var state = get_script().duplicate().new()
 	Global.swapTree(state,true)
 	
 	Global.onSwapTree.disconnect(destroy)
 	Global.onSwapTree.connect(func():
-		for vars in [&'seenCutscene',&'playAsOpponent']: state[vars] = get(vars)
+		for vars in CopyThisValues: state[vars] = self[vars]
 		destroy(false),CONNECT_ONE_SHOT
 	)
 
@@ -570,6 +518,7 @@ func characterEditor():
 #endregion
 
 #region Video Methods
+const FunkinVideo = preload("uid://w8ju6w7jofop")
 func startVideo(path: Variant, isCutscene: bool = true) -> FunkinVideo:
 	var video_player = FunkinVideo.new()
 	video_player.load_stream(path)
@@ -588,7 +537,6 @@ func startVideo(path: Variant, isCutscene: bool = true) -> FunkinVideo:
 	return videoPlayer
 
 func _on_cutscene_ends() -> void:
-	startCountdown()
 	inCutscene = false
 	canPause = true
 	seenCutscene = true
@@ -612,7 +560,8 @@ func onSectionHit(sec: int = Conductor.section) -> void:
 	FunkinGD.gfSection = gfSection
 	FunkinGD.altAnim = altSection
 	
-func detectSection() -> String: return 'gf' if gfSection else ('boyfriend' if mustHitSection else 'dad')
+func detectSection() -> String: 
+	return 'gf' if gfSection else ('boyfriend' if mustHitSection else 'dad')
 #endregion
 
 #region Character Methods
@@ -629,24 +578,82 @@ func loadCharactersFromData(json: Dictionary = SONG) -> void:
 
 static func get_character_type_name(type: int) -> StringName:
 	match type:
-		1: return 'dad'
-		2: return 'gf'
-		_: return 'boyfriend'
+		1: return &'dad'
+		2: return &'gf'
+		_: return &'boyfriend'
 #endregion
 
 #region Stage Methods
-func loadStage(stage: StringName, loadScript: bool = loadStageScript):
+func loadStage(stage: StringName):
 	if curStage == stage: return
-	FunkinGD.removeScript('stages/'+curStage)
 	FunkinGD.callOnScripts(&"onPreloadStage",stage)
 	FunkinGD.curStage = stage
 	curStage = stage
 	
 	stageJson = Stage.loadStage(stage)
 	isPixelStage = stageJson.isPixelStage
-	
-	if loadScript: FunkinGD.addScript('stages/'+stage); Stage.loadSprites()
 	FunkinGD.callOnScripts(&"onLoadStage",stage)
+
+func _check_stage_sprites_beat():
+	for i in stageDanceSprites: pass
+
+func loadStageSprites():
+	if !stageJson: return
+	
+	var props = stageJson.get('props')
+	if !props: return
+	for data in props:
+		var name = data.get('name','')
+		var image = data.get('assetPath')
+		var animations = data.get('animations')
+		var sprite: FunkinSprite = FunkinSprite.new(!!animations)
+		sprite.name = data.get('name','')
+		
+		var position = data.get('position'); 
+		if position: position = Vector2(position[0],position[1])
+		
+		var scale = data.get('scale'); 
+		if scale: sprite.setGraphicScale(Vector2(scale[0],scale[1]))
+		
+		var scroll = data.get('scroll');
+		if scroll: sprite.scrollFactor = Vector2(scroll[0],scroll[1])
+		
+		sprite.antialiasing = !data.get('isPixel',false)
+		
+		sprite.position = position
+		sprite.modulate.a = data.get('alpha',1.0)
+		
+		FunkinGD.spritesCreated[name] = sprite
+		FunkinGD.addSprite(sprite,data.get('front',false))
+		
+		if image.begins_with("#"): sprite.modulate = Color(image);
+		else: sprite.image.texture = Paths.texture(image)
+		
+		if animations:
+			for anim in animations:
+				var anim_name = anim.get('name','')
+				var fps = anim.get('frameRate',24)
+				var looped = anim.get('looped',false)
+				var indices = anim.get('frameIndices')
+				var offsets = anim.get('offsets'); offsets = Vector2(offsets[0],offsets[1]) if offsets else Vector2.ZERO
+				
+				if indices: sprite.animation.add_animation_by_prefix(anim_name,anim.prefix,fps,looped,indices)
+				else: sprite.animation.add_animation_by_prefix(anim_name,anim.prefix,fps,looped)
+				sprite.animation.set_anim_offset(anim_name,offsets)
+			
+			var startAnim = data.get('startingAnimation')
+			if startAnim: sprite.animation.play(startAnim,true)
+
+			var danceEvery = data.get('danceEvery')
+			if danceEvery:
+				stageDanceSprites.append(
+					[
+						danceEvery,
+						sprite,
+						sprite.animation.has_any_animations(['danceLeft','danceRight'])
+					]
+				)
+	
 #endregion
 
 #region Game Over Methods
@@ -662,7 +669,7 @@ func clear() -> void:
 	
 	_is_first_event_load = true
 	eventNotes.clear()
-	EventNoteUtils.event_variables.clear()
+	EventNoteUtils.events_data.clear()
 	
 	camHUD.removeFilters(); camOther.removeFilters()
 #endregion
@@ -671,6 +678,8 @@ func clear() -> void:
 func set_health(value: float) -> void:
 	value = clampf(value,-1.0,2.0)
 	if health == value: return
+	
+	
 	health = value
 	
 	if isGameOverEnabled(): gameOver(); return
@@ -678,10 +687,11 @@ func set_health(value: float) -> void:
 	var progress_h = value*0.5
 	healthBar.progress = progress_h if playAsOpponent else 1.0 - progress_h
 	
+	
 	var bar_state = 0.0
-	if progress_h >= 0.7: bar_state = IconState.WINNING
-	elif progress_h <= 0.3: bar_state = IconState.LOSING
-	else: bar_state = IconState.NORMAL
+	if progress_h >= 0.7: bar_state = Icon.State.WINNING
+	elif progress_h <= 0.3: bar_state = Icon.State.LOSING
+	else: bar_state = Icon.State.NORMAL
 	
 	if bar_state == _healthBar_State: return
 	_healthBar_State = bar_state

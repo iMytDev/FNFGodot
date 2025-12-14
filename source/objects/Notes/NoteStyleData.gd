@@ -1,3 +1,6 @@
+@tool
+class_name NoteStyleData extends Object
+
 static var styles_loaded: Dictionary[StringName,Dictionary]
 
 const DEFAULT_NOTES_SCALE: float = 0.7

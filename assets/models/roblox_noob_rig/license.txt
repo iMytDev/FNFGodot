@@ -1,0 +1,11 @@
+Model Information:
+* title:	roblox Noob rig
+* source:	https://sketchfab.com/3d-models/roblox-noob-rig-95163fb22fb9432e8e364e79fa7fc2f6
+* author:	Modelsforgame (https://sketchfab.com/Modelsforgame)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "roblox Noob rig" (https://sketchfab.com/3d-models/roblox-noob-rig-95163fb22fb9432e8e364e79fa7fc2f6) by Modelsforgame (https://sketchfab.com/Modelsforgame) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

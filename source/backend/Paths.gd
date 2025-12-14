@@ -381,7 +381,7 @@ static func get_dialog(dir: String = '') -> FileDialog:
 static func saveFile(json: Variant, path: String, extension: String = '.json') -> void:
 	if json is Dictionary: json = JSON.stringify(json,'\t')
 	else: json = str(json)
-	if not path.ends_with(extension): path += extension
+	if !path.ends_with(extension): path += extension
 	var folder_acess = FileAccess.open(path, FileAccess.WRITE)
 	if folder_acess: folder_acess.store_string(json)
 
@@ -453,16 +453,15 @@ static func updateDirectories(): ##Update the folders that the [method detectFil
 	
 	var new_dirs: PackedStringArray
 	
-	var exe_dir = exePath+'/'
 	if enableMods:
 		var searchIn = modsFounded
 		if !searchAllMods: searchIn = getRunningMods()
 		
-		for i in searchIn: new_dirs.append(exe_dir+'mods/'+i+'/')
-		new_dirs.append(exe_dir+'mods/')
+		for i in searchIn: new_dirs.append(exePath+'/mods/'+i+'/')
+		new_dirs.append(exePath+'/mods/')
 	
-	new_dirs.append(exe_dir+'assets/')
-	new_dirs.append(exe_dir)
+	new_dirs.append(exePath+'/assets/')
+	new_dirs.append(exePath+'/')
 	new_dirs.append('res://assets/')
 	
 	if extraDirectory: for i in new_dirs: dirsToSearch.append(i+extraDirectory+'/'); dirsToSearch.append(i)
@@ -615,5 +614,6 @@ static func character(path: String) -> Dictionary[StringName,Variant]:
 	
 	var json = DictUtils.getDictTyped(loadJsonNoCache(file),TYPE_STRING_NAME)
 	json.merge(Character._convert_psych_to_original(json),true)
+	Character.fixCharJson(json)
 	return json
 #endregion
