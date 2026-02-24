@@ -1,0 +1,847 @@
+[gd_scene format=3 uid="uid://cgp0t7khte5e2"]
+
+[ext_resource type="Script" uid="uid://bo0fdh4ajdrir" path="res://source/states/PlayState2D.gd" id="1_oj8pg"]
+[ext_resource type="Script" uid="uid://cerxbopol4l1g" path="res://source/backend/Song/SongData.gd" id="2_lih18"]
+[ext_resource type="Script" uid="uid://dxuhy4065ximc" path="res://source/objects/ui/display/camera/FunkinCamera2D.gd" id="3_6rpux"]
+[ext_resource type="Script" uid="uid://sp0gefpiyn7t" path="res://source/objects/ui/display/camera/FunkinScroll2D.gd" id="4_5clma"]
+[ext_resource type="Texture2D" uid="uid://cv2qf1dmsc6jr" path="res://icons/Save.svg" id="5_l0m5n"]
+[ext_resource type="Texture2D" uid="uid://d10eacn2cxwej" path="res://icons/Load.svg" id="6_8nwnx"]
+[ext_resource type="Texture2D" uid="uid://d3ler7oyh2kc5" path="res://icons/Remove.svg" id="7_jkcs6"]
+[ext_resource type="Texture2D" uid="uid://v434y5imjqvi" path="res://icons/BPMChanges.svg" id="8_tffpe"]
+[ext_resource type="Script" uid="uid://djppt66esh217" path="res://source/custom_nodes/FunkinFileDialog.gd" id="9_yojcu"]
+[ext_resource type="Script" uid="uid://bscbt2dibch22" path="res://source/custom_nodes/controls/ButtonRange/ButtonRange.gd" id="10_x70b1"]
+[ext_resource type="Script" uid="uid://bxu1ahcd17pxh" path="res://source/custom_nodes/2d/SolidNode2D.gd" id="11_ymx4s"]
+[ext_resource type="Script" uid="uid://civxp6sn4g58h" path="res://source/scenes/states/Editors/Event/Editor/EventsMenu.gd" id="13_w2oyb"]
+
+[sub_resource type="GDScript" id="GDScript_gthfs"]
+resource_name = "EventEditor"
+script/source = "extends Node
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if !event.pressed or event.echo: return
+		match event.keycode:
+			KEY_SPACE:
+				if Conductor.is_playing:
+					%PlayState.process_mode = PROCESS_MODE_DISABLED
+					Conductor.pauseSongs() 
+				else: 
+					%PlayState.process_mode = PROCESS_MODE_INHERIT
+					Conductor.resumeSongs()
+"
+
+[sub_resource type="Resource" id="Resource_sa5ld"]
+script = ExtResource("2_lih18")
+
+[sub_resource type="GDScript" id="GDScript_0jpuc"]
+resource_name = "FilesManager"
+script/source = "extends PopupMenu
+
+@onready var chart_dialog = $ChartLoader
+@onready var clear_popup = $ClearChart
+@onready var audio_select: PopupPanel = $AudioSelect
+@onready var audio_dialog: FunkinFileDialog = $AudioDialog
+
+
+func _on_index_pressed(index: int) -> void:
+	match index:
+		0: chart_dialog.show()
+		2: clear_popup.show()
+		3: audio_select.show()
+		4: audio_dialog.show()
+
+func _on_chart_selected(file: String):
+	var options = chart_dialog.get_selected_options()
+"
+
+[sub_resource type="GDScript" id="GDScript_wa4ne"]
+resource_name = "AudioLoader"
+script/source = "extends PopupPanel
+
+@onready var inst: LineEdit = $VBoxContainer/Inst
+@onready var voices: LineEdit = $VBoxContainer/Voices
+@onready var bpm: ButtonRange = $VBoxContainer/BPM
+
+var _last_dir: String = PathsStore.assetsPath
+var _selecting_songs: bool = false
+
+func _load():
+	Conductor.loadSong(inst.text,&\"Inst\")
+	if voices: for i in voices.text.split(\",\"): Conductor.loadSong(i,i.get_file())
+	Conductor.default_bpm_data.bpm = bpm.value
+	hide()
+
+func _on_load_inst_button_down() -> void:
+	var dialog = FunkinFileDialog.new()
+	dialog.current_dir = _last_dir
+	dialog.transient = false
+	dialog.use_native_dialog = true
+	dialog.file_selected.connect(
+		func(text):
+			inst.text = text
+			_last_dir = text.get_base_dir()
+			dialog.queue_free()
+	)
+	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+	dialog.visible = true
+	get_window().add_child(dialog)
+
+func _on_load_voices_button_down() -> void:
+	var dialog = FunkinFileDialog.new()
+	dialog.current_dir = _last_dir
+	dialog.use_native_dialog = true
+	dialog.files_selected.connect(func(texts):
+		voices.text = \",\".join(texts)
+		_last_dir = texts[0].get_base_dir()
+		dialog.queue_free()
+	)
+	dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILES
+	dialog.visible = true
+	get_window().add_child(dialog)
+
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_APPLICATION_FOCUS_OUT: if visible: _selecting_songs = true; show.call_deferred()
+		NOTIFICATION_APPLICATION_FOCUS_IN: 
+			if _selecting_songs: _selecting_songs = false; call_deferred(\"call_deferred\",\"show\")
+"
+
+[sub_resource type="GDScript" id="GDScript_v0h7v"]
+resource_name = "PreviewManager"
+script/source = "extends PopupMenu
+
+
+@onready var play_state = %PlayState
+@onready var play_view: SubViewport = %PlayView
+@onready var stage_loader: FileDialog = $StageLoader
+
+func _on_index_pressed(index: int) -> void:
+	match index:
+		0: 
+			if is_item_checked(0): 
+				play_view.render_target_update_mode = SubViewport.UPDATE_DISABLED; 
+				play_state.process_mode = Node.PROCESS_MODE_INHERIT
+			else: 
+				play_view.render_target_update_mode = SubViewport.UPDATE_WHEN_VISIBLE; 
+				play_state.process_mode = Node.PROCESS_MODE_DISABLED
+		2: stage_loader.show()
+"
+
+[sub_resource type="GDScript" id="GDScript_5wlhs"]
+resource_name = "StageLoader"
+script/source = "extends FunkinFileDialog
+
+signal on_stage_loaded(stage: Dictionary)
+func _on_file_selected(path: String) -> void: on_stage_loaded.emit(FunkinStage.fixStageJson(Paths.load_json_absolute(path)))
+"
+
+[sub_resource type="GDScript" id="GDScript_oj8pg"]
+resource_name = "EventProperties"
+script/source = "extends PanelContainer
+
+signal event_selected(event: Dictionary)
+@onready var popup: PopupPanel = $Container/Event/EventSelected/Popup
+@onready var event_button: Button = $Container/Event/EventSelected
+
+@onready var step_rect: Node2D = %StepRect
+@onready var variables_menu = %VariablesMenu
+@onready var trigger_player: CheckBox = $Container/TriggerPlayer
+@onready var trigger_opponent: CheckBox = $Container/TriggerOpponent
+
+var event_data: Dictionary
+func _on_event_pressed(i: Button):
+	var cur_event = variables_menu.cur_event_variables
+	event_button.text = i.text
+	event_button.icon = i.icon
+	event_data = i.get_meta(&\"event_data\")
+	cur_event.e = i.text
+	var vars = cur_event.get(\"v\"); if vars: vars.clear()
+	variables_menu.load_variables(event_data)
+	trigger_opponent.set_pressed_no_signal(event_data.get(\"trigger_when_opponent\",true))
+	trigger_player.set_pressed_no_signal(event_data.get(\"trigger_when_player\",true))
+
+func _on_event_selected(event: EventKey) -> void:
+	event_button.text = event.event_name
+	event_data = event.event_data
+	event_button.icon = event.event_data.icon_texture
+	variables_menu.cur_event_variables = event.chart_data
+	variables_menu.load_variables(event.event_data)
+"
+
+[sub_resource type="GDScript" id="GDScript_prnaq"]
+resource_name = "EventVariables"
+script/source = "@tool
+extends VBoxContainer
+var cur_event_variables: Dictionary[StringName, Variant] = EventNote.get_base_data()
+func _on_event_selected(event: Button): load_variables(event.get_meta(&\"event_data\"))
+
+func load_variables(event_data: Dictionary):
+	for i in get_children(): i.queue_free()
+	
+	var vars = event_data.get(&\"variables\"); if !vars: return
+	for i in vars:
+		var data = vars[i]
+		var type = data.get(\"type\",\"String\")
+		type = MathUtils.get_type_by_name(type)
+		
+		if data.get(\"options\"): _create_menu_button(i ,data)
+		else:
+			match type:
+				TYPE_STRING,TYPE_STRING_NAME: _add_line_edit_interator(i, data)
+				TYPE_FLOAT,TYPE_INT: _add_button_range(i, data, type == TYPE_INT)
+				TYPE_COLOR: _add_color_interator(i, data)
+
+func set_property_value(value: Variant, property_name: StringName): cur_event_variables.v[property_name] = value
+func get_property_value(property_name: StringName, default: Variant) -> Variant: 
+	var vars = cur_event_variables.get(\"v\"); 
+	return vars.get(property_name, default) if vars else default
+
+func _create_property_title(prop: Control):
+	var label = Label.new()
+	label.name = prop.name
+	label.text = prop.name+\": \"
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	var line_size = Vector2(100.0,30)
+	label.custom_minimum_size = Vector2(60.0,0.0) + line_size * 1.5
+	
+	prop.position = Vector2(label.get_minimum_size().x, line_size.y* 0.25)
+	prop.size = line_size
+	prop.position.x = label.get_minimum_size().x
+	label.add_child(prop)
+	add_child(label)
+	return label
+
+func _create_menu_button(property_name: StringName, data: Dictionary):
+	var menu = MenuButton.new()
+	menu.flat = false
+	menu.name = property_name
+	var popup = menu.get_popup()
+	popup.index_pressed.connect(func(i: int): 
+		menu.text = popup.get_item_text(i)
+		set_property_value(menu.text,property_name) 
+	)
+	for i in data.options: popup.add_item(i)
+	_create_property_title(menu).tooltip_text = data.get(\"description\",\"\")
+
+func _add_button_range(property_name: StringName, data: Dictionary, is_int: bool = false):
+	var range = ButtonRange.new()
+	range.text = property_name+\": \"
+	range.name = property_name
+	range.int_value = is_int
+	range.line_edit.placeholder_text = str(data.get(\"default\",\"\"))
+	range.value = float(get_property_value(property_name,range.line_edit.placeholder_text))
+	range.value_changed.connect(set_property_value.bind(property_name))
+	range.tooltip_text = str(data.get(\"description\",\"\"))
+	add_child(range)
+
+func _add_color_interator(property_name: StringName, data: Dictionary):
+	var color_picker = ColorPickerButton.new()
+	color_picker.name = property_name
+	color_picker.color = Color(get_property_value(property_name,\"ffffff\"))
+	color_picker.color_changed.connect(func(col): set_property_value(Color.html(col),property_name))
+	_create_property_title(color_picker).tooltip_text = str(data.get(\"description\",\"\"))
+
+
+func _add_line_edit_interator(property_name: StringName, data: Dictionary):
+	var line_edit = LineEdit.new()
+	line_edit.name = property_name
+	line_edit.placeholder_text = str(data.get(\"default\",\"\"))
+	line_edit.text = get_property_value(property_name,\"\")
+	
+	line_edit.text_submitted.connect(
+		func(t):
+			if t: set_property_value(t, property_name)
+			else: cur_event_variables.v.erase(property_name)
+	)
+	_create_property_title(line_edit).tooltip_text = str(data.get(\"description\",\"\"))
+"
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_dx476"]
+viewport_path = NodePath("PlayView")
+
+[sub_resource type="GDScript" id="GDScript_vt33a"]
+resource_name = "Timeline"
+script/source = "extends Panel
+
+var events_created: Array[Control]
+var cur_event_selected: EventKey
+
+@onready var scroll = $Scroll
+@onready var chess_container = $Scroll/Chess
+@onready var CHESS_SIZE: Vector2 = chess_container.get_meta(&\"chess_size\")
+@onready var line = $Scroll/Line
+@onready var step_rect: Node2D = %StepRect
+@onready var slots_count: Label = %SlotsCount
+@onready var event_property = %EventProperties
+var chess_created: Array[ChessEvent]
+
+signal event_selected(event: EventKey)
+func _ready() -> void:
+	_create_chess(); Conductor.song_position_changed.connect(_on_song_position_changed)
+
+func _on_song_position_changed():
+	var _step = Conductor.step_float
+	var off: float 
+	line.position.x = _step * CHESS_SIZE.x
+	if _step < 0:   off = -24.0 * CHESS_SIZE.x
+	else:   off = -maxf(_step - 12.0, 0) 
+	scroll.position.x = off * CHESS_SIZE.x
+	
+	for i in chess_created: i.step_offset = -snappedf(off,2.0)
+#region Chess Methods
+func _create_chess():
+	var chess = ChessEvent.new()
+	chess.chess_input.connect(_on_chess_gui_input)
+	chess.mouse_exited.connect(step_rect.hide)
+	chess.mouse_entered.connect(step_rect.show)
+	chess.rect_size = CHESS_SIZE
+	chess.position.y = CHESS_SIZE.y * 2.0 * (chess_container.get_child_count())
+	chess.size = Vector2(
+		CHESS_SIZE.x * 27.0, 
+		CHESS_SIZE.y
+	)
+	chess_container.add_child(chess)
+	chess_created.append(chess)
+	_update_slots_text()
+
+func _on_chess_gui_input(event: InputEvent, chess: ChessEvent) -> void:
+	step_rect.cur_chess = chess
+	if event is InputEventMouseButton:
+		if !event.pressed or event.button_index != 1: return
+		var step = step_rect.position.x / chess.rect_size.x
+		_create_event(step, chess)
+
+func _update_slots_text():
+	var t: String = ''
+	var length = chess_container.get_child_count()
+	var count = 1
+	while count <= length: t += '\\n\\n%d\\n\\n' % count; count += 1
+	slots_count.text = t
+#endregion
+
+#region Event Methods
+func _create_event(step: float, chess: Chess):
+	var event_note = EventKey.new()
+	event_note.chart_data.t = Conductor.get_step_time(step)
+	event_note.event_data = event_property.event_data
+	event_note.position = Vector2(
+		step * chess.rect_size.x, 
+		chess.position.y + chess.rect_size.y * 0.5
+	)
+	chess_container.add_child(event_note)
+	chess.get_meta(&\"events\").append(event_note)
+	return event_note
+
+func _select_event(event: EventKey):
+	if cur_event_selected: _unselect_event(cur_event_selected)
+	event.modulate = Color.CYAN
+	event_selected.emit(event)
+
+func _unselect_event(event: EventKey): event.modulate = Color.WHITE
+#endregion
+
+
+class ChessEvent extends Chess:
+	var events_created: Array[Node2D]
+	var event_init: int
+	var event_final: int
+	var step_offset: float:
+		set(val):
+			step_offset = val
+			position.x = val * rect_size.x
+	
+	
+	signal chess_input(event: InputEvent, chess: ChessEvent)
+	func _gui_input(event: InputEvent) -> void: chess_input.emit(event,self)
+	
+	func _ready(): 
+		primary_color = Color(0.2,0.2,0.2)
+		secondary_color = Color(0.1,0.1,0.1)
+		set_meta(&\"events\", []); super(); 
+	
+	func _validate_property(property: Dictionary) -> void:
+		match StringName(property.name):
+			&\"rect_size\": property.usage = PROPERTY_USAGE_NONE
+"
+
+[sub_resource type="GDScript" id="GDScript_l35mb"]
+resource_name = "Steps"
+script/source = "@tool
+extends Node2D
+const STEPS_TO_DRAW: int = 26
+var bg_color: Color = Color(0.2,0.2,0.2,0.25)
+var step_init: int = 0:
+	set(val): 
+		if step_init == val: return
+		step_init = val; queue_redraw()
+
+@export var max_steps: int = 1:
+	set(val): max_steps = val; queue_redraw()
+
+@onready var chess = $\"../Chess\"
+@onready var scroll: Node2D = $\"..\"
+
+@onready var CHESS_SIZE: Vector2 = chess.get_meta(&\"chess_size\")
+func _ready() -> void:
+	if Engine.is_editor_hint(): return
+	Conductor.song_position_changed.connect(_update_step)
+	Conductor.on_bpm_changes.connect(_on_bpm_changes)
+	_on_bpm_changes()
+
+func _update_step() -> void: step_init = floori(-scroll.position.x / CHESS_SIZE.x)
+func _on_bpm_changes(): max_steps = Conductor.get_step_count()
+
+func _draw() -> void:
+	var init: int = step_init
+	var steps_to_draw: int = mini(max_steps,init + STEPS_TO_DRAW)
+	draw_rect(Rect2(-scroll.position.x, 0.0, CHESS_SIZE.x * (STEPS_TO_DRAW+1), 25), bg_color)
+	while init <= steps_to_draw:
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(CHESS_SIZE.x*init,20.0),
+			\"%d\" % init,
+			HORIZONTAL_ALIGNMENT_CENTER,
+			CHESS_SIZE.x,14
+		)
+		
+		draw_string(
+			ThemeDB.fallback_font,
+			Vector2(CHESS_SIZE.x*(init+1) - 5.0,20.0),
+			\"|\"
+		)
+		init += 1
+"
+
+[sub_resource type="GDScript" id="GDScript_tt24g"]
+resource_name = "ChessStepRect"
+script/source = "@tool
+extends SolidNode2D
+
+@onready var chess: Node2D = $\"../Chess\"
+var cur_chess
+func _process(_d: float) -> void:
+	if !visible or !cur_chess: return
+	var mouse_x: float = cur_chess.get_local_mouse_position().x
+	if !Input.is_key_pressed(KEY_SHIFT): mouse_x = snappedf(mouse_x, cur_chess.rect_size.x)
+	position.x = cur_chess.position.x + mouse_x
+	position.y = cur_chess.position.y + (cur_chess.size.y - size.y)*0.5 + chess.position.y
+"
+
+[node name="EventsEditor" type="Node" unique_id=762341541]
+script = SubResource("GDScript_gthfs")
+
+[node name="PlayView" type="SubViewport" parent="." unique_id=1668449510]
+unique_name_in_owner = true
+handle_input_locally = false
+size = Vector2i(1280, 720)
+
+[node name="PlayState" type="Node" parent="PlayView" unique_id=1038288721]
+unique_name_in_owner = true
+script = ExtResource("1_oj8pg")
+SONG = SubResource("Resource_sa5ld")
+playAsOpponent = false
+botplay = false
+metadata/_custom_type_script = "uid://bo0fdh4ajdrir"
+
+[node name="camGame" type="Node2D" parent="PlayView/PlayState" unique_id=489861639]
+script = ExtResource("3_6rpux")
+size = Vector2(1280, 720)
+
+[node name="scroll" type="Node2D" parent="PlayView/PlayState/camGame" unique_id=1066381292]
+script = ExtResource("4_5clma")
+pivot_offset = Vector2(640, 360)
+
+[node name="camHUD" type="Node2D" parent="PlayView/PlayState" unique_id=926247264]
+script = ExtResource("3_6rpux")
+size = Vector2(1280, 720)
+
+[node name="scroll" type="Node2D" parent="PlayView/PlayState/camHUD" unique_id=1372627888]
+script = ExtResource("4_5clma")
+pivot_offset = Vector2(640, 360)
+
+[node name="camOther" type="Node2D" parent="PlayView/PlayState" unique_id=1046554499]
+script = ExtResource("3_6rpux")
+size = Vector2(1280, 720)
+
+[node name="scroll" type="Node2D" parent="PlayView/PlayState/camOther" unique_id=69488217]
+script = ExtResource("4_5clma")
+pivot_offset = Vector2(640, 360)
+
+[node name="Panel" type="Panel" parent="." unique_id=544905587]
+offset_right = 1280.0
+offset_bottom = 30.0
+size_flags_vertical = 3
+
+[node name="Menus" type="HBoxContainer" parent="Panel" unique_id=1851183170]
+z_index = 1
+layout_mode = 0
+offset_left = 16.0
+offset_right = 1279.0
+offset_bottom = 30.0
+theme_override_constants/separation = 40
+
+[node name="Files" type="Button" parent="Panel/Menus" unique_id=962832453]
+layout_mode = 2
+focus_mode = 0
+text = "Files"
+flat = true
+
+[node name="Menu" type="PopupMenu" parent="Panel/Menus/Files" unique_id=1346268093]
+oversampling_override = 1.0
+position = Vector2i(15, 30)
+size = Vector2i(263, 156)
+theme_override_constants/icon_max_width = 16
+item_count = 5
+item_0/text = "Save Events"
+item_0/icon = ExtResource("5_l0m5n")
+item_0/id = 1
+item_1/text = "Load Events"
+item_1/icon = ExtResource("6_8nwnx")
+item_1/id = 0
+item_2/text = "Clear Events"
+item_2/icon = ExtResource("7_jkcs6")
+item_2/id = 2
+item_3/text = "Load Songs"
+item_3/icon = ExtResource("8_tffpe")
+item_3/id = 4
+item_4/text = "Load Songs from Chart"
+item_4/icon = ExtResource("8_tffpe")
+item_4/id = 5
+script = SubResource("GDScript_0jpuc")
+
+[node name="ChartLoader" type="FileDialog" parent="Panel/Menus/Files/Menu" unique_id=798388661]
+oversampling_override = 1.0
+title = "Open a File"
+initial_position = 1
+file_mode = 0
+access = 2
+use_native_dialog = true
+option_count = 4
+option_0/name = "Load Events"
+option_0/default = 1
+option_1/name = "Load Characters"
+option_1/default = 1
+option_2/name = "Load Notes"
+option_2/default = 1
+option_3/name = "Load Stage"
+option_3/default = 1
+script = ExtResource("9_yojcu")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[node name="AudioDialog" type="FileDialog" parent="Panel/Menus/Files/Menu" unique_id=1572273541]
+oversampling_override = 1.0
+title = "Open File(s)"
+initial_position = 1
+file_mode = 1
+access = 2
+filters = PackedStringArray("*.ogg", "*.wav", "*.mp3")
+use_native_dialog = true
+script = ExtResource("9_yojcu")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[node name="AudioSelect" type="PopupPanel" parent="Panel/Menus/Files/Menu" unique_id=586154090]
+transparent_bg = false
+oversampling_override = 1.0
+title = "Load Audios"
+initial_position = 1
+size = Vector2i(410, 130)
+borderless = false
+always_on_top = true
+transparent = false
+keep_title_visible = true
+script = SubResource("GDScript_wa4ne")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/Menus/Files/Menu/AudioSelect" unique_id=917863897]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 406.0
+offset_bottom = 126.0
+
+[node name="Inst" type="LineEdit" parent="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer" unique_id=1055658881]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="Load" type="Button" parent="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer/Inst" unique_id=927895853]
+layout_mode = 0
+offset_left = 285.0
+offset_right = 378.00006
+offset_bottom = 23.0
+size_flags_horizontal = 0
+text = "Load Inst"
+
+[node name="Voices" type="LineEdit" parent="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer" unique_id=1286528108]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+
+[node name="Load" type="Button" parent="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer/Voices" unique_id=1782787019]
+layout_mode = 0
+offset_left = 285.0
+offset_right = 397.0
+offset_bottom = 23.0
+size_flags_horizontal = 0
+text = "Load Voices"
+
+[node name="BPM" type="Label" parent="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer" unique_id=2070475713]
+custom_minimum_size = Vector2(225, 40)
+layout_mode = 2
+text = "BPM:"
+vertical_alignment = 1
+script = ExtResource("10_x70b1")
+metadata/_custom_type_script = "uid://bscbt2dibch22"
+
+[node name="Insert" type="Button" parent="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer" unique_id=86482105]
+layout_mode = 2
+text = "Insert"
+
+[node name="ClearChart" type="ConfirmationDialog" parent="Panel/Menus/Files/Menu" unique_id=1297127831]
+oversampling_override = 1.0
+title = "You sure?"
+initial_position = 1
+size = Vector2i(279, 82)
+dialog_text = "If cleared, the events will 
+not be able to get restored."
+
+[node name="Preview" type="Button" parent="Panel/Menus" unique_id=1243772711]
+layout_mode = 2
+focus_mode = 0
+text = "Preview"
+flat = true
+
+[node name="Menu" type="PopupMenu" parent="Panel/Menus/Preview" unique_id=340475624]
+oversampling_override = 1.0
+position = Vector2i(200, 30)
+size = Vector2i(236, 100)
+theme_override_constants/icon_max_width = 16
+item_count = 3
+item_0/text = "Preview"
+item_0/checkable = 1
+item_0/checked = true
+item_0/id = 0
+item_1/text = "View"
+item_1/id = 2
+item_1/separator = true
+item_2/text = "Load Stage"
+item_2/icon = ExtResource("6_8nwnx")
+item_2/id = 1
+script = SubResource("GDScript_v0h7v")
+
+[node name="StageLoader" type="FileDialog" parent="Panel/Menus/Preview/Menu" unique_id=153580054]
+oversampling_override = 1.0
+title = "Open a File"
+initial_position = 1
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.json")
+use_native_dialog = true
+script = SubResource("GDScript_5wlhs")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[node name="VSplit" type="VSplitContainer" parent="Panel" unique_id=2069631325]
+layout_mode = 0
+offset_top = 32.0
+offset_right = 1280.0
+offset_bottom = 719.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+split_offsets = PackedInt32Array(-24)
+split_offset = -24
+
+[node name="HSplit" type="HSplitContainer" parent="Panel/VSplit" unique_id=2127968721]
+layout_mode = 2
+size_flags_vertical = 3
+split_offsets = PackedInt32Array(-100, 300)
+split_offset = -100
+
+[node name="EventProperties" type="PanelContainer" parent="Panel/VSplit/HSplit" unique_id=1651425381]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = SubResource("GDScript_oj8pg")
+
+[node name="Container" type="VBoxContainer" parent="Panel/VSplit/HSplit/EventProperties" unique_id=1881105716]
+layout_mode = 2
+
+[node name="Event" type="Label" parent="Panel/VSplit/HSplit/EventProperties/Container" unique_id=1302293615]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Event:"
+vertical_alignment = 1
+
+[node name="EventSelected" type="Button" parent="Panel/VSplit/HSplit/EventProperties/Container/Event" unique_id=811041090]
+custom_minimum_size = Vector2(70, 35)
+layout_mode = 0
+offset_left = 56.0
+offset_top = 3.0
+offset_right = 222.0
+offset_bottom = 38.0
+size_flags_horizontal = 0
+focus_mode = 0
+theme_override_constants/icon_max_width = 23
+clip_text = true
+
+[node name="Popup" type="PopupPanel" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected" unique_id=978732822]
+oversampling_override = 1.0
+position = Vector2i(908, 176)
+size = Vector2i(250, 300)
+script = ExtResource("13_w2oyb")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup" unique_id=376507528]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 246.0
+offset_bottom = 296.0
+
+[node name="Container" type="VBoxContainer" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup/ScrollContainer" unique_id=1012627195]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="General" type="FoldableContainer" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup/ScrollContainer/Container" unique_id=290506705]
+layout_mode = 2
+tooltip_text = "Events that runs in both of the game modes(2D & 3D)."
+theme_override_colors/font_color = Color(0, 0.88235295, 0, 1)
+theme_override_colors/hover_font_color = Color(0.5607121, 0.99999994, 0.52922046, 1)
+theme_override_colors/collapsed_font_color = Color(0, 0.88235295, 0, 1)
+title = "General"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup/ScrollContainer/Container/General" unique_id=307204082]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="2D" type="FoldableContainer" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup/ScrollContainer/Container" unique_id=1446571517]
+layout_mode = 2
+tooltip_text = "Events that only run in 2D game."
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+theme_override_colors/hover_font_color = Color(0.8720066, 0.9999997, 0.9968024, 1)
+theme_override_colors/collapsed_font_color = Color(0, 1, 1, 1)
+folded = true
+title = "2D"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup/ScrollContainer/Container/2D" unique_id=207986636]
+visible = false
+layout_mode = 2
+
+[node name="3D" type="FoldableContainer" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup/ScrollContainer/Container" unique_id=337899964]
+layout_mode = 2
+tooltip_text = "Events that only run in 3D game."
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/hover_font_color = Color(1.6199999, 0.39675102, 0.30887237, 1)
+theme_override_colors/collapsed_font_color = Color(1, 0, 0, 1)
+folded = true
+title = "3D"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup/ScrollContainer/Container/3D" unique_id=1357611491]
+visible = false
+layout_mode = 2
+
+[node name="TriggerPlayer" type="CheckBox" parent="Panel/VSplit/HSplit/EventProperties/Container" unique_id=1505429986]
+layout_mode = 2
+tooltip_text = "If checked, the event will be trigged if  playing as player side."
+focus_mode = 0
+button_pressed = true
+text = "Trigger for player"
+
+[node name="TriggerOpponent" type="CheckBox" parent="Panel/VSplit/HSplit/EventProperties/Container" unique_id=1352830676]
+layout_mode = 2
+tooltip_text = "If checked, this event will be trigged when playing as opponent."
+focus_mode = 0
+button_pressed = true
+text = "Trigger for opponent"
+
+[node name="HSeparator" type="HSeparator" parent="Panel/VSplit/HSplit/EventProperties/Container" unique_id=721458002]
+layout_mode = 2
+
+[node name="VariablesMenu" type="VBoxContainer" parent="Panel/VSplit/HSplit/EventProperties/Container" unique_id=1689825949]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 0
+size_flags_stretch_ratio = 0.0
+script = SubResource("GDScript_prnaq")
+
+[node name="TextureRect" type="TextureRect" parent="Panel/VSplit/HSplit" unique_id=1506818957]
+layout_mode = 2
+texture = SubResource("ViewportTexture_dx476")
+expand_mode = 2
+stretch_mode = 5
+
+[node name="Panel2" type="Panel" parent="Panel/VSplit/HSplit" unique_id=447228036]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Inspetor" type="HSplitContainer" parent="Panel/VSplit" unique_id=169057895]
+layout_mode = 2
+size_flags_vertical = 3
+split_offsets = PackedInt32Array(-304)
+split_offset = -304
+
+[node name="Panel" type="PanelContainer" parent="Panel/VSplit/Inspetor" unique_id=600841427]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/VSplit/Inspetor/Panel" unique_id=583643876]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="Panel/VSplit/Inspetor/Panel/VBoxContainer" unique_id=1499265548]
+custom_minimum_size = Vector2(0, 25)
+layout_mode = 2
+size_flags_vertical = 0
+text = "Slots:"
+
+[node name="SlotsCount" type="Label" parent="Panel/VSplit/Inspetor/Panel/VBoxContainer" unique_id=1959379097]
+unique_name_in_owner = true
+layout_mode = 2
+horizontal_alignment = 2
+
+[node name="Button" type="Button" parent="Panel/VSplit/Inspetor/Panel" unique_id=1274868943]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 0
+text = "Create Slot"
+
+[node name="Timeline" type="Panel" parent="Panel/VSplit/Inspetor" unique_id=1487406147]
+clip_contents = true
+layout_mode = 2
+size_flags_horizontal = 3
+script = SubResource("GDScript_vt33a")
+
+[node name="Scroll" type="Node2D" parent="Panel/VSplit/Inspetor/Timeline" unique_id=74714789]
+
+[node name="Chess" type="Node2D" parent="Panel/VSplit/Inspetor/Timeline/Scroll" unique_id=26526086]
+position = Vector2(0, 49)
+metadata/chess_size = Vector2(36, 36)
+
+[node name="Line" type="Node2D" parent="Panel/VSplit/Inspetor/Timeline/Scroll" unique_id=2034463833]
+modulate = Color(0.4506483, 0.4506483, 0.45064825, 1)
+script = ExtResource("11_ymx4s")
+size = Vector2(2, 600)
+metadata/_custom_type_script = "uid://bxu1ahcd17pxh"
+
+[node name="Steps" type="Node2D" parent="Panel/VSplit/Inspetor/Timeline/Scroll" unique_id=1482603385]
+script = SubResource("GDScript_l35mb")
+max_steps = 32
+
+[node name="StepRect" type="Node2D" parent="Panel/VSplit/Inspetor/Timeline/Scroll" unique_id=1158300763]
+unique_name_in_owner = true
+visible = false
+position = Vector2(0, 67)
+rotation = 0.7853982
+script = SubResource("GDScript_tt24g")
+size = Vector2(6, 6)
+metadata/_custom_type_script = "uid://bxu1ahcd17pxh"
+
+[connection signal="button_down" from="Panel/Menus/Files" to="Panel/Menus/Files/Menu" method="show"]
+[connection signal="index_pressed" from="Panel/Menus/Files/Menu" to="Panel/Menus/Files/Menu" method="_on_index_pressed"]
+[connection signal="file_selected" from="Panel/Menus/Files/Menu/ChartLoader" to="Panel/Menus/Files/Menu" method="_on_chart_selected"]
+[connection signal="button_down" from="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer/Inst/Load" to="Panel/Menus/Files/Menu/AudioSelect" method="_on_load_inst_button_down"]
+[connection signal="button_down" from="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer/Voices/Load" to="Panel/Menus/Files/Menu/AudioSelect" method="_on_load_voices_button_down"]
+[connection signal="button_down" from="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer/Insert" to="Panel/Menus/Files/Menu/AudioSelect" method="_load"]
+[connection signal="button_down" from="Panel/Menus/Files/Menu/AudioSelect/VBoxContainer/Insert" to="Panel/Menus/Files/Menu/AudioSelect" method="hide"]
+[connection signal="button_down" from="Panel/Menus/Preview" to="Panel/Menus/Preview/Menu" method="show"]
+[connection signal="index_pressed" from="Panel/Menus/Preview/Menu" to="Panel/Menus/Preview/Menu" method="_on_index_pressed"]
+[connection signal="file_selected" from="Panel/Menus/Preview/Menu/StageLoader" to="Panel/Menus/Preview/Menu/StageLoader" method="_on_file_selected"]
+[connection signal="on_stage_loaded" from="Panel/Menus/Preview/Menu/StageLoader" to="PlayView/PlayState" method="load_stage_from_json"]
+[connection signal="button_down" from="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected" to="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected/Popup" method="show"]
+[connection signal="button_down" from="Panel/VSplit/Inspetor/Panel/Button" to="Panel/VSplit/Inspetor/Timeline" method="_create_chess"]
+[connection signal="event_selected" from="Panel/VSplit/Inspetor/Timeline" to="Panel/VSplit/HSplit/EventProperties/Container/Event/EventSelected" method="_on_event_selected"]

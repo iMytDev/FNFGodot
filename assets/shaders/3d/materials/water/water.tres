@@ -1,0 +1,91 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://dg37l8jl6upxn"]
+
+[ext_resource type="Texture2D" uid="uid://36822axleyry" path="res://assets/shaders/3d/materials/water/water_cover2.png" id="1_t7qx3"]
+
+[sub_resource type="Shader" id="Shader_catgd"]
+code = "shader_type spatial;
+render_mode cull_disabled, shadows_disabled;
+
+
+group_uniforms Water;
+uniform sampler2D water_texture: filter_linear_mipmap;
+uniform sampler2D screen_texture: hint_screen_texture;
+uniform sampler2D water_noise;
+uniform vec4 color: source_color;
+uniform float exposure: hint_range(0.0, 5.0, 0.1) = 2.5;
+uniform vec2 water_offset;
+uniform float water_strength = 0.15;
+uniform bool mirror_water_conner;
+
+group_uniforms Wave;
+uniform float wave_strength = 0.5;
+
+group_uniforms Material;
+uniform vec2 uv_scale = vec2(1.0);
+uniform float roughness: hint_range(-1.0, 1.0, 0.025) = 0.0;
+uniform float specular: hint_range(0.0, 1.0, 0.05) = 0.5;
+uniform float metallic: hint_range(0.0, 1.0, 0.05) = 0.5;
+
+
+uniform sampler2D depth_texture: hint_depth_texture;
+varying flat int facing_up;
+vec2 repeat(vec2 uv){
+	uv = mod(uv,vec2(2.0));
+	uv = abs(uv - floor(uv)*2.0);
+	return uv - floor(uv);
+}
+
+
+void vertex(){
+	if(NORMAL.y > 0.7){
+		facing_up = 1;
+	}else facing_up = 0;
+	float offset = (0.5 + smoothstep(0.0,1.0,sin((VERTEX.x + VERTEX.z + TIME))) * 0.5);
+	offset *= wave_strength;
+	VERTEX.y += offset;
+}
+
+void fragment() {
+	vec3 albedo = color.rgb;
+	if(facing_up == 1){
+		vec2 uv = UV * uv_scale;
+		
+		float uv_cos = cos(uv.y * 10.0 + texture(water_noise, uv).r + TIME);
+		uv.x += uv_cos * water_strength;
+		float wave = uv_cos * 0.2;
+		
+		if(mirror_water_conner) uv = repeat(uv);
+		uv += water_offset;
+		vec4 water_tex = texture(water_texture, uv);
+		albedo = mix(color.rgb, water_tex.rgb, water_tex.a);
+	}
+	ALBEDO = albedo * exposure;
+	METALLIC = metallic;
+	SPECULAR = specular;
+	ROUGHNESS = roughness;
+}
+"
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_t7qx3"]
+frequency = 0.05
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_qohk6"]
+noise = SubResource("FastNoiseLite_t7qx3")
+seamless = true
+seamless_blend_skirt = 0.0
+
+[resource]
+render_priority = 0
+shader = SubResource("Shader_catgd")
+shader_parameter/water_texture = ExtResource("1_t7qx3")
+shader_parameter/water_noise = SubResource("NoiseTexture2D_qohk6")
+shader_parameter/color = Color(0.089180164, 0.6826091, 1.494973, 1)
+shader_parameter/exposure = 2.5
+shader_parameter/water_offset = Vector2(0, 0)
+shader_parameter/water_strength = 0.15
+shader_parameter/mirror_water_conner = true
+shader_parameter/wave_strength = 0.5
+shader_parameter/uv_scale = Vector2(100, 30)
+shader_parameter/roughness = 0.5000000223518
+shader_parameter/specular = 0.5000000074506
+shader_parameter/metallic = 0.5000000074506

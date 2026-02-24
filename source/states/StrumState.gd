@@ -1,59 +1,40 @@
-extends Node
+@tool
+@icon("res://icons/StrumState.svg")
+class_name StrumState extends Node
 
 @export_category('Notes')
-const NoteStyleData = preload("uid://by78myum2dx8h")
+const NOTE_SPAWN_TIME: float = 1000
+const StrumOffset: float = 112.0
 const NoteSplash = preload("uid://cct1klvoc2ebg")
 const SplashPool = preload("uid://dcbm0oeieae0v")
-const Note = preload("uid://deen57blmmd13")
 
-const EventNoteUtils = preload("uid://dqymf0mowy0dt")
 const NoteParser = preload("uid://h8nnpmoaoq70")
-const NoteSustain = preload("uid://bhagylovx7ods")
-
-const NoteHit = preload("uid://dx85xmyb5icvh")
-const StrumNote = preload("uid://coipwnceltckt")
-
-const StrumOffset: float = 112.0
-const NOTE_SPAWN_TIME: float = 1000
 
 static var isModding: bool = true
-static var inModchartEditor: bool
+
 static var week_data: Dictionary
 
+var inModchartEditor: bool
 @export_group("Song Data")
-@export var song_folder: String
-@export var song_json_file: String 
-@export var difficulty: String
-@export var _from_mod: String
-
-@export var autoStartSong: bool  ##Start the Song when the Song json is loaded. Used in PlayState
+@export var SONG: SongData = SongData.new()
+@export var autoStartSong: bool = true ##Start the Song when the Song json is loaded. Used in PlayState
 
 ##If this is [code]false[/code], will disable the notes, 
 ##making them stretched and not being created
-var generateMusic: bool = true
+var generateMusic: bool = !Engine.is_editor_hint()
 var exitingSong: bool
 var clear_song_after_exiting: bool = true
 
 var songSpeed: float: set = set_song_speed 
-var _isSongStarted: bool
-
-static var SONG: Dictionary:
-	set(dir): Conductor.songJson = dir
-	get(): return Conductor.songJson ##The data of the Song.
+var _is_song_start: bool
 
 var keyCount: int = 4: ##The amount of notes that will be used, default is [b]4[/b].
 	set(value): 
-		keyCount = value
-		var length = keyCount*2
-		_notes_to_hit.resize(value)
-		defaultStrumPos.resize(length)
-		defaultStrumAlpha.resize(length)
-
-var mustHitSection: bool ##When the focus is on the opponent.
-var gfSection: bool ##When the focus is on the girlfriend.
-
+		if value == keyCount: return
+		keyCount = value; _rebuild_keys()
 
 var _songPos: float
+
 @export_group("Notes")
 var defaultStrumPos: PackedVector2Array
 var defaultStrumAlpha: PackedFloat32Array
@@ -64,16 +45,16 @@ var opponentStrums: SpriteGroup = SpriteGroup.new() ##Strum's Oponnent Group.
 var playerStrums: SpriteGroup = SpriteGroup.new() ##Strum's Player Group.
 var extraStrums: Array[StrumNote]
 
- ##Returns the player strum. 
+##Returns the player strum. 
 ##If [member playAsOpponent] = true, returns [member opponentStrums], else, returns [member playerStrums]
 var current_player_strum: Array = playerStrums.members
 
 var uiGroup: SpriteGroup = SpriteGroup.new() ##Hud Group.
 
-static var unspawnNotes: Array[Note] ##Unspawn notes.
-var _unspawnNotesLength: int
-var _unspawnIndex: int
-var _respawnIndex: int
+var unspawnNotes: Array[Note] ##Unspawn notes.
+var _unspawn_length: int
+var _unspawn_index: int
+var _respawn_index: int
 var respawnNotes: bool
 var notes: SpriteGroup = SpriteGroup.new()
 var noteSpawnTime: float = NOTE_SPAWN_TIME
@@ -82,27 +63,27 @@ var _notes_to_hit: Array[Note]
 
 var canHitNotes: bool = true
 
-var splashesEnabled: bool = ClientPrefs.data.splashesEnabled
-var opponentSplashes: bool = splashesEnabled and ClientPrefs.data.opponentSplashes
+var splashesEnabled: bool = true
+var opponentSplashes: bool
 var grpNoteSplashes: SpriteGroup = SpriteGroup.new() ##Note Splashes Group.
 var grpNoteHoldSplashes: Dictionary[int,NoteSplash] ##Note Hold Splashes Group.
 
 static var isPixelStage: bool
-@export var arrowStyle: StringName = &'funkin'
-@export var splashStyle: StringName = &'NoteSplashes'
-@export var splashHoldStyle: StringName = &'HoldNoteSplashes'
+var arrowStyle: StringName = SongData.DEFAULT_ARROW_STYLE
+var splashStyle: StringName = SongData.DEFAULT_SPLASH_STYLE
+var splashHoldStyle: StringName = SongData.DEFAULT_SPLASH_HOLD_STYLE
 
 @export_group("Play Options")
 ##Play as Opponent, reversing the sides.
 @export var playAsOpponent: bool = ClientPrefs.data.playAsOpponent: set = _set_play_opponent
 
-##When activate, the notes will be hitted automatically.
-@export var botplay: bool = ClientPrefs.data.botplay: set = _set_botplay
 
-@export var downScroll: bool = ClientPrefs.data.downscroll: set = _set_downscroll
-@export var middleScroll: bool = ClientPrefs.data.middlescroll: set = _set_middlescroll
+@export var botplay: bool = ClientPrefs.data.botplay: set = _set_botplay ##When activate, the notes will be hitted automatically.
 
+var downScroll: bool: set = _set_downscroll
+var middleScroll: bool: set = _set_middlescroll
 
+var stateLoaded: bool
 var touch_state #Android System
 
 var Inst: AudioStreamPlayer:
@@ -111,17 +92,32 @@ var Inst: AudioStreamPlayer:
 var vocals: AudioStreamPlayer:
 	get(): return ArrayUtils.get_array_index(Conductor.songs,1)
 
-signal hit_note
-func _init():
+#region Native Methods
+func _process(_d) -> void: 
+	if generateMusic:_songPos = Conductor.songPositionDelayed; _process_notes()
+
+func _init(data: SongData = null):
+	if data: SONG = data
+	
+	splashesEnabled = ClientPrefs.data.splashesEnabled
+	opponentSplashes = splashesEnabled and ClientPrefs.data.opponentSplashes
+	downScroll = ClientPrefs.data.downscroll
+	middleScroll = ClientPrefs.data.middlescroll
+	
 	add_child(uiGroup)
 	uiGroup.name = &'uiGroup'
-	
-	uiGroup.add(strumLineNotes)
-	uiGroup.add(playerStrums)
-	uiGroup.add(opponentStrums)
-	uiGroup.add(notes)
-	uiGroup.add(grpNoteSplashes)
-	
+	_add_note_groups()
+
+func _ready() -> void:
+	if Engine.is_editor_hint(): return;
+	PathsStore.curMod = SONG.mod; 
+	_load_song()
+	_rebuild_keys()
+	_load_song_objects()
+	if autoStartSong: startSong()
+	stateLoaded = true
+
+func _add_note_groups():
 	grpNoteSplashes.name = &'grpNoteSplashes'
 	
 	opponentStrums.name = &'opponentStrums'
@@ -129,75 +125,66 @@ func _init():
 	strumLineNotes.name = &'strumLineNotes'
 	
 	notes.name = &'notes'
+	uiGroup.append(strumLineNotes)
+	uiGroup.append(playerStrums)
+	uiGroup.append(opponentStrums)
+	uiGroup.append(notes)
+	uiGroup.append(grpNoteSplashes)
 
-func _ready() -> void:
-	loadSong()
-	loadSongObjects()
-	if autoStartSong: startSong()
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if botplay or !event.pressed or event.echo: return
+		_check_hit_notes(event.keycode)
 
+func clear() -> void: 
+	clear_song_notes()
+	Conductor.clearSong(exitingSong)
+	grpNoteSplashes.members.clear()
+	grpNoteHoldSplashes.clear()
+	unspawnNotes.clear()
+	NoteStyleData.styles_loaded.clear()
+	inModchartEditor = false
+	isPixelStage = false
+#endregion
+
+#region Ui Methods
 func _setup_hud() -> void:
+	arrowStyle = SONG.getArrowStyle(isPixelStage)
+	splashStyle = SONG.getSplashStyle()
+	splashHoldStyle = SONG.getSplashHoldStyle()
 	_create_strums()
-	if Paths.is_on_mobile: createMobileGUI()
+	
+	if !Engine.is_editor_hint() and Paths.is_on_mobile: createMobileGUI()
 
-func createMobileGUI() -> void:
-	##HitBox
+func createMobileGUI() -> void: ##HitBox
 	touch_state = load("uid://caqru406gega1").new()
 	add_child(touch_state)
 	touch_state.z_index = 1
-
-
+#endregion
 
 #region Song Methods
-func loadSong(data: String = song_json_file, songDifficulty: String = difficulty):
-	if _from_mod: Paths.curMod = _from_mod
-	if !SONG: Conductor.loadSong(data,songDifficulty)
-	keyCount = SONG.get('keyCount',4)
+func _load_song():
+	if !SONG.data: SONG.load_data();
+	Conductor.loadSongFromData(SONG)
+	
+	keyCount = SONG.keyCount
 	FunkinGD.keyCount = keyCount
 	
-	var arrow_s = SONG.get('arrowStyle')
-	var splash_s = SONG.get('splashStyle')
-	var hold_s = SONG.get('holdSplashStyle')
-	
-	if arrow_s: arrowStyle = arrow_s
-	else: arrowStyle = &'pixel' if isPixelStage else &'funkin'
-	
-	if splash_s: splashStyle = splash_s
-	if hold_s: splashHoldStyle = hold_s
-	
-	if !SONG: return
-	Conductor.loadSongsStreams()
-	
-	set_song_speed(SONG.speed)
-	
-	if !SONG.notes: return
-	mustHitSection = SONG.notes[0].mustHitSection
-	gfSection = SONG.notes[0].get('gfSection',false)
+	songSpeed = SONG.data.get("speed",2.0)
+	Conductor.loadSongsStreamsFromData(SONG)
 
-
-func loadSongObjects(): ##Load song data. Used in PlayState
+func _load_song_objects(): ##Load song data. Used in PlayState
 	_setup_hud()
-	
-	_respawnIndex = 0
-	_unspawnIndex = 0
+	_respawn_index = 0
+	_unspawn_index = 0
 	if !SONG: return
-	loadNotes()
+	load_notes()
 
-func loadNotes():
-	if !unspawnNotes:  unspawnNotes = NoteParser.getNotesFromData(SONG)
-	_unspawnNotesLength = unspawnNotes.size()
-	reloadNotes()
-
-func clearSongNotes():
-	notes.queue_free_members()
-	_respawnIndex = 0
-	_unspawnIndex = 0
-	
-	unspawnNotes.clear()
 
 func startSong() -> void: ##Begins the song. See also [method loadSong].
 	if !Conductor.songs: return
 	Conductor.resumeSongs()
-	_isSongStarted = true
+	_is_song_start = true
 	FunkinGD.songLength = Conductor.songLength
 
 ##Seek the Song Position to [param time] in miliseconds.[br]
@@ -209,63 +196,79 @@ func seek_to(time: float, kill_notes: bool = true):
 	var time_offset: float = time + 1000
 	for i in notes: if i.strumTime < time_offset: i.kill()
 	
-	while _unspawnIndex < _unspawnNotesLength:
-		if unspawnNotes[_unspawnIndex].strumTime > time_offset: break
-		_unspawnIndex += 1
-	
+	while _unspawn_index < _unspawn_length:
+		if unspawnNotes[_unspawn_index].strumTime > time_offset: break
+		_unspawn_index += 1
 #endregion
 
 #region Strums
-func updateStrumsPosition():
-	var screen_center = ScreenUtils.screenCenter
-	var key_div = keyCount*0.5
-	var strum_off = StrumOffset
+func _update_strums_position(): 
+	defaultStrumPos = getDefaultStrumPos(); defaultStrumAlpha = getDefaultStrumAlpha()
+
+func getDefaultStrumAlpha(middlescroll: bool = middleScroll) -> PackedFloat32Array:
+	var value = PackedFloat32Array()
+	var length = keyCount * 2
+	if middlescroll:
+		var i = 0
+		while i < length:
+			if i >= keyCount: value.append(0.3 if playAsOpponent else 1.0)
+			else: value.append(1.0 if playAsOpponent else 3.0)
+			i += 1
+	else:
+		value.resize(length)
+		value.fill(1.0)
+	return value
+
+func getDefaultStrumPos(middlescroll: bool = middleScroll, downscroll: bool = downScroll) -> PackedVector2Array:
+	var positions: PackedVector2Array
+	positions.resize(keyCount*2)
+	positions.fill(Vector2(0.0,getDefaultStrumY(downscroll)))
 	
-	var strumsSpace = (StrumOffset*keyCount)
-	var margin_scale: float = minf(
-		ScreenUtils.screenWidth/strumsSpace - 2.0,
+	var strum_off = StrumOffset
+	var key_length = keyCount * 2
+	var strums_full_width = StrumOffset * (key_length)
+	strum_off *= minf(
+		ScreenUtils.screenWidth / strums_full_width,
 		1.0
 	)
-	var margin_offset: float = strum_off*margin_scale
-	defaultStrumAlpha.fill(1.0)
+	var space_between_strums: float = clampf(
+		ScreenUtils.screenWidth / strum_off - (key_length + 0.5),
+		0.0,
+		2.0
+	)
 	
-	var first_op_pos = screen_center.x
-	var strum_first_pos = screen_center.x
+	var i: int = 0
+	while i < keyCount: #Opponent Position
+		var strumPos: float = getDefaultStrumX(i,strum_off,space_between_strums,middleScroll,playAsOpponent)
+		if middlescroll and !playAsOpponent: defaultStrumAlpha[i] = 0.35
+		positions[i].x = strumPos
+		i += 1
 	
-	
-	if middleScroll:  strum_first_pos -= strum_off*(key_div)
-	else: 
-		strum_first_pos += margin_offset
-		first_op_pos -= margin_offset + strum_off*(keyCount)
-	
-	#Opponent Position
-	var op_middle_offset = strum_off*(key_div-1)*margin_scale
-	for i in keyCount:
-		var strumPos: float = first_op_pos
-		var strumIndex: int = i
-		
-		if middleScroll:
-			if i < key_div: strumPos += strum_off*(i-keyCount) - op_middle_offset
-			else: strumPos += strum_off*i + op_middle_offset
-			if playAsOpponent: strumIndex += keyCount
-			defaultStrumAlpha[strumIndex] = 0.35
-		else: strumPos += strum_off*i
-		defaultStrumPos[strumIndex].x = strumPos
-	
-	#Player Position
-	for i in keyCount:
-		var strumIndex: int = (i+keyCount) if not (middleScroll and playAsOpponent) else i 
-		var strumPos: float = strum_first_pos
-		strumPos += strum_off*i
-		defaultStrumPos[strumIndex].x = strumPos
-	updateStrumsY()
+	i = 0
+	while i < keyCount: #Player Position
+		var strumIndex: int = i+keyCount
+		if middleScroll and playAsOpponent:defaultStrumAlpha[strumIndex] = 0.35
+		positions[strumIndex].x = getDefaultStrumX(i,strum_off,space_between_strums,middleScroll,!playAsOpponent)
+		i += 1
+	return positions
 
-func getDefaultStrumY(downscroll: bool = downScroll) -> float: return ScreenUtils.screenHeight - 150.0 if downscroll else 50.0
-
-func updateStrumsY() -> void:
-	var strumY = getDefaultStrumY()
-	var index = defaultStrumPos.size()
-	while index: index -= 1; defaultStrumPos[index].y = strumY; 
+func getDefaultStrumX(
+	data: int, 
+	offset: float = StrumOffset, 
+	space_between_notes: float = 3.0, middle: bool = middleScroll, must_press: bool = false
+):
+	var first_pos: float
+	if middle: 
+		if must_press: first_pos = -offset * keyCount * 0.5
+		else:
+			if data < keyCount*0.5: first_pos = -offset * (keyCount * 2 + space_between_notes*0.5)
+			else: first_pos = offset * (keyCount * 2 + space_between_notes*0.5)
+	else:
+		if must_press: first_pos = offset * (space_between_notes * 0.5)
+		else: first_pos = -offset * (keyCount + space_between_notes * 0.5)
+	
+	return ScreenUtils.screenCenter.x + first_pos + offset * data 
+func getDefaultStrumY(downscroll: bool = downScroll): return (ScreenUtils.screenHeight - 50.0) if downscroll else 50.0
 
 func _create_strums() -> void:
 	StrumNote.keyCount = keyCount
@@ -274,7 +277,7 @@ func _create_strums() -> void:
 	playerStrums.members.clear()
 	opponentStrums.members.clear()
 	
-	updateStrumsPosition()
+	_update_strums_position()
 	var i: int = keyCount
 	i = keyCount*2
 	while i > keyCount: #Player Strums
@@ -283,7 +286,7 @@ func _create_strums() -> void:
 		strum.mustPress = !botplay
 		playerStrums.insert(0,strum)
 		strumLineNotes.insert(0,strum)
-		strum._position = defaultStrumPos[i]
+		strum.position = defaultStrumPos[i]
 		strum.mustPress = !playAsOpponent and !botplay
 		strum.modulate.a = defaultStrumAlpha[i]
 	while i: #Opponent Strums
@@ -291,16 +294,16 @@ func _create_strums() -> void:
 		var strum = createStrum(i)
 		opponentStrums.insert(0,strum)
 		strumLineNotes.insert(0,strum)
-		strum._position = defaultStrumPos[i]
+		strum.position = defaultStrumPos[i]
 		strum.mustPress = playAsOpponent and !botplay
 		strum.modulate.a = defaultStrumAlpha[i]
-	
-	
+
 func createStrum(i: int) -> StrumNote:
 	var strum = StrumNote.new(i)
 	strum.loadFromStyle(arrowStyle)
 	strum.downscroll = downScroll
 	strum.name = &"StrumNote"
+	strum.isPixelNote = isPixelStage
 	return strum
 
 func _update_strum_must_press() -> void:
@@ -316,67 +319,46 @@ func _update_strum_must_press() -> void:
 
 func _strum_confirm_from_note(note: Note) -> void:
 	var strum: StrumNote = note.strumNote; if !strum: return
-	if !strum.mustPress and (!note.isSustainNote or note.isEndSustain): strum.strumConfirm(note.hitAnim); return
-	strum.hitTime = 0.0; strum.animation.play(note.hitAnim,true); strum.return_to_static_on_finish = false
+	if !strum.mustPress and (!note.isSustainNote or note.isEndSustain): strum.strumConfirm(note.hitStrumAnim); return
+	strum.hitTime = 0.0; strum.animation.play(note.hitStrumAnim,true); strum.return_to_static_on_finish = false
 #endregion
 
-func _process(_d) -> void:  if generateMusic: _songPos = Conductor.songPositionDelayed; updateNotes()
+
 
 #region Note Methods
-func updateNotes():
+func load_notes() -> void:
+	if !unspawnNotes:  unspawnNotes = NoteParser.getNotesFromData(SONG.data)
+	_unspawn_length = unspawnNotes.size()
+	reloadNotes()
+
+func clear_song_notes():
+	for i in unspawnNotes: if i: i.queue_free()
+	_respawn_index = 0; _unspawn_index = 0
+	unspawnNotes.clear()
+
+func _rebuild_keys():
+	var length = keyCount*2
+	_notes_to_hit.resize(keyCount)
+	defaultStrumPos.resize(length)
+	defaultStrumAlpha.resize(length)
+	
+func _process_notes():
 	_check_unspawn_notes()
 	_check_respawn_notes()
-	
-	_notes_to_hit.fill(null) #Detect notes that can hit
 	if !notes.members: return
-	
 	var members = notes.members
 	var note_index: int = members.size()
 	if respawnNotes:
 		while note_index:
 			note_index -= 1
 			var note = members[note_index]
-			if note.strumTime - _songPos > noteSpawnTime: note.kill(); _unspawnIndex -= 1
+			if note.strumTime - _songPos > noteSpawnTime: note.kill(); _unspawn_index -= 1
 			elif !updateNote(note): continue
-			members.remove_at(note_index)
-	else: while note_index: note_index -= 1; if !updateNote(members[note_index]): members.remove_at(note_index)
-	if !botplay and canHitNotes: _check_hit_notes()
-
-func _check_unspawn_notes() -> void:
-	if !unspawnNotes: return
-	while _unspawnIndex < _unspawnNotesLength:
-		var unspawn: Note = unspawnNotes[_unspawnIndex]
-		if unspawn and unspawn.strumTime - _songPos > noteSpawnTime: break
-		_unspawnIndex += 1
-		spawnNote(unspawn)
-
-func _check_respawn_notes() -> void:
-	if !respawnNotes or !unspawnNotes: return
-	while _respawnIndex < _unspawnIndex:
-		var note = unspawnNotes[_respawnIndex]
-		if !note.wasHit and !note.missed: break
-		_respawnIndex += 1
-
-func _check_hit_notes() -> void:
-	var index: int = _notes_to_hit.size()
-	while index: 
-		index -= 1
-		var i = _notes_to_hit[index]
-		_notes_to_hit[index] = null
-		if i and Input.is_action_just_pressed(i.hit_action): preHitNote(i)
-
-##Spawns the note
-func spawnNote(note: Note) -> void: if note: addNoteToGroup(note,note.noteGroup if note.noteGroup else notes)
-
-func addNoteToGroup(note: Note, group: Node) -> void:
-	if group != notes: notes.members.append(note)
-	if group is SpriteGroup:
-		if note.isSustainNote: group.insert(0,note)
-		else: group.add(note)
-		return
-	
-	group.add_child(note)
-	if note.isSustainNote: group.move_child(note,0)
+			notes.remove_at(note_index)
+	else: 
+		while note_index: 
+			note_index -= 1; 
+			if !updateNote(members[note_index]): notes.remove_at(note_index)
 
 func updateNote(n: Note) -> bool:
 	if !n or !n.is_inside_tree(): return false
@@ -386,9 +368,10 @@ func updateNote(n: Note) -> bool:
 	n.noteSpeed = songSpeed
 	n.updateNote()
 	
-	if _is_note_missed(n) and !n.missed and !opponentNote and !n.ignoreNote: noteMiss(n,!isSus); return true
+	var noteMissed = _is_note_missed(n)
+	if noteMissed and !n.missed and !opponentNote and !n.ignoreNote: noteMiss(n,!isSus); return true
 	
-	if isSus and n._sustain_filled: n.kill(); return false
+	if noteMissed or isSus and n._sustain_filled: n.kill(); return false
 	
 	if !n.canBeHit or !canHitNotes or n.missed: return true
 	
@@ -397,26 +380,67 @@ func updateNote(n: Note) -> bool:
 		return true
 	
 	if isSus:
-		var hit_action = n.noteParent.hit_action
-		if Input.is_action_pressed(hit_action): preHitNote(n); return true
-		if !n.isEndSustain and n.isBeingDestroyed: _remove_hold_splash_from_strum(n.strumNote); n.isBeingDestroyed = false
+		var hit_action = n.noteParent.hit_actions
+		if InputUtils.is_any_key_pressed(hit_action): preHitNote(n);
+		elif n.wasHit: _remove_hold_splash_from_strum(n.strumNote);
 		return true
 	
 	var l = _notes_to_hit[n.noteData]
 	if !l or absf(n.distance) < absf(l.distance): _notes_to_hit[n.noteData] = n
 	return true
 
+func _check_unspawn_notes() -> void:
+	while _unspawn_index < _unspawn_length:
+		var unspawn: Note = unspawnNotes[_unspawn_index]
+		if unspawn and unspawn.strumTime - _songPos > noteSpawnTime: break
+		_unspawn_index += 1
+		spawnNote(unspawn)
+
+func _check_respawn_notes() -> void:
+	if !respawnNotes: return
+	while _respawn_index < _unspawn_index:
+		var note = unspawnNotes[_respawn_index]
+		if !note.wasHit and !note.missed: break
+		_respawn_index += 1
+
+func _check_hit_notes(action_pressed: Key) -> void:
+	var index: int = keyCount
+	while index: 
+		index -= 1
+		var i: Note = _notes_to_hit[index]
+		if !i or !i.canBeHit: _notes_to_hit[index] = null; continue
+		if action_pressed in i.hit_actions: 
+			preHitNote(i);
+			_notes_to_hit[index] = null
+
+##Spawns the note
+func spawnNote(note: Note) -> void: 
+	addNoteToGroup(note, note.noteGroup, 0 if note.isSustainNote else -1)
+	if note.has_sustains(): spawnNote(note.sustain); spawnNote(note.sustain.end_sustain)
+
+func addNoteToGroup(note: Note, group: Node, at: int = -1) -> void:
+	if !group: return
+	if group != notes: notes.members.append(note)
+	if group is SpriteGroup:
+		if at != -1: group.insert(at,note)
+		else: group.append(note)
+		return
+	
+	group.add_child(note)
+	if at != -1: group.move_child(note,at)
+
 func _is_note_missed(n: Note) -> bool:
 	return not (n.isSustainNote and n.isBeingDestroyed) and n.distance <= n.missOffset
+
 func preHitNote(note: Note):
 	if !note: return
 	if !note.isSustainNote: note.updateRating()
 	note.wasHit = true
 	note.judgementTime = _songPos
-	note.hitAnim = &'press' if note.isEndSustain and isPlayerNote(note) else &'confirm'
+	note.hitStrumAnim = &'press' if note.isEndSustain and isPlayerNote(note) else &'confirm'
 	hitNote(note)
 
-func hitNote(note: Note) -> void: ##Called when the hits a [NoteBase] 
+func hitNote(note: Note) -> void: ##Hit a [NoteBase].
 	if !note: return
 	var strum: StrumNote = note.strumNote
 	if note.isEndSustain: 
@@ -429,33 +453,33 @@ func hitNote(note: Note) -> void: ##Called when the hits a [NoteBase]
 	if note.strumConfirm: _strum_confirm_from_note(note)
 
 func splashAllowed(n: Note) -> bool:
-	if n.isSustainNote: return !n.splashDisabled and splashesEnabled and n.ratingMod <= 1 and !n.isBeingDestroyed
-	return !n.splashDisabled and splashesEnabled and n.ratingMod <= 1 and (isPlayerNote(n) or opponentSplashes)
+	var en = splashesEnabled and !(n.noteParent.ratingMod if n.isSustainNote and n.noteParent else n.ratingMod)
+	if n.isSustainNote: return en and !n.splashDisabled and !n.isBeingDestroyed
+	return en and !n.splashDisabled and (isPlayerNote(n) or opponentSplashes)
 #endregion
 
 func isPlayerNote(note: Note) -> bool: return note.mustPress != playAsOpponent
 
 func noteMiss(note: Note, kill_note: bool = true) -> void: ##Called when the player miss a [Note]
 	if !note:return
-	note.missed = true
+	note.miss()
 	note.judgementTime = _songPos
-	if note.isSustainNote: _disable_note_sustains(note.noteParent); _remove_hold_splash_from_strum(note.strumNote)
-	prints(note.isSustainNote,kill_note)
+	if note.isSustainNote: _remove_hold_splash_from_strum(note.strumNote)
 	if kill_note: note.kill()
+	
 func reloadNotes() -> void: 
 	var index: int = unspawnNotes.size()
 	while index: index -= 1; reloadNote(unspawnNotes[index]);
-
+	
 func reloadNote(note: Note):
 	note.loadFromStyle(arrowStyle)
 	var noteStrum: StrumNote = strumLineNotes.members.get((note.noteData + keyCount) if note.mustPress else note.noteData)
 	note.strumNote = noteStrum
 	note.isPixelNote = isPixelStage
 	note.noteGroup = notes
+	if note.has_sustains(): reloadNote(note.sustain); reloadNote(note.sustain.end_sustain)
 	note.resetNote()
 	note.splashStyle = splashHoldStyle if note.isSustainNote else splashStyle
-func _disable_note_sustains(note: Note) -> void:
-	if note: for sus in note.sustainParents: sus.blockHit = true; sus.ignoreNote = true; sus.modulate.a = 0.3
 #endregion
 
 #region Splash Methods
@@ -466,9 +490,11 @@ func createSplash(note) -> NoteSplash: ##Create Splash
 	if !splash: return
 	
 	splash.strum = strum
+	splash.followStrum()
 	if splash.holdSplash: 
 		_remove_hold_splash_from_strum(strum); 
 		grpNoteHoldSplashes[strum.get_instance_id()] = splash
+	
 	
 	var splashParent = note.splashParent
 	if splashParent: 
@@ -476,7 +502,7 @@ func createSplash(note) -> NoteSplash: ##Create Splash
 		else: splash.add_child(splashParent); grpNoteSplashes.members.append(splash); 
 	else:
 		if splash.is_inside_tree(): splash.reparent(grpNoteSplashes,false)
-		else: grpNoteSplashes.add(splash); 
+		else: grpNoteSplashes.append(splash); 
 	splash.isPixelSplash = isPixelStage
 	return 
 
@@ -491,14 +517,14 @@ func _remove_hold_splash_from_strum(strum: StrumNote, hide: bool = true) -> Note
 #endregion
 
 func destroy(absolute: bool = true): ##Remove the state
-	Conductor.clearSong(exitingSong)
 	SplashPool.splashes_loaded.clear()
-	
+	Paths.clear_local_files()
 	if absolute: clear(); queue_free(); return
 	
-	Paths.clearLocalFiles()
 	if isModding: NoteStyleData.styles_loaded.clear()
 	for note in notes.members: note.kill()
+
+
 
 
 #region Setters
@@ -511,31 +537,17 @@ func _set_play_opponent(isOpponent: bool = playAsOpponent) -> void:
 	playAsOpponent = isOpponent
 	_update_strum_must_press()
 	current_player_strum = (opponentStrums if isOpponent else playerStrums).members
-	if middleScroll: updateStrumsPosition()
-	
+	if middleScroll and stateLoaded: _update_strums_position()
+
 func _set_downscroll(value):
+	FunkinGD.downscroll = value
 	if downScroll == value: return
 	downScroll = value
-	updateStrumsY()
+	if stateLoaded: _update_strums_position()
 
 func _set_middlescroll(value):
+	FunkinGD.middlescroll = value
 	if middleScroll == value: return
 	middleScroll = value
-	FunkinGD.middlescroll = value
-	updateStrumsPosition()
+	if stateLoaded: _update_strums_position()
 #endregion
-
-
-func clear() -> void: 
-	clearSongNotes() #Replaced in PlayStateBase
-	
-	grpNoteSplashes.members.clear()
-	grpNoteHoldSplashes.clear()
-	
-	unspawnNotes.clear()
-	
-	NoteStyleData.styles_loaded.clear()
-	
-	Paths.clearLocalFiles()
-	inModchartEditor = false
-	isPixelStage = false

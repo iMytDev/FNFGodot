@@ -1,0 +1,35 @@
+[gd_scene format=3 uid="uid://bntsbhqys10it"]
+
+[ext_resource type="Script" uid="uid://c5emumn8mkcd5" path="res://source/scenes/states/Freeplay/Freeplay.gd" id="1_jylcp"]
+[ext_resource type="Script" uid="uid://i51if6phbgd1" path="res://source/scenes/states/Freeplay/FreeplaySection.gd" id="2_wnhmp"]
+[ext_resource type="Script" uid="uid://cerxbopol4l1g" path="res://source/backend/Song/SongData.gd" id="3_6riy3"]
+
+[sub_resource type="Resource" id="Resource_jylcp"]
+script = ExtResource("3_6riy3")
+mod = "Vs Wednesday's Infidelity - Mods Folder"
+songName = "unknown-suffering-alexstep8"
+packedScene = "uid://bffm0hveosh8f"
+difficulties = PackedStringArray("hard")
+bg_color = Color(0.31764707, 0.3372549, 0.31764707, 1)
+icon_name = "icon-mickey"
+metadata/_custom_type_script = "uid://cerxbopol4l1g"
+
+[sub_resource type="Resource" id="Resource_wnhmp"]
+script = ExtResource("3_6riy3")
+mod = "StarlightMayhem"
+songName = "echoes"
+packedScene = "uid://c04txgydygggl"
+difficulties = PackedStringArray("hard")
+bg_color = Color(0.7529412, 0, 0.77254903, 1)
+icon_name = "icon-ruby"
+metadata/_custom_type_script = "uid://cerxbopol4l1g"
+
+[sub_resource type="Resource" id="Resource_ef67f"]
+script = ExtResource("2_wnhmp")
+title = "2.5D Showcase"
+songs = Array[ExtResource("3_6riy3")]([SubResource("Resource_jylcp"), SubResource("Resource_wnhmp")])
+metadata/_custom_type_script = "uid://i51if6phbgd1"
+
+[node name="Freeplay" type="Node" unique_id=1009175469]
+script = ExtResource("1_jylcp")
+weeks = Array[ExtResource("2_wnhmp")]([SubResource("Resource_ef67f")])

@@ -1,87 +1,33 @@
-extends Object
-
-const Reflect = preload("uid://btume6yjt6ubo")
-const PlayStateBase = preload("uid://dgnunksqrmpbr")
-
+@abstract
+class_name FunkinInternal extends Resource
 #region Variables
-static var debugMode: bool = OS.is_debug_build()
+##The node that will have all the source created using the [FunkinGD] methods. [b]Example:[/b][br]
+## If the [method playSound] is called, the sound will be added to this node.[br]
+## If the [method makeSprite] is called, the sprite will be added to this node.
+## If the [method runTimer] is called, the timer will be processed from this node.
+static var owner: Node
 
-#region Storage
+static var debugMode: bool = OS.is_debug_build()
 static var game: PlayStateBase
 static var modVars: Dictionary ##[b]Variables[/b] created using [method setVar] and [method createCamera] methods.
-static var spritesCreated: Dictionary[StringName,Node] ##Sprites created using [method makeSprite] or [method makeAnimatedSprite] methods.
-static var groupsCreated: Dictionary[StringName,SpriteGroup]##Sprite groups created using [method createSpriteGroup] method.
-static var tweensCreated: Dictionary[StringName,RefCounted] ##[b][Tween][/b] created using [method startTween] function.
-static var shadersCreated: Dictionary[StringName,ShaderMaterial] ##[b]Shaders[/b] created using [method initShader] function.
-static var soundsPlaying: Dictionary[StringName,AudioStreamPlayer] = {} ##[b]Sounds[/b] created using [method playSound] function.
-static var timersPlaying: Dictionary[StringName,Array] ##[b]Timers[/b] created using [method runTimer] function.
+
 static var scriptsCreated: Dictionary ##Scripts created using [method addScript] function.
 static var scriptsUID: Dictionary[int,Object]
-static var textsCreated: Dictionary[StringName,Label] ##[b]Texts[/b] created using [method makeText] function.
-static var dictionariesToCheck: Array[Dictionary] = [modVars,spritesCreated,shadersCreated,textsCreated,groupsCreated]
+
+static var dictionariesToCheck: Array[Dictionary] = [
+	modVars,
+	FunkinSpritesServer.spritesCreated,
+	FunkinShadersServer.shadersCreated,
+	FunkinTextServer.textsCreated,
+	FunkinGroups.groups
+]
 #endregion
 
 #region Script Arguments
-static var arguments: Dictionary[int,Dictionary]
 static var method_list: Dictionary[StringName,Array]
 #endregion
 
-#endregion
 
-#region Audio Methods
-static func _create_audio(stream: Variant, tag: String = '') -> AudioStreamPlayer:
-	var audio = _get_sound(stream)
-	if !audio: return
-	(game if game else Global).add_child(audio)
-	if !tag: return audio
-	audio.name = tag
-	soundsPlaying[tag] = audio
-	audio.finished.connect(stopSound.bind(tag),CONNECT_ONE_SHOT)
-	return audio
-
-static func stopSound(tag: StringName):
-	if !soundsPlaying.has(tag): return
-	soundsPlaying[tag].stop()
-	soundsPlaying.erase(tag)
-
-static func _get_sound(stream: Variant):
-	if !stream is AudioStream: stream = Paths.sound(stream); if !stream: return
-	var audio = AudioStreamPlayer.new()
-	audio.stream = stream;
-	audio.finished.connect(audio.queue_free)
-	return audio
-#endregion
-
-#region Object Methods
-
-#endregion
-
-#region Sprite Methods
-static func _insert_sprite(tag: StringName, object: Node) -> void: 
-	var sprite = spritesCreated.get(tag)
-	if sprite and sprite is Node: sprite.queue_free()
-	spritesCreated[tag] = object
-#endregion
-
-
-#region Shader Methods
-static func _find_shader_material(shader: Variant) -> ShaderMaterial:
-	if !shader or shader is ShaderMaterial: return shader
-	var material = shadersCreated.get(shader); if material: return material
-	material = Reflect._find_object(shader)
-	return material.get(&'material') if material else null
-
-static func _check_shaders_array(shaders: Array) -> void:
-	var index: int = shaders.size()
-	while index:
-		index -= 1
-		var s = shaders[index]
-		if s is String: shaders[index] = _find_shader_material(s)
-#endregion
-
-#region Property Methods
-
-#endregion
 
 #region Classes Methods
 static var class_dirs: PackedStringArray = [
@@ -90,17 +36,55 @@ static var class_dirs: PackedStringArray = [
 	'res://source/',
 	'res://source/general/',
 	'res://source/objects/',
-	Paths.exePath+'/assets/'
+	PathsStore.assetsPath+'/assets/'
 ]
-
-
 #endregion
 
 #region Color Methods
-static func _get_color(color: Variant) -> Color: return color if color is Color else Color.html(color)
+static func _get_color(color: Variant) -> Color: 
+	match typeof(color):
+		TYPE_COLOR: return color
+		TYPE_INT: return Color.hex(color)
+		TYPE_STRING,TYPE_STRING_NAME: return Color.html(color)
+		_: return Color.WHITE
 #endregion
 
 #region Script Methods
+static func load_scripts_from_dir(dir_name: String) -> void:
+	for i in PathsStore.dirsToSearch:
+		var folder_name = i+dir_name; 
+		var dir = PathsDir.get_dir(folder_name); if !dir: continue
+		for file in dir.get_files(): 
+			if !file.ends_with('.gd'): continue 
+			var path = dir_name+'/'+file; if scriptsCreated.has(path): continue
+			registerScript(_load_script_code(folder_name+'/'+file).new(), path)
+
+static func load_scripts_from_dir_absolute(dir_name: String) -> void:
+	var dir = PathsDir.get_dir(dir_name); if !dir: push_error("Error in load_scripts_from_dir_absolute: Dir don't exists."); return
+	var dir_base = PathsStore.get_base_path(dir_name)
+	for i in dir.get_files():
+		if !i.ends_with('.gd'): continue 
+		var path = dir_base+'/'+i; 
+		if scriptsCreated.has(path): continue
+		registerScript(_load_script_code(dir_name+'/'+i).new(), path)
+
+static func _load_script_from_path(path: String) -> Object:
+	var code = _get_script_code(path); 
+	return code.new() if code else code
+
+static func _get_script_code(path: String):
+	var absolute_path = PathsStore.detectFileFolder(path); if !absolute_path: return
+	var code = _load_script_code(absolute_path); if !code: return
+	return code
+
+static func _load_script_code(path_absolute: String) -> GDScript:
+	var code = FileAccess.get_file_as_string(path_absolute); if !code: return
+	var script: GDScript = GDScript.new()
+	script.source_code = code
+	script.take_over_path(path_absolute)
+	script.reload()
+	return script
+
 static func _find_script_path(script: Object) -> String:
 	var id = script.get_instance_id()
 	for i in scriptsCreated: if scriptsCreated[i].get_instance_id() == id: return i
@@ -108,130 +92,98 @@ static func _find_script_path(script: Object) -> String:
 
 static func _script_path(path: String): return path if path.ends_with('.gd') else path+'.gd'
 
-static func get_arguments(script: Object) -> Dictionary[StringName,Variant]:
+static func get_arguments(script: Script) -> Dictionary[StringName,Variant]:
 	var functions: Dictionary[StringName,Variant]
 	if !script: return functions
-	var method_list = script.get_script_method_list()
-	var i = method_list.size()
-	while i:
-		i -= 1
-		var f = method_list[i]
+	var methods = script.get_script_method_list()
+	var f = methods.size()
+	while f:
+		f -= 1; var data = methods[f]; if data.flags & METHOD_FLAG_STATIC: continue
 		
-		if f.flags & METHOD_FLAG_STATIC: continue
+		var name: StringName = data.name
+		var args = data.args; if !args: functions[name] = null; continue
+		var new_args: Array[Dictionary]
 		
-		var args = f.args
-		if !args: functions[f.name] = null; continue
+		var default_args = data.default_args
+		var args_default_length = default_args.size()
+		var args_length = args.size()
 		
-		var default_args = f.default_args
-		var index: int = default_args.size()
-		while index: index -= 1; args[index].default = default_args[index];
-		functions[f.name] = args
+		var a: int = 0
+		while a < args_length: 
+			var param_data = {&"type": args[a].type}
+			if default_args:
+				var d_i = args_default_length - (args_length - a)
+				if d_i >= 0: param_data.default = default_args[d_i]
+			new_args.append(param_data)
+			a += 1
+		functions[name] = new_args
 	return functions
 
-static func registerScript(script: Object, tag: String = '') -> bool:
+static func registerScript(script: Object, tag: StringName = &'') -> bool:
 	if !script: return false
 	var args = get_arguments(script.get_script())
-	scriptsCreated[tag] = script
-	arguments[script.get_instance_id()] = args
-	
-	for func_name in args:
-		if !func_name in method_list: method_list[func_name] = [script]
-		else: method_list[func_name].append(script)
+	scriptsCreated[tag] = script; script.set_meta(&"arguments",args)
+	for func_name in args: _register_callback_no_check(script,func_name)
 	
 	if args.has(&"onCreate"): script.onCreate()
 	if args.has(&'onCreatePost') and game and game.get(&'stateLoaded'): script.onCreatePost(); 
 	return true
 
 static func _register_callback_no_check(script: Object, function: StringName):
-	if !function in method_list: method_list[function] = [script]
+	if !function in method_list: method_list[function] = Array([script],TYPE_OBJECT,&"",null)
 	else: method_list[function].append(script)
 
-static func removeScript(path: Variant):
-	var script: Object
-	if path is Object: 
-		script = path
-		path = _find_script_path(script)
-		if !path: return
-	else:
-		if path is String: path = _script_path(Paths.getPath(path,false))
-		script = scriptsCreated.get(path)
-		if !script: return
-		
+static func removeScript(path: Variant): 
+	if path is Object: path = _find_script_path(path)
+	_remove_script_from_path(_script_path(PathsStore.get_base_path(path,false)))
+
+static func _get_script(script: Variant) -> Object:
+	if !script: return
+	if script is Object: return script
+	return scriptsCreated.get(_script_path(script))
+
+static func _remove_script_from_path(path: StringName):
+	var script: Object = scriptsCreated.get(path); if !script: return
 	scriptsCreated.erase(path)
-	var id = script.get_instance_id()
-	var script_args = arguments.get(id)
 	
-	for i in script_args:
+	var args = script.get_meta(&"arguments")
+	if !args: FunkinGD.callOnScripts(&'onScriptRemoved', script, path); return
+	
+	for i in args:
 		if method_list[i].size() == 1: method_list.erase(i)
-		else:  method_list[i].erase(script)
-	arguments.erase(id)
-	FunkinGD.callOnScripts(&'onScriptRemoved',[script,path])
+		else: method_list[i].erase(script)
+	FunkinGD.callOnScripts(&'onScriptRemoved', script, path)
 
 static func _clear_scripts(absolute: bool = false):
-	if absolute:
-		for i in spritesCreated.values(): if i: i.queue_free()
-		for i in groupsCreated.values(): i.queue_free()
-		for i in tweensCreated.values(): if i: i.stop()
-		for i in modVars.values(): if i is Node: i.queue_free()
-		for i in timersPlaying.values(): if i: i[0].stop()
-	soundsPlaying.clear()
 	method_list.clear()
-	shadersCreated.clear()
-	scriptsCreated.clear()
-	shadersCreated.clear()
 	modVars.clear()
-	spritesCreated.clear()
-	groupsCreated.clear()
-	timersPlaying.clear()
-	tweensCreated.clear()
+	
+	scriptsCreated.clear()
+	FunkinAudioServer.clear()
+	FunkinShadersServer.clear()
+	FunkinSpritesServer.clear()
+	FunkinTweenerServer.clear(absolute)
+	FunkinTimerServer.clear(absolute)
+	FunkinGroups.clear(absolute)
 
 
-static func _call_script_no_check(script: Object, function: StringName, parameters: Variant) -> Variant:
-	var args = arguments.get(script.get_instance_id()); if !args or !args.has(function): return
-	args = args[function]
-	
-	if !args: return script.call(function)
-	
-	if args.size() == 1: return script.call(function,parameters[0] if ArrayUtils.is_array(parameters) else parameters)
-	return script.callv(function,_sign_parameters(args,parameters)) 
+static func _call_script_no_check(script: Object, function: StringName, parameters: Array) -> Variant: 
+	if !parameters: return script.call(function)
+	return script.callv(function, parameters) 
 
-static func _sign_parameters(args: Array,parameters: Variant) -> Array:
-	if ArrayUtils.is_array(parameters): return _sign_parameters_array(args,parameters)
-	parameters = [_sign_value(parameters,args[0].type)]
-	var index: int = 1
-	while index < args.size(): 
-		var i = args[index]
-		if i.has(&'default'): break
-		parameters.append(MathUtils.get_new_value(i.type));
-		index += 1
-	return parameters
 
-static func _sign_parameters_array(args: Array, parameters: Array) -> Array:
-	var index: int = 0
-	parameters = parameters.duplicate()
-	
-	var parms_size = parameters.size()
-	var args_length = args.size()
-	
-	if parms_size > args_length: parameters.resize(args_length); parms_size = args_length
-	while index < parms_size:
-		var i = args[index]
-		parameters[index] = _sign_value(parameters[index],i.type)
-		index += 1
-	
-	while index < args_length: 
-		var i = args[index]; parameters.append(i.get('default')); index += 1;
-	
-	return parameters
 
-static func _sign_value(value: Variant, type_to_convert: Variant.Type) -> Variant:
-	return value if type_to_convert == TYPE_NIL or typeof(value) == type_to_convert else type_convert(value,type_to_convert)
 
 #endregion
 
 #region Warning Methods
+static func debug_error(warning: String):
+	if OS.is_debug_build(): push_error(warning)
+	else: debug_message(warning) 
+
 static func debug_message(warning: String, color: Color = Color.RED, only_show_when_debugging: bool = true):
 	if only_show_when_debugging and !debugMode: return
+	
 	var text = Global.show_label_warning(warning,5.0)
 	text.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	text.modulate = color 
@@ -239,24 +191,10 @@ static func debug_message(warning: String, color: Color = Color.RED, only_show_w
 #endregion
 
 #region Timer Methods
-static func _create_timer(tag: StringName, time: float, loops: int) -> Array:
-	var timer = Timer.new()
-	var data = [timer,loops]
-	timer.timeout.connect(func():
-		if data[1] > 1: timer.start(time); data[1] -= 1
-		else: timersPlaying.erase(tag); timer.queue_free()
-		FunkinGD.callOnScripts(&'onTimerCompleted',[tag,data[1]])
-	)
-	get_game().add_child(timer)
-	timersPlaying[tag] = data
-	timer.start(time)
-	return data
+
 
 #endregion
 
-#region Getters
-static func get_game() -> Node:
-	return game if game else Global
-#endregion
-
-#endregion
+static func _add_game_node(node: Node) -> void:
+	if owner: owner.add_child(node)
+	else: Global.add_child(node)

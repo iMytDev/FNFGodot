@@ -1,0 +1,61 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://db1erfski0kuu"]
+
+[ext_resource type="Shader" uid="uid://0sncd4dgejsq" path="res://assets/shaders/3d/sky.gdshader" id="1_bt8gs"]
+
+[sub_resource type="Gradient" id="Gradient_5i0cy"]
+offsets = PackedFloat32Array(0.5040431, 1)
+colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_t2qxf"]
+noise_type = 0
+fractal_gain = 0.8
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_5i0cy"]
+width = 1024
+height = 1024
+generate_mipmaps = false
+noise = SubResource("FastNoiseLite_t2qxf")
+color_ramp = SubResource("Gradient_5i0cy")
+seamless = true
+
+[sub_resource type="Gradient" id="Gradient_0nul6"]
+offsets = PackedFloat32Array(0.9269231, 1)
+colors = PackedColorArray(0, 0, 0, 0, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_0nul6"]
+noise_type = 5
+frequency = 0.538
+fractal_type = 0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_bt8gs"]
+width = 720
+height = 720
+noise = SubResource("FastNoiseLite_0nul6")
+color_ramp = SubResource("Gradient_0nul6")
+
+[resource]
+shader = ExtResource("1_bt8gs")
+shader_parameter/time_offset = 0.5000000223518
+shader_parameter/exposure = 1.0
+shader_parameter/day_top_color = Color(0.1, 0.5, 1, 1)
+shader_parameter/day_horizon_color = Color(0.8, 1, 0.9, 1)
+shader_parameter/sunset = false
+shader_parameter/sunset_color = Color(1, 0.5, 0, 1)
+shader_parameter/sunset_start = 0.0
+shader_parameter/inv_sky_curve = 4.0
+shader_parameter/inv_ground_curve = 30.000000670552268
+shader_parameter/sun_angle_max = 0.877
+shader_parameter/inv_sun_curve = 22.78
+shader_parameter/clouds = true
+shader_parameter/clouds_offset = -0.1
+shader_parameter/cloud_direction = Vector2(3, 9)
+shader_parameter/clouds_wave_strength = 0.01
+shader_parameter/cloud_scale = Vector2(0.5, 0.5)
+shader_parameter/cloud_texture = SubResource("NoiseTexture2D_5i0cy")
+shader_parameter/clouds2_offset = -0.1
+shader_parameter/cloud2_direction = Vector2(3, 9)
+shader_parameter/cloud2_scale = Vector2(1, 1)
+shader_parameter/stars = true
+shader_parameter/stars_noise = SubResource("NoiseTexture2D_bt8gs")
+shader_parameter/night_top_color = Color(0, 0, 0, 1)
+shader_parameter/night_bottom_color = Color(0, 0, 0, 1)

@@ -1,0 +1,268 @@
+[gd_scene format=3 uid="uid://chdh2fjkvv31k"]
+
+[ext_resource type="Script" uid="uid://dsm0luhaq03go" path="res://source/custom_nodes/controls/ChessScroll.gd" id="3_3rws7"]
+[ext_resource type="Script" uid="uid://djppt66esh217" path="res://source/custom_nodes/FunkinFileDialog.gd" id="4_a3uu6"]
+
+[sub_resource type="GDScript" id="GDScript_afo8h"]
+resource_name = "EventManager"
+script/source = "extends Node
+
+@export var event: EventData = EventData.new()
+
+signal on_event_loaded(data: EventData)
+func _save_event(path_absolute: String):
+	var event_converted = _get_event_converted_to_json()
+	var save = FileAccess.open(path_absolute,FileAccess.WRITE)
+	save.store_string(JSON.stringify(event_converted,'\\t'))
+	save.close()
+
+func _load_event(path_absolute: String):
+	event = EventData.load_from_json(Paths.load_json_absolute(path_absolute))
+	on_event_loaded.emit(event)
+
+func _get_event_converted_to_json() -> Dictionary:
+	var dict = {
+		&\"description\": event.description,
+		&\"icon\": event.icon,
+		&\"variables\": {}
+	}
+	for i in event.variables:
+		var d = event.variables[i]
+		var type = d.type
+		var var_data: Dictionary[String, Variant] = {}
+		if d.default:
+			match type:
+				TYPE_VECTOR2,TYPE_VECTOR2I: var_data.default = [d.default.x,d.default.y]
+				TYPE_VECTOR3,TYPE_VECTOR4I: var_data.default = [d.default.x,d.default.y,d.default.z]
+				TYPE_VECTOR4,TYPE_VECTOR4I: var_data.default = [d.default.x,d.default.y,d.default.z,d.default.w]
+				_: var_data.default = d.default
+		var_data.type = d.type_string
+		dict.variables[i] = var_data
+	return dict
+
+func _on_description_submitted(new_text: String) -> void: event.description = new_text
+func _on_icon_submitted(new_text: String) -> void: event.icon = new_text
+"
+
+[sub_resource type="GDScript" id="GDScript_538v2"]
+resource_name = "IconSprite"
+script/source = "extends Sprite2D
+
+func _set_icon(tex: String): texture = Paths.texture(tex)
+"
+
+[sub_resource type="GDScript" id="GDScript_wv6yg"]
+resource_name = "Icon"
+script/source = "extends LineEdit
+
+func _on_icon_file_selected(path: String) -> void:
+	path = PathsStore.get_base_path(path,false)
+	if path.begins_with(\"images/\"): path = path.right(-7)
+	text = path.get_basename(); text_submitted.emit(text)
+
+
+func _on_event_loaded(data: EventData) -> void:
+	text = data.icon; 
+	text_submitted.emit(text)
+"
+
+[sub_resource type="GDScript" id="GDScript_hpgey"]
+script/source = "extends LineEdit
+func _on_event_loaded(data: EventData) -> void: text = data.description
+"
+
+[sub_resource type="GDScript" id="GDScript_laab7"]
+resource_name = "VariablesContainer"
+script/source = "extends Control
+const VariableButton = preload(\"uid://cym5wyvu8du7u\")
+@onready var container: VBoxContainer = $Container/VBoxContainer
+@onready var var_name: LineEdit = $Name
+
+func _add_variable():
+	if !var_name.text: 
+		Global.show_label_warning(\"Insert a name before adding it\")
+		return
+	
+	if var_name.text in owner.event.variables:
+		Global.show_label_warning(\"Property already exists with the same name!\")
+		return
+	var value_type = EventValueType.new()
+	owner.event.variables[var_name.text] = value_type
+	add_variable_from_type(var_name.text,value_type)
+
+func add_variable_from_type(prop_name: String, data: EventValueType):
+	var variable_button = VariableButton.new(data)
+	variable_button.title = prop_name
+	container.add_child(variable_button)
+	
+	var delete_button = Button.new()
+	delete_button.icon = load(\"res://icons/Remove.svg\")
+	delete_button.button_down.connect(func():
+		owner.event.variables.erase(prop_name)
+		variable_button.queue_free()
+		queue_free()
+	)
+	delete_button.add_theme_constant_override(&\"icon_max_width\",16)
+	delete_button.position.x = container.size.x - 40
+	variable_button.add_child(delete_button)
+
+func _on_event_loaded(data: EventData) -> void:
+	for i in container.get_children(): i.queue_free()
+	for i in data.variables: add_variable_from_type(i, data.variables[i])
+"
+
+[node name="EventCreator" type="Node" unique_id=773717611]
+script = SubResource("GDScript_afo8h")
+
+[node name="ChessScroll" type="Control" parent="." unique_id=451515499]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1282.0
+offset_bottom = 727.0
+script = ExtResource("3_3rws7")
+primary_color = Color(0, 0, 0, 1)
+secondary_color = Color(0.029506557, 0.029506557, 0.029506557, 1)
+metadata/_custom_type_script = "uid://dsm0luhaq03go"
+metadata/_edit_lock_ = true
+
+[node name="Icon" type="Sprite2D" parent="." unique_id=29400968]
+position = Vector2(248, 336)
+scale = Vector2(1.2, 1.2)
+script = SubResource("GDScript_538v2")
+
+[node name="TabContainer" type="TabContainer" parent="." unique_id=978019924]
+offset_left = 692.0
+offset_top = 337.0
+offset_right = 1281.0
+offset_bottom = 722.0
+current_tab = 1
+
+[node name="Event" type="VBoxContainer" parent="TabContainer" unique_id=856816450]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 15
+metadata/_tab_index = 0
+
+[node name="Icon" type="Label" parent="TabContainer/Event" unique_id=2077935218]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Icon:"
+vertical_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/Event/Icon" unique_id=1840924191]
+layout_mode = 0
+offset_left = 49.0
+offset_top = 9.0
+offset_right = 225.0
+offset_bottom = 32.0
+script = SubResource("GDScript_wv6yg")
+
+[node name="Icon" type="FileDialog" parent="TabContainer/Event/Icon" unique_id=631016948]
+oversampling_override = 1.0
+title = "Open a File"
+initial_position = 1
+file_mode = 0
+access = 2
+use_native_dialog = true
+script = ExtResource("4_a3uu6")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[node name="Button" type="Button" parent="TabContainer/Event/Icon" unique_id=441410146]
+layout_mode = 0
+offset_left = 229.0
+offset_top = 9.0
+offset_right = 350.0
+offset_bottom = 32.0
+focus_mode = 0
+text = "Select Image"
+
+[node name="Description" type="Label" parent="TabContainer/Event" unique_id=1823621033]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+text = "Description:"
+vertical_alignment = 1
+
+[node name="LineEdit" type="LineEdit" parent="TabContainer/Event/Description" unique_id=825312690]
+layout_mode = 0
+offset_left = 114.0
+offset_top = -2.0
+offset_right = 450.0
+offset_bottom = 41.0
+script = SubResource("GDScript_hpgey")
+
+[node name="Save" type="Button" parent="TabContainer/Event" unique_id=2010705053]
+custom_minimum_size = Vector2(0, 39)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Save Event"
+
+[node name="FileDialog" type="FileDialog" parent="TabContainer/Event/Save" unique_id=473280806]
+initial_position = 1
+access = 2
+filters = PackedStringArray("*.json")
+use_native_dialog = true
+script = ExtResource("4_a3uu6")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[node name="Load" type="Button" parent="TabContainer/Event" unique_id=863674942]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_horizontal = 0
+text = "Load Event"
+
+[node name="FileDialog" type="FileDialog" parent="TabContainer/Event/Load" unique_id=511098035]
+title = "Open a File"
+initial_position = 1
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.json")
+use_native_dialog = true
+script = ExtResource("4_a3uu6")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[node name="Variables" type="Control" parent="TabContainer" unique_id=128431352]
+layout_mode = 2
+script = SubResource("GDScript_laab7")
+metadata/_tab_index = 1
+
+[node name="Name" type="LineEdit" parent="TabContainer/Variables" unique_id=808350752]
+layout_mode = 0
+offset_left = 8.0
+offset_top = 7.0
+offset_right = 160.0
+offset_bottom = 38.0
+
+[node name="Add" type="Button" parent="TabContainer/Variables" unique_id=697817736]
+layout_mode = 0
+offset_left = 172.0
+offset_top = 8.0
+offset_right = 311.0
+offset_bottom = 37.0
+size_flags_horizontal = 0
+text = "Add Variable"
+
+[node name="Container" type="ScrollContainer" parent="TabContainer/Variables" unique_id=1938811966]
+layout_mode = 0
+offset_left = 1.0
+offset_top = 45.0
+offset_right = 589.0
+offset_bottom = 359.0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Variables/Container" unique_id=297591665]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[connection signal="on_event_loaded" from="." to="TabContainer/Event/Icon/LineEdit" method="_on_event_loaded"]
+[connection signal="on_event_loaded" from="." to="TabContainer/Event/Description/LineEdit" method="_on_event_loaded"]
+[connection signal="on_event_loaded" from="." to="TabContainer/Variables" method="_on_event_loaded"]
+[connection signal="text_submitted" from="TabContainer/Event/Icon/LineEdit" to="." method="_on_icon_submitted"]
+[connection signal="text_submitted" from="TabContainer/Event/Icon/LineEdit" to="Icon" method="_set_icon"]
+[connection signal="file_selected" from="TabContainer/Event/Icon/Icon" to="TabContainer/Event/Icon/LineEdit" method="_on_icon_file_selected"]
+[connection signal="button_down" from="TabContainer/Event/Icon/Button" to="TabContainer/Event/Icon/Icon" method="show"]
+[connection signal="text_submitted" from="TabContainer/Event/Description/LineEdit" to="." method="_on_description_submitted"]
+[connection signal="button_down" from="TabContainer/Event/Save" to="TabContainer/Event/Save/FileDialog" method="show"]
+[connection signal="file_selected" from="TabContainer/Event/Save/FileDialog" to="." method="_save_event"]
+[connection signal="button_down" from="TabContainer/Event/Load" to="TabContainer/Event/Load/FileDialog" method="show"]
+[connection signal="file_selected" from="TabContainer/Event/Load/FileDialog" to="." method="_load_event"]
+[connection signal="button_down" from="TabContainer/Variables/Add" to="TabContainer/Variables" method="_add_variable"]

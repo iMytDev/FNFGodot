@@ -1,27 +1,20 @@
-extends "Note.gd"
+extends Note
 const NoteSustain = preload("uid://bhagylovx7ods")
-var sustainParents: Array[NoteSustain]
-var hit_action: StringName ##The Key that have to be press to hit the note, this auto changes when [member noteData] is setted.
 
-var copyAngle: bool = true ## Follow strum angle
-var offsetAngle: float = 0.0 ##Additive Angle offset 
+const _rating_string: Array = [&'sick',&'good',&'bad',&'shit']
+const _ratings_length: int = 4
+const _rating_offset: PackedFloat32Array = [45.0,130.0,150.0,200]
+
+var sustain: NoteSustain
+var sustainEnd: NoteSustain
+
 func updateRating() -> void:
-	var timeAbs = absf(distance)
 	ratingMod = 0
-	while ratingMod < _ratings_length: 
-		if timeAbs < _rating_offset[ratingMod]: break
-		ratingMod += 1
+	var dist = absf(distance)
+	while ratingMod < _ratings_length and dist >= _rating_offset[ratingMod]: ratingMod += 1
 	rating = _rating_string[ratingMod]
-	
-	if !sustainParents: return
-	sustainParents[0].ratingMod = ratingMod
 
-func followStrum(strum: StrumNote = strumNote) -> void:
-	if !strum: return
-	super.followStrum(strum)
-	if copyAngle: rotation_degrees = strum.rotation_degrees + offsetAngle
-	if copyScale: setGraphicScale(strumNote.scale * multScale)
-
-func setNoteData(_data: int) -> void: super.setNoteData(_data); hit_action = getInputActions()[_data]
-
-static func getInputActions(key_count: int = Song.keyCount) -> Array: return key_actions[key_count]
+func follow_strum(strum: StrumNote = strumNote) -> void:
+	super(strum)
+	if copyAngle: rotation = strum.rotation + noteAngle
+	if copyScale: scale = (strumNote.scale * multScale * noteScale)

@@ -1,0 +1,286 @@
+[gd_scene format=3 uid="uid://bi5qmvyhqe1cq"]
+
+[sub_resource type="GDScript" id="GDScript_0y3xc"]
+script/source = "@tool
+extends ChessScroll
+
+
+var characters_to_convert: PackedStringArray
+var stages_to_convert: PackedStringArray
+
+class ButtonConvert extends MenuButton:
+	func _ready() -> void:
+		flat = false
+		var popup = get_popup()
+		popup.set(\"theme_override_constants/icon_max_width\",24)
+		
+		popup.index_pressed.connect(select_item)
+		set(\"theme_override_constants/icon_max_width\",24)
+		select_item(0)
+		
+	
+	func select_item(index: int): icon = get_popup().get_item_icon(index)
+"
+
+[sub_resource type="GDScript" id="GDScript_gvi0j"]
+resource_name = "Files"
+script/source = "extends FunkinFileDialog
+
+var characters: PackedStringArray
+
+@onready var containers = $Popup/Panel/ScrollContainer/VBoxContainer
+@onready var popup_confirm = $Popup
+func _ready() -> void:
+	title = \"Select Characters to convert\"
+	files_selected.connect(_on_files_selected)
+
+func _on_files_selected(files: PackedStringArray): 
+	characters = files
+	for i in containers.get_children(): i.queue_free()
+	for i in characters: 
+		var label = Label.new()
+		label.text = i
+		containers.add_child(label)
+		
+		var delete_button = Button.new()
+		delete_button.icon = load(\"uid://d3ler7oyh2kc5\")
+		delete_button.set(&\"theme_override_constants/icon_max_width\",20)
+		label.add_child(delete_button)
+		delete_button.layout_direction = Control.LAYOUT_DIRECTION_RTL
+	popup_confirm.show()
+
+func _convert_characters():
+	if !characters: return
+	var save_old_chars = get_selected_options().get(\"Save old characters\")
+	
+	if !save_old_chars:
+		for i in characters: Paths.saveFile(_convert_psych_to_godot(Paths.loadJson(i)),i)
+		return
+	
+	var base_dir = characters[0].get_base_dir()+'/old'
+	if !DirAccess.dir_exists_absolute(base_dir): DirAccess.make_dir_absolute(base_dir)
+	for i in characters:
+		var json = Paths.loadJson(i)
+		Paths.saveFile(char,base_dir+'/'+i.get_file())
+		var char = _convert_psych_to_godot(json)
+		Paths.saveFile(char,i)
+		
+
+static func _convert_psych_to_godot(json: Dictionary) -> Dictionary[StringName,Variant]:
+	var new_json: Dictionary[StringName,Variant] = Character.getCharacterBaseData()
+	
+	
+	var animations: Array
+	var anims: Array = json.get(&'animations',[])
+	for i in anims:
+		var anim: Dictionary
+		if i.has(\"indices\"): anim.frameIndices = i.indices
+		if i.has(\"loop\"): anim.looped = i.loop
+		if i.has(\"anim\"):  anim.name = i.anim; if i.has(&'name'): anim.prefix = i.name
+		if i.has(\"fps\"): anim.fps = i.fps
+		if i.has(\"offsets\"): anim.offsets = i.offsets
+		animations.append(anim)
+	
+	new_json.offsets = json.get(&'position',[0,0])
+	new_json.flipX = json.get(&'flip_x',false)
+	new_json.healthbar_colors = json.get(&\"healthbar_colors\",PackedByteArray([255,255,255]))
+	new_json.assetPath = json.get(&'image','')
+	new_json.singTime = json.get(&'sing_duration',4.0)*2.0
+	new_json.isPixel = json.get(&'no_antialiasing',false)
+	
+	var icon = json.get(&'healthicon',&'icon-face')
+	new_json.healthIcon.id = StringName(icon)
+	new_json.healthIcon.isPixel = icon.ends_with('-pixel')
+	new_json.camera_position = json.get(&'camera_position',[0,0])
+	new_json.scale = json.get(&'scale',1.0)
+	DictUtils.merge_existing(new_json,json)
+	new_json.animations = animations
+	return new_json
+"
+
+[sub_resource type="GDScript" id="GDScript_rknfc"]
+script/source = "extends FunkinFileDialog
+
+const Stage = preload(\"uid://dh7syegxufdht\")
+var stages: PackedStringArray
+
+@onready var containers = $Popup/Panel/ScrollContainer/VBoxContainer
+@onready var popup_confirm = $Popup
+
+func _ready() -> void: 
+	title = \"Select Stages to convert\"
+	files_selected.connect(_on_files_selected)
+
+func _on_files_selected(files: PackedStringArray): 
+	stages = files
+	
+	for i in files: 
+		var label = Label.new()
+		label.text = i
+		containers.add_child(label)
+		
+		var delete_button = Button.new()
+		delete_button.icon = load(\"uid://d3ler7oyh2kc5\")
+		delete_button.set(&\"theme_override_constants/icon_max_width\",20)
+		label.add_child(delete_button)
+		delete_button.layout_direction = Control.LAYOUT_DIRECTION_RTL
+	popup_confirm.show()
+
+func _convert_stages():
+	if !stages: return
+	var save_old_chars = get_selected_options().get(\"Save old characters\")
+	
+	if !save_old_chars:
+		for i in stages: Paths.saveFile(_convert_psych_to_godot(Paths.loadJson(i)),i)
+		return
+	
+	var base_dir = stages[0].get_base_dir()+'/old'
+	if !DirAccess.dir_exists_absolute(base_dir): DirAccess.make_dir_absolute(base_dir)
+	
+	for i in stages:
+		var json = Paths.loadJson(i)
+		Paths.saveFile(char,base_dir+'/'+i.get_file())
+		var char = _convert_psych_to_godot(json)
+		Paths.saveFile(char,i)
+	
+static func _convert_psych_to_godot(json: Dictionary):
+	var new_json: Dictionary = Stage.getStageBaseJson()
+	
+	for i in json: if new_json.has(i): new_json[i] = json[i]
+	
+	if json.has('camera_girlfriend'): 
+		new_json.characters.gf.cameraOffsets = [json.camera_girlfriend.x,json.camera_girlfriend.y]
+	if json.has('camera_boyfriend'): 
+		new_json.characters.bf.cameraOffsets = [json.camera_boyfriend.x,json.camera_boyfriend.y]
+	if json.has('camera_opponent'): 
+		new_json.characters.dad.cameraOffsets = [json.camera_opponent.x,json.camera_opponent.y]
+	
+	
+	new_json.cameraZoom = json.get('defaultZoom',new_json.cameraZoom)
+	new_json.cameraSpeed = json.get('camera_speed',new_json.cameraSpeed)
+	 
+	new_json.characters.bf.position = json.get('boyfriend',new_json.characters.bf.position)
+	new_json.characters.dad.position = json.get('opponent',new_json.characters.dad.position)
+	new_json.characters.gf.position = json.get('girlfriend',new_json.characters.gf.position)
+	return new_json
+"
+
+[node name="Convert" type="Control" unique_id=1012919356]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 1280.0
+offset_bottom = 720.0
+script = SubResource("GDScript_0y3xc")
+primary_color = Color(0.033853278, 0.033853278, 0.033853274, 1)
+secondary_color = Color(0.017732397, 0.017732391, 0.017732384, 1)
+metadata/_custom_type_script = "uid://dsm0luhaq03go"
+
+[node name="CharactersDialog" type="FileDialog" parent="." unique_id=1188607267]
+oversampling_override = 1.0
+title = "Open File(s)"
+initial_position = 1
+file_mode = 1
+access = 2
+filters = PackedStringArray("*.json")
+option_count = 1
+option_0/name = "Save old characters"
+script = SubResource("GDScript_gvi0j")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[node name="Popup" type="ConfirmationDialog" parent="CharactersDialog" unique_id=3762226]
+oversampling_override = 1.0
+mode = 1
+title = "Convert These Files?"
+initial_position = 1
+size = Vector2i(400, 300)
+ok_button_text = "Convert"
+
+[node name="Panel" type="PanelContainer" parent="CharactersDialog/Popup" unique_id=2144349655]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 392.0
+offset_bottom = 259.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CharactersDialog/Popup/Panel" unique_id=277008994]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CharactersDialog/Popup/Panel/ScrollContainer" unique_id=1598267396]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 15
+
+[node name="StageDialog" type="FileDialog" parent="." unique_id=1846007524]
+oversampling_override = 1.0
+title = "Open File(s)"
+initial_position = 1
+file_mode = 1
+access = 2
+filters = PackedStringArray("*.json")
+script = SubResource("GDScript_rknfc")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[node name="Popup" type="ConfirmationDialog" parent="StageDialog" unique_id=565247748]
+oversampling_override = 1.0
+mode = 1
+title = "Convert These Stages?"
+initial_position = 1
+size = Vector2i(400, 300)
+ok_button_text = "Convert"
+
+[node name="Panel" type="PanelContainer" parent="StageDialog/Popup" unique_id=1507965573]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 392.0
+offset_bottom = 259.0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="StageDialog/Popup/Panel" unique_id=808602495]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="StageDialog/Popup/Panel/ScrollContainer" unique_id=746505673]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 15
+
+[node name="Panel" type="Panel" parent="." unique_id=1748177659]
+layout_mode = 0
+offset_left = 234.0
+offset_top = 160.0
+offset_right = 943.0
+offset_bottom = 487.0
+
+[node name="Label" type="Label" parent="Panel" unique_id=896602777]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+anchor_bottom = 0.046000004
+offset_right = 2.0
+offset_bottom = 75.958
+text = "Convert Psych Files"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Character" type="Button" parent="Panel" unique_id=146176246]
+layout_mode = 0
+offset_left = 38.0
+offset_top = 293.0
+offset_right = 206.0
+offset_bottom = 316.0
+text = "Convert Characters"
+
+[node name="Button" type="Button" parent="Panel" unique_id=317676608]
+layout_mode = 0
+offset_left = 459.0
+offset_top = 293.0
+offset_right = 589.0
+offset_bottom = 316.0
+text = "Convert Stages"
+
+[connection signal="files_selected" from="CharactersDialog" to="." method="_on_characters_selected"]
+[connection signal="confirmed" from="CharactersDialog/Popup" to="CharactersDialog" method="show"]
+[connection signal="confirmed" from="CharactersDialog/Popup" to="CharactersDialog" method="_convert_characters"]
+[connection signal="confirmed" from="StageDialog/Popup" to="StageDialog" method="show"]
+[connection signal="confirmed" from="StageDialog/Popup" to="StageDialog" method="_convert_stages"]
+[connection signal="pressed" from="Panel/Character" to="CharactersDialog" method="show"]
+[connection signal="pressed" from="Panel/Button" to="StageDialog" method="show" flags=3]

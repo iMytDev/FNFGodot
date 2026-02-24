@@ -12,7 +12,7 @@ static var endSoundName: StringName = 'gameOverEnd'
 static var gameOverTime: float = 2
 
 var isOpponent: bool = false
-var character: Character
+var character: Character2D
 var bg = ColorRect.new()
 
 var state: int = 0
@@ -72,7 +72,7 @@ func _on_confirm_time_completed():
 func back() -> void:
 	if !back_state: return
 	Global.swapTree(back_state,true)
-	Global.onSwapTree.connect(queue_free,CONNECT_ONE_SHOT)
+	Global.on_swap_tree.connect(queue_free,CONNECT_ONE_SHOT)
 	
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey:

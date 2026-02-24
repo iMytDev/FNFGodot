@@ -1,8 +1,6 @@
 extends Node
 
 const ModeSelect = preload("res://source/states/Menu/ModeSelect.gd")
-const AlphabetText = preload("res://source/objects/AlphabetText/AlphabetText.gd")
-const SolidSprite = preload("res://source/objects/Sprite/SolidSprite.gd")
 
 var introText: PackedStringArray = [
 	'A Engine made on \n#Godot',
@@ -13,27 +11,28 @@ var introText: PackedStringArray = [
 var curIntroText: int
 var introTime: float
 
-var alphaText: AlphabetText = AlphabetText.new()
+var alphaText: FunkinText = FunkinText.new()
 
-var flash: SolidSprite = SolidSprite.new()
+var flash: SolidNode2D = SolidNode2D.new()
 var flashTween: Tween
 
-var gfBeating: FunkinSprite = FunkinSprite.new(true,'gfDanceTitle')
-var logoBomping: FunkinSprite = FunkinSprite.new(true,'logoBumpin')
-var pressStart: FunkinSprite = FunkinSprite.new(true,'titleEnter')
+var gfBeating: FunkinAnimatedSprite2D = FunkinAnimatedSprite2D.new('gfDanceTitle')
+var logoBomping: FunkinAnimatedSprite2D = FunkinAnimatedSprite2D.new('logoBumpin')
+var pressStart: FunkinAnimatedSprite2D = FunkinAnimatedSprite2D.new('titleEnter')
 
-var bpm: float
+var bpm: float = 120.0
 var beat: int: set = set_beat
 var menuState: int
 var playIntroText: bool = true
 
+var soundMenu: AudioStreamPlayer
 func _ready():
 	DiscordRPC.details = 'In Menu'
 	DiscordRPC.refresh()
 	
 	var bpm_data = Paths.loadJson('images/gfDanceTitle')
 	
-	FunkinGD.playSound(Paths.music('freakyMenu'),1,'freakyMenu',false,true)
+	soundMenu = FunkinGD.playSound(Paths.music('freakyMenu'),1,'freakyMenu',false,true)
 	flash.scale = Vector2(ScreenUtils.screenWidth,ScreenUtils.screenHeight)
 	flash.modulate.a = 0
 	
@@ -49,7 +48,7 @@ func _ready():
 	add_child(flash)
 	logoBomping.animation.add_animation_by_prefix('logo','logo bumpin')
 	logoBomping.visible = false
-	logoBomping._position = Vector2(bpm_data.get('titlex',-150),bpm_data.get('titley',-100))
+	logoBomping.position = Vector2(bpm_data.get('titlex',-150),bpm_data.get('titley',-100))
 	logoBomping.name = &'logoBomping'
 	
 	gfBeating.image.texture = Paths.texture('gfDanceTitle')
@@ -57,7 +56,7 @@ func _ready():
 	gfBeating.animation.add_animation_by_prefix('danceRight','gfDance',24,false,range(15,30))
 	gfBeating.visible = false
 	
-	gfBeating._position = Vector2(bpm_data.get('gfx',600),bpm_data.get('gfy',40))
+	gfBeating.position = Vector2(bpm_data.get('gfx',600),bpm_data.get('gfy',40))
 	gfBeating.name = &'GfBeating'
 	bpm = bpm_data.get('bpm',102)
 	
@@ -65,10 +64,10 @@ func _ready():
 	pressStart.animation.add_animation_by_prefix('idle','ENTER IDLE',24,true)
 	pressStart.animation.add_animation_by_prefix('pressed','ENTER PRESSED',24,true)
 	pressStart.visible = false
-	pressStart._position = Vector2(bpm_data.get('startx',100),bpm_data.get('starty',ScreenUtils.screenHeight - 150))
+	pressStart.position = Vector2(bpm_data.get('startx',100),bpm_data.get('starty',ScreenUtils.screenHeight - 150))
 	pressStart.name = &'pressStart'
 	
-	Global.onSwapTree.connect(queue_free,CONNECT_ONE_SHOT)
+	Global.on_swap_tree.connect(queue_free,CONNECT_ONE_SHOT)
 	if not playIntroText: changeState(1)
 	
 func changeState(state: int = 0):
@@ -87,8 +86,7 @@ func set_beat(newBeat: int):
 	logoBomping.animation.play(&'logo',true)
 	
 func _process(delta: float) -> void:
-	var audio = FunkinGD.soundsPlaying.get('freakyMenu')
-	if audio: beat = audio.get_playback_position()/(60.0/bpm)
+	if soundMenu: beat = int(soundMenu.get_playback_position() / (60.0/bpm))
 	introTime += delta
 	match menuState:
 		0:

@@ -1,0 +1,5842 @@
+[gd_scene format=3 uid="uid://c04txgydygggl"]
+
+[ext_resource type="Script" uid="uid://dj6mim1fcomjg" path="res://source/states/PlayState3D.gd" id="1_doisg"]
+[ext_resource type="Script" uid="uid://cerxbopol4l1g" path="res://source/backend/Song/SongData.gd" id="2_4htwx"]
+[ext_resource type="Material" uid="uid://db1erfski0kuu" path="res://assets/shaders/3d/sky.tres" id="3_fhqw1"]
+[ext_resource type="Script" uid="uid://cy48tucumoxy4" path="res://source/objects/ui/display/camera/FunkinCamera3D.gd" id="3_qks6i"]
+[ext_resource type="PackedScene" uid="uid://bspxvt7njpdgx" path="res://mods/City/models/Beach/Beach.tscn" id="4_55o6w"]
+[ext_resource type="Script" uid="uid://duup8gtapd1" path="res://source/objects/ui/display/camera/LockedCamera3D.gd" id="5_be2nr"]
+[ext_resource type="Script" uid="uid://b71vleqndetjo" path="res://source/objects/characters/CharacterSprite3D.gd" id="6_xbp0w"]
+[ext_resource type="Script" uid="uid://br8wh5do7l62w" path="res://source/utils/animation/AnimationData.gd" id="7_ia13n"]
+[ext_resource type="Script" uid="uid://bv8xd8nuxerrp" path="res://source/utils/animation/FunkinAnimator.gd" id="8_sf0sj"]
+[ext_resource type="Script" uid="uid://dxuhy4065ximc" path="res://source/objects/ui/display/camera/FunkinCamera2D.gd" id="9_sc367"]
+[ext_resource type="Script" uid="uid://sp0gefpiyn7t" path="res://source/objects/ui/display/camera/FunkinScroll2D.gd" id="10_l7fuk"]
+
+[sub_resource type="Resource" id="Resource_c4mer"]
+script = ExtResource("2_4htwx")
+mod = "StarlightMayhem"
+songName = "echoes"
+difficulty = "hard"
+difficulties = PackedStringArray("easy", "normal", "hard")
+metadata/_custom_type_script = "uid://cerxbopol4l1g"
+
+[sub_resource type="Resource" id="Resource_la416"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 87, 708, 685),
+&"region_rect": Rect2(4941, 2344, 697, 597),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 87, 708, 685),
+&"region_rect": Rect2(4941, 2344, 697, 597),
+&"rotated": false
+}, {
+&"frameData": Rect2(102, 24, 708, 685),
+&"region_rect": Rect2(5648, 2344, 603, 660),
+&"rotated": false
+}, {
+&"frameData": Rect2(102, 24, 708, 685),
+&"region_rect": Rect2(5648, 2344, 603, 660),
+&"rotated": false
+}, {
+&"frameData": Rect2(263, 0, 708, 685),
+&"region_rect": Rect2(6261, 2344, 444, 684),
+&"rotated": false
+}, {
+&"frameData": Rect2(263, 0, 708, 685),
+&"region_rect": Rect2(6261, 2344, 444, 684),
+&"rotated": false
+}, {
+&"frameData": Rect2(207, 55, 708, 685),
+&"region_rect": Rect2(6715, 2344, 501, 630),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(300, 270)
+
+[sub_resource type="Resource" id="Resource_h2l3i"]
+script = ExtResource("7_ia13n")
+asset = ""
+metadata/offset = Vector2(0, 10)
+
+[sub_resource type="Resource" id="Resource_1lwd4"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 64, 439, 499),
+&"region_rect": Rect2(2694, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(3143, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3592, 0, 439, 499),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4041, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4490, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(5388, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(5837, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(6286, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(6735, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(7184, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(7633, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(0, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(449, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(898, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(1347, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(1796, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(2245, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(2694, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(3143, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(3592, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4041, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4490, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(33, 69)
+
+[sub_resource type="Resource" id="Resource_61ir1"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(0, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(449, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(449, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(898, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(898, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1347, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1347, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1796, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(0, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(449, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(449, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(898, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(898, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1347, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1347, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1796, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}]
+looped = true
+asset = ""
+metadata/offset = Vector2(33, 5)
+
+[sub_resource type="Resource" id="Resource_nq74e"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(3, 0, 380, 404),
+&"region_rect": Rect2(7226, 2344, 375, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(3, 0, 380, 404),
+&"region_rect": Rect2(7611, 2344, 375, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, -20)
+
+[sub_resource type="Resource" id="Resource_3nx3y"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}]
+looped = true
+asset = ""
+metadata/offset = Vector2(0, -20)
+
+[sub_resource type="Resource" id="Resource_bbixl"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 0, 439, 445),
+&"region_rect": Rect2(5082, 988, 433, 415),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 439, 445),
+&"region_rect": Rect2(5525, 988, 433, 415),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5968, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6417, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6866, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7315, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2245, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1444, 439, 439),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1444, 439, 439),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1444, 439, 434),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1444, 439, 434),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4939, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5388, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5837, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6286, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6735, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7184, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7633, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2245, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 435),
+&"region_rect": Rect2(0, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(33, 11)
+
+[sub_resource type="Resource" id="Resource_wvaog"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 0, 439, 445),
+&"region_rect": Rect2(5082, 988, 433, 415),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 439, 445),
+&"region_rect": Rect2(5525, 988, 433, 415),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5968, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6417, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6866, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7315, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2245, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1444, 439, 439),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1444, 439, 439),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1444, 439, 434),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1444, 439, 434),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4939, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5388, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5837, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6286, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6735, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7184, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7633, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2245, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 435),
+&"region_rect": Rect2(0, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(23, 11)
+
+[sub_resource type="Resource" id="Resource_xgb0u"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 0, 415, 418),
+&"region_rect": Rect2(5388, 509, 395, 416),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 415, 418),
+&"region_rect": Rect2(5388, 509, 395, 416),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 8, 415, 418),
+&"region_rect": Rect2(5793, 509, 413, 410),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 8, 415, 418),
+&"region_rect": Rect2(5793, 509, 413, 410),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(7, 4)
+
+[sub_resource type="Resource" id="Resource_ntr26"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 16, 451, 441),
+&"region_rect": Rect2(4939, 1893, 429, 425),
+&"rotated": false
+}, {
+&"frameData": Rect2(4, 0, 451, 441),
+&"region_rect": Rect2(5378, 1893, 418, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(59, 38, 451, 441),
+&"region_rect": Rect2(5806, 1893, 392, 393),
+&"rotated": false
+}, {
+&"frameData": Rect2(59, 38, 451, 441),
+&"region_rect": Rect2(6208, 1893, 392, 393),
+&"rotated": false
+}, {
+&"frameData": Rect2(58, 39, 451, 441),
+&"region_rect": Rect2(6610, 1893, 378, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(58, 39, 451, 441),
+&"region_rect": Rect2(6998, 1893, 378, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(20, 20)
+
+[sub_resource type="Resource" id="Resource_2vl2x"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}]
+looped = true
+asset = ""
+metadata/offset = Vector2(20, 20)
+
+[sub_resource type="Resource" id="Resource_mq6iw"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 20, 411, 412),
+&"region_rect": Rect2(0, 2344, 406, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 20, 411, 412),
+&"region_rect": Rect2(0, 2344, 406, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 19, 411, 412),
+&"region_rect": Rect2(416, 2344, 408, 393),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 19, 411, 412),
+&"region_rect": Rect2(416, 2344, 408, 393),
+&"rotated": false
+}, {
+&"frameData": Rect2(3, 14, 411, 412),
+&"region_rect": Rect2(834, 2344, 405, 398),
+&"rotated": false
+}, {
+&"frameData": Rect2(3, 14, 411, 412),
+&"region_rect": Rect2(834, 2344, 405, 398),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 1, 411, 412),
+&"region_rect": Rect2(1249, 2344, 410, 411),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 1, 411, 412),
+&"region_rect": Rect2(1249, 2344, 410, 411),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Resource_qde7e"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 1, 386, 374),
+&"region_rect": Rect2(3761, 2344, 386, 373),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 386, 374),
+&"region_rect": Rect2(3761, 2344, 386, 373),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4157, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4157, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-20, -40)
+
+[sub_resource type="Resource" id="Resource_yceev"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 1, 410, 413),
+&"region_rect": Rect2(2087, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 410, 413),
+&"region_rect": Rect2(2505, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 410, 413),
+&"region_rect": Rect2(2923, 2344, 408, 413),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3341, 2344, 410, 413),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-4, 0)
+
+[sub_resource type="Resource" id="Resource_vvp1r"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 5, 375, 362),
+&"region_rect": Rect2(6640, 509, 374, 357),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 5, 375, 362),
+&"region_rect": Rect2(6640, 509, 374, 357),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-10, -50)
+
+[sub_resource type="Resource" id="Resource_qraj0"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 35, 375, 362),
+&"region_rect": Rect2(6640, 509, 374, 357),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 378, 392),
+&"region_rect": Rect2(7407, 509, 376, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 378, 392),
+&"region_rect": Rect2(7407, 509, 376, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-11, -19)
+
+[sub_resource type="Resource" id="Resource_p8mbb"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 0, 385, 406),
+&"region_rect": Rect2(0, 988, 383, 406),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 385, 406),
+&"region_rect": Rect2(0, 988, 383, 406),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(12, -6)
+
+[sub_resource type="Resource" id="Resource_884ey"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 26, 384, 432),
+&"region_rect": Rect2(777, 988, 383, 406),
+&"rotated": false
+}, {
+&"frameData": Rect2(15, 0, 384, 432),
+&"region_rect": Rect2(1170, 988, 369, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(15, 0, 384, 432),
+&"region_rect": Rect2(1170, 988, 369, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(12, 24)
+
+[sub_resource type="Resource" id="Resource_5qpnc"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 2, 409, 407),
+&"region_rect": Rect2(1929, 988, 408, 405),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 2, 409, 407),
+&"region_rect": Rect2(1929, 988, 408, 405),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-41, -7)
+
+[sub_resource type="Resource" id="Resource_5k7tj"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(7, 30, 409, 407),
+&"region_rect": Rect2(1929, 988, 408, 405),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 415, 435),
+&"region_rect": Rect2(2765, 988, 395, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 415, 435),
+&"region_rect": Rect2(2765, 988, 395, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-30, 21)
+
+[sub_resource type="Resource" id="Resource_7fysy"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(5, 0, 376, 446),
+&"region_rect": Rect2(3580, 988, 369, 446),
+&"rotated": false
+}, {
+&"frameData": Rect2(5, 0, 376, 446),
+&"region_rect": Rect2(3580, 988, 369, 446),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-41, 31)
+
+[sub_resource type="Resource" id="Resource_fyfao"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(9, 0, 376, 446),
+&"region_rect": Rect2(3580, 988, 369, 446),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 13, 378, 446),
+&"region_rect": Rect2(4345, 988, 360, 427),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 13, 378, 446),
+&"region_rect": Rect2(4345, 988, 360, 427),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-29, 27)
+
+[sub_resource type="Resource" id="Resource_i53y1"]
+script = ExtResource("8_sf0sj")
+animationsArray = {
+&"attack": SubResource("Resource_la416"),
+&"cheer": SubResource("Resource_h2l3i"),
+&"deathConfirm": SubResource("Resource_1lwd4"),
+&"deathLoop": SubResource("Resource_61ir1"),
+&"dodge": SubResource("Resource_nq74e"),
+&"dodge-hold": SubResource("Resource_3nx3y"),
+&"fakeoutDeath": SubResource("Resource_bbixl"),
+&"firstDeath": SubResource("Resource_wvaog"),
+&"hey": SubResource("Resource_xgb0u"),
+&"hit": SubResource("Resource_ntr26"),
+&"hit-hold": SubResource("Resource_2vl2x"),
+&"idle": SubResource("Resource_mq6iw"),
+&"preAttack": SubResource("Resource_qde7e"),
+&"scared": SubResource("Resource_yceev"),
+&"singDOWN": SubResource("Resource_vvp1r"),
+&"singDOWNmiss": SubResource("Resource_qraj0"),
+&"singLEFT": SubResource("Resource_p8mbb"),
+&"singLEFTmiss": SubResource("Resource_884ey"),
+&"singRIGHT": SubResource("Resource_5qpnc"),
+&"singRIGHTmiss": SubResource("Resource_5k7tj"),
+&"singUP": SubResource("Resource_7fysy"),
+&"singUPmiss": SubResource("Resource_fyfao")
+}
+curAnim = SubResource("Resource_mq6iw")
+current_animation = &"idle"
+frame = 13
+
+[sub_resource type="Resource" id="Resource_ahui6"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 87, 708, 685),
+&"region_rect": Rect2(4941, 2344, 697, 597),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 87, 708, 685),
+&"region_rect": Rect2(4941, 2344, 697, 597),
+&"rotated": false
+}, {
+&"frameData": Rect2(102, 24, 708, 685),
+&"region_rect": Rect2(5648, 2344, 603, 660),
+&"rotated": false
+}, {
+&"frameData": Rect2(102, 24, 708, 685),
+&"region_rect": Rect2(5648, 2344, 603, 660),
+&"rotated": false
+}, {
+&"frameData": Rect2(263, 0, 708, 685),
+&"region_rect": Rect2(6261, 2344, 444, 684),
+&"rotated": false
+}, {
+&"frameData": Rect2(263, 0, 708, 685),
+&"region_rect": Rect2(6261, 2344, 444, 684),
+&"rotated": false
+}, {
+&"frameData": Rect2(207, 55, 708, 685),
+&"region_rect": Rect2(6715, 2344, 501, 630),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(300, 270)
+
+[sub_resource type="Resource" id="Resource_qu037"]
+script = ExtResource("7_ia13n")
+asset = ""
+metadata/offset = Vector2(0, 10)
+
+[sub_resource type="Resource" id="Resource_2im0t"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 64, 439, 499),
+&"region_rect": Rect2(2694, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(3143, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3592, 0, 439, 499),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4041, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4490, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(5388, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(5837, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(6286, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(6735, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(7184, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(7633, 0, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(0, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(449, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(898, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(1347, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(1796, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(2245, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(2694, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(3143, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(3592, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4041, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4490, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 30, 439, 499),
+&"region_rect": Rect2(4939, 509, 439, 469),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(33, 69)
+
+[sub_resource type="Resource" id="Resource_eid1d"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(0, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(449, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(449, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(898, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(898, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1347, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1347, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1796, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(0, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(449, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(449, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(898, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(898, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1347, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1347, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1796, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2245, 0, 439, 435),
+&"rotated": false
+}]
+looped = true
+asset = ""
+metadata/offset = Vector2(33, 5)
+
+[sub_resource type="Resource" id="Resource_o3sid"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(3, 0, 380, 404),
+&"region_rect": Rect2(7226, 2344, 375, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(3, 0, 380, 404),
+&"region_rect": Rect2(7611, 2344, 375, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, -20)
+
+[sub_resource type="Resource" id="Resource_5gduu"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(780, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(0, 3038, 380, 403),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 380, 404),
+&"region_rect": Rect2(390, 3038, 380, 403),
+&"rotated": false
+}]
+looped = true
+asset = ""
+metadata/offset = Vector2(0, -20)
+
+[sub_resource type="Resource" id="Resource_ev8re"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 0, 439, 445),
+&"region_rect": Rect2(5082, 988, 433, 415),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 439, 445),
+&"region_rect": Rect2(5525, 988, 433, 415),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5968, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6417, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6866, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7315, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2245, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1444, 439, 439),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1444, 439, 439),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1444, 439, 434),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1444, 439, 434),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4939, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5388, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5837, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6286, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6735, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7184, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7633, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2245, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 435),
+&"region_rect": Rect2(0, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(33, 11)
+
+[sub_resource type="Resource" id="Resource_4co61"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 0, 439, 445),
+&"region_rect": Rect2(5082, 988, 433, 415),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 439, 445),
+&"region_rect": Rect2(5525, 988, 433, 415),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5968, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6417, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6866, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7315, 988, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2245, 1444, 439, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1444, 439, 439),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1444, 439, 439),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1444, 439, 434),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1444, 439, 434),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4939, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5388, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(5837, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6286, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(6735, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7184, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(7633, 1444, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(0, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(449, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(898, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1347, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(1796, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2245, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(2694, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3143, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(3592, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4041, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 435),
+&"region_rect": Rect2(0, 0, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 439, 445),
+&"region_rect": Rect2(4490, 1893, 439, 435),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(23, 11)
+
+[sub_resource type="Resource" id="Resource_t51ob"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 0, 415, 418),
+&"region_rect": Rect2(5388, 509, 395, 416),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 415, 418),
+&"region_rect": Rect2(5388, 509, 395, 416),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 8, 415, 418),
+&"region_rect": Rect2(5793, 509, 413, 410),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 8, 415, 418),
+&"region_rect": Rect2(5793, 509, 413, 410),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 6, 415, 418),
+&"region_rect": Rect2(6216, 509, 414, 412),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(7, 4)
+
+[sub_resource type="Resource" id="Resource_ycfx3"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 16, 451, 441),
+&"region_rect": Rect2(4939, 1893, 429, 425),
+&"rotated": false
+}, {
+&"frameData": Rect2(4, 0, 451, 441),
+&"region_rect": Rect2(5378, 1893, 418, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(59, 38, 451, 441),
+&"region_rect": Rect2(5806, 1893, 392, 393),
+&"rotated": false
+}, {
+&"frameData": Rect2(59, 38, 451, 441),
+&"region_rect": Rect2(6208, 1893, 392, 393),
+&"rotated": false
+}, {
+&"frameData": Rect2(58, 39, 451, 441),
+&"region_rect": Rect2(6610, 1893, 378, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(58, 39, 451, 441),
+&"region_rect": Rect2(6998, 1893, 378, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(20, 20)
+
+[sub_resource type="Resource" id="Resource_dhlvi"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7386, 1893, 392, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 39, 451, 441),
+&"region_rect": Rect2(7788, 1893, 392, 392),
+&"rotated": false
+}]
+looped = true
+asset = ""
+metadata/offset = Vector2(20, 20)
+
+[sub_resource type="Resource" id="Resource_juqrl"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 20, 411, 412),
+&"region_rect": Rect2(0, 2344, 406, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 20, 411, 412),
+&"region_rect": Rect2(0, 2344, 406, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 19, 411, 412),
+&"region_rect": Rect2(416, 2344, 408, 393),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 19, 411, 412),
+&"region_rect": Rect2(416, 2344, 408, 393),
+&"rotated": false
+}, {
+&"frameData": Rect2(3, 14, 411, 412),
+&"region_rect": Rect2(834, 2344, 405, 398),
+&"rotated": false
+}, {
+&"frameData": Rect2(3, 14, 411, 412),
+&"region_rect": Rect2(834, 2344, 405, 398),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 1, 411, 412),
+&"region_rect": Rect2(1249, 2344, 410, 411),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 1, 411, 412),
+&"region_rect": Rect2(1249, 2344, 410, 411),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 411, 412),
+&"region_rect": Rect2(1669, 2344, 408, 412),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Resource_700ej"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 1, 386, 374),
+&"region_rect": Rect2(3761, 2344, 386, 373),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 386, 374),
+&"region_rect": Rect2(3761, 2344, 386, 373),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4157, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4157, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 386, 374),
+&"region_rect": Rect2(4549, 2344, 382, 374),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-20, -40)
+
+[sub_resource type="Resource" id="Resource_4t52u"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 1, 410, 413),
+&"region_rect": Rect2(2087, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 410, 413),
+&"region_rect": Rect2(2505, 2344, 408, 412),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 410, 413),
+&"region_rect": Rect2(2923, 2344, 408, 413),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3341, 2344, 410, 413),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-4, 0)
+
+[sub_resource type="Resource" id="Resource_gs670"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 5, 375, 362),
+&"region_rect": Rect2(6640, 509, 374, 357),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 5, 375, 362),
+&"region_rect": Rect2(6640, 509, 374, 357),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 375, 362),
+&"region_rect": Rect2(7024, 509, 373, 362),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-10, -50)
+
+[sub_resource type="Resource" id="Resource_nhuyv"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 35, 375, 362),
+&"region_rect": Rect2(6640, 509, 374, 357),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 378, 392),
+&"region_rect": Rect2(7407, 509, 376, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 378, 392),
+&"region_rect": Rect2(7407, 509, 376, 392),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 4, 378, 392),
+&"region_rect": Rect2(7793, 509, 378, 388),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-11, -19)
+
+[sub_resource type="Resource" id="Resource_fhqw1"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 0, 385, 406),
+&"region_rect": Rect2(0, 988, 383, 406),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 385, 406),
+&"region_rect": Rect2(0, 988, 383, 406),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}, {
+&"frameData": Rect2(11, 2, 385, 406),
+&"region_rect": Rect2(393, 988, 374, 404),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(12, -6)
+
+[sub_resource type="Resource" id="Resource_2fpyq"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 26, 384, 432),
+&"region_rect": Rect2(777, 988, 383, 406),
+&"rotated": false
+}, {
+&"frameData": Rect2(15, 0, 384, 432),
+&"region_rect": Rect2(1170, 988, 369, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(15, 0, 384, 432),
+&"region_rect": Rect2(1170, 988, 369, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(13, 0, 384, 432),
+&"region_rect": Rect2(1549, 988, 370, 430),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(12, 24)
+
+[sub_resource type="Resource" id="Resource_bb6md"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(1, 2, 409, 407),
+&"region_rect": Rect2(1929, 988, 408, 405),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 2, 409, 407),
+&"region_rect": Rect2(1929, 988, 408, 405),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 409, 407),
+&"region_rect": Rect2(2347, 988, 408, 407),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-41, -7)
+
+[sub_resource type="Resource" id="Resource_ew61o"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(7, 30, 409, 407),
+&"region_rect": Rect2(1929, 988, 408, 405),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 415, 435),
+&"region_rect": Rect2(2765, 988, 395, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 415, 435),
+&"region_rect": Rect2(2765, 988, 395, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 0, 415, 435),
+&"region_rect": Rect2(3170, 988, 400, 432),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-30, 21)
+
+[sub_resource type="Resource" id="Resource_bjdj4"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(5, 0, 376, 446),
+&"region_rect": Rect2(3580, 988, 369, 446),
+&"rotated": false
+}, {
+&"frameData": Rect2(5, 0, 376, 446),
+&"region_rect": Rect2(3580, 988, 369, 446),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 376, 446),
+&"region_rect": Rect2(3959, 988, 376, 441),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-41, 31)
+
+[sub_resource type="Resource" id="Resource_wfsvk"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(9, 0, 376, 446),
+&"region_rect": Rect2(3580, 988, 369, 446),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 13, 378, 446),
+&"region_rect": Rect2(4345, 988, 360, 427),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 13, 378, 446),
+&"region_rect": Rect2(4345, 988, 360, 427),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}, {
+&"frameData": Rect2(1, 10, 378, 446),
+&"region_rect": Rect2(4715, 988, 357, 430),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-29, 27)
+
+[sub_resource type="Resource" id="Resource_gu658"]
+script = ExtResource("8_sf0sj")
+animationsArray = {
+"attack": SubResource("Resource_ahui6"),
+"cheer": SubResource("Resource_qu037"),
+"deathConfirm": SubResource("Resource_2im0t"),
+"deathLoop": SubResource("Resource_eid1d"),
+"dodge": SubResource("Resource_o3sid"),
+"dodge-hold": SubResource("Resource_5gduu"),
+"fakeoutDeath": SubResource("Resource_ev8re"),
+"firstDeath": SubResource("Resource_4co61"),
+"hey": SubResource("Resource_t51ob"),
+"hit": SubResource("Resource_ycfx3"),
+"hit-hold": SubResource("Resource_dhlvi"),
+"idle": SubResource("Resource_juqrl"),
+"preAttack": SubResource("Resource_700ej"),
+"scared": SubResource("Resource_4t52u"),
+"singDOWN": SubResource("Resource_gs670"),
+"singDOWNmiss": SubResource("Resource_nhuyv"),
+&"singLEFT": SubResource("Resource_fhqw1"),
+&"singLEFTmiss": SubResource("Resource_2fpyq"),
+"singRIGHT": SubResource("Resource_bb6md"),
+"singRIGHTmiss": SubResource("Resource_ew61o"),
+"singUP": SubResource("Resource_bjdj4"),
+"singUPmiss": SubResource("Resource_wfsvk")
+}
+curAnim = SubResource("Resource_juqrl")
+current_animation = &"idle"
+frame = 13
+
+[sub_resource type="Resource" id="Resource_t7u2e"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 0, 703, 657),
+&"region_rect": Rect2(0, 0, 699, 657),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(709, 0, 703, 657),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 3, 703, 657),
+&"region_rect": Rect2(1422, 0, 703, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2135, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Resource_l3awn"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 0, 703, 657),
+&"region_rect": Rect2(0, 0, 699, 657),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(709, 0, 703, 657),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 3, 703, 657),
+&"region_rect": Rect2(1422, 0, 703, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2135, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Resource_m1wsa"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 14, 703, 648),
+&"region_rect": Rect2(3553, 0, 699, 634),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 14, 703, 648),
+&"region_rect": Rect2(4262, 0, 703, 634),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 16, 703, 648),
+&"region_rect": Rect2(4975, 0, 703, 632),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 16, 703, 648),
+&"region_rect": Rect2(5688, 0, 699, 632),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 13, 703, 648),
+&"region_rect": Rect2(6397, 0, 699, 635),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 13, 703, 648),
+&"region_rect": Rect2(7106, 0, 699, 635),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 11, 703, 648),
+&"region_rect": Rect2(0, 667, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(1418, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(1418, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(1418, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(2127, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(2127, 667, 699, 648),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, -9)
+
+[sub_resource type="Resource" id="Resource_k6agu"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 12, 703, 648),
+&"region_rect": Rect2(2836, 667, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 12, 703, 648),
+&"region_rect": Rect2(3545, 667, 703, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 12, 703, 648),
+&"region_rect": Rect2(4258, 667, 703, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 12, 703, 648),
+&"region_rect": Rect2(4971, 667, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 11, 703, 648),
+&"region_rect": Rect2(5680, 667, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 11, 703, 648),
+&"region_rect": Rect2(6389, 667, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 10, 703, 648),
+&"region_rect": Rect2(7098, 667, 699, 638),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 5, 703, 648),
+&"region_rect": Rect2(0, 1325, 699, 643),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 5, 703, 648),
+&"region_rect": Rect2(0, 1325, 699, 643),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 5, 703, 648),
+&"region_rect": Rect2(0, 1325, 699, 643),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 6, 703, 648),
+&"region_rect": Rect2(709, 1325, 699, 642),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 6, 703, 648),
+&"region_rect": Rect2(709, 1325, 699, 642),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 6, 703, 648),
+&"region_rect": Rect2(709, 1325, 699, 642),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 6, 703, 648),
+&"region_rect": Rect2(1418, 1325, 699, 642),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 6, 703, 648),
+&"region_rect": Rect2(1418, 1325, 699, 642),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, -9)
+
+[sub_resource type="Resource" id="Resource_3xu65"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 3, 699, 636),
+&"region_rect": Rect2(709, 5294, 699, 633),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 3, 699, 636),
+&"region_rect": Rect2(709, 5294, 699, 633),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2836, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2836, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3545, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3545, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(2, -21)
+
+[sub_resource type="Resource" id="Resource_4qgxf"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(45, 13, 748, 649),
+&"region_rect": Rect2(7098, 1325, 701, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(45, 13, 748, 649),
+&"region_rect": Rect2(0, 1978, 703, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 21, 748, 649),
+&"region_rect": Rect2(713, 1978, 748, 628),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 22, 748, 649),
+&"region_rect": Rect2(1471, 1978, 699, 627),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(45, -8)
+
+[sub_resource type="Resource" id="Resource_7jurn"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 13, 703, 648),
+&"region_rect": Rect2(2127, 1325, 699, 635),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 13, 703, 648),
+&"region_rect": Rect2(2836, 1325, 703, 635),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 29, 703, 648),
+&"region_rect": Rect2(3549, 1325, 703, 619),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 29, 703, 648),
+&"region_rect": Rect2(4262, 1325, 699, 619),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 41, 703, 648),
+&"region_rect": Rect2(4971, 1325, 699, 607),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 41, 703, 648),
+&"region_rect": Rect2(5680, 1325, 699, 607),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 22, 703, 648),
+&"region_rect": Rect2(6389, 1325, 699, 626),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(1418, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(1418, 667, 699, 648),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, -9)
+
+[sub_resource type="Resource" id="Resource_tb0b2"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 3, 699, 636),
+&"region_rect": Rect2(709, 5294, 699, 633),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 3, 699, 636),
+&"region_rect": Rect2(709, 5294, 699, 633),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2836, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2836, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3545, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3545, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-2, -21)
+
+[sub_resource type="Resource" id="Resource_nph56"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(6406, 3295, 699, 640),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(7115, 3295, 699, 640),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 2, 699, 640),
+&"region_rect": Rect2(0, 3952, 699, 638),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(709, 3952, 699, 640),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(-2, -17)
+
+[sub_resource type="Resource" id="Resource_4nf1v"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 6, 703, 637),
+&"region_rect": Rect2(2853, 3295, 699, 631),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 6, 703, 637),
+&"region_rect": Rect2(3562, 3295, 703, 631),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 1, 703, 637),
+&"region_rect": Rect2(4275, 3295, 703, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 637),
+&"region_rect": Rect2(4988, 3295, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5697, 3295, 699, 637),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, -20)
+
+[sub_resource type="Resource" id="Resource_w8xh5"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 5, 703, 638),
+&"region_rect": Rect2(2844, 4623, 699, 633),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 7, 703, 638),
+&"region_rect": Rect2(3553, 4623, 703, 631),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(4266, 4623, 703, 638),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 638),
+&"region_rect": Rect2(4979, 4623, 699, 638),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 638),
+&"region_rect": Rect2(5688, 4623, 699, 638),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 638),
+&"region_rect": Rect2(6397, 4623, 699, 638),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(7106, 4623, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(7106, 4623, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, -19)
+
+[sub_resource type="Resource" id="Resource_0j3am"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 5, 703, 637),
+&"region_rect": Rect2(1418, 3952, 699, 632),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 5, 703, 637),
+&"region_rect": Rect2(2127, 3952, 703, 632),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2840, 3952, 703, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(3553, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(4262, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(4971, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5680, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(5680, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(6389, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(6389, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(6389, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(6389, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(6389, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(6389, 3952, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 637),
+&"region_rect": Rect2(6389, 3952, 699, 637),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, -20)
+
+[sub_resource type="Resource" id="Resource_22afp"]
+script = ExtResource("7_ia13n")
+frames = [{
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(7098, 3952, 699, 661),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(0, 4623, 703, 661),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(713, 4623, 703, 661),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(1426, 4623, 699, 661),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(2135, 4623, 699, 661),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(2135, 4623, 699, 661),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(2135, 4623, 699, 661),
+&"rotated": false
+}]
+asset = ""
+metadata/offset = Vector2(0, 4)
+
+[sub_resource type="Resource" id="Resource_fe5sr"]
+script = ExtResource("8_sf0sj")
+animationsArray = {
+&"cheer": SubResource("Resource_t7u2e"),
+&"combo50": SubResource("Resource_l3awn"),
+&"danceLeft": SubResource("Resource_m1wsa"),
+&"danceRight": SubResource("Resource_k6agu"),
+&"drop70": SubResource("Resource_3xu65"),
+&"hairBlow": SubResource("Resource_4qgxf"),
+&"hairFall": SubResource("Resource_7jurn"),
+&"sad": SubResource("Resource_tb0b2"),
+&"scared": SubResource("Resource_nph56"),
+&"singDOWN": SubResource("Resource_4nf1v"),
+&"singLEFT": SubResource("Resource_w8xh5"),
+&"singRIGHT": SubResource("Resource_0j3am"),
+&"singUP": SubResource("Resource_22afp")
+}
+curAnim = SubResource("Resource_m1wsa")
+current_animation = &"danceLeft"
+frame = 14
+
+[sub_resource type="Sky" id="Sky_k7oai"]
+sky_material = ExtResource("3_fhqw1")
+
+[sub_resource type="Environment" id="Environment_gs670"]
+background_mode = 2
+sky = SubResource("Sky_k7oai")
+tonemap_exposure = 1.5
+sdfgi_read_sky_light = false
+glow_enabled = true
+glow_strength = 0.8
+
+[node name="Breach" type="Node3D" unique_id=658534795 node_paths=PackedStringArray("boyfriend", "dad", "gf")]
+script = ExtResource("1_doisg")
+boyfriend = NodePath("camGame/boyfriend")
+dad = NodePath("camGame/dad")
+gf = NodePath("camGame/gf")
+defaultCamZoom = 0.8
+SONG = SubResource("Resource_c4mer")
+playAsOpponent = false
+botplay = false
+
+[node name="camGame" type="Node3D" parent="." unique_id=877551204]
+script = ExtResource("3_qks6i")
+zoom = 0.8
+default_zoom = 0.8
+scroll = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15725672, 2.3008246, 11.27621)
+size = Vector2(1280, 720)
+
+[node name="Brench" parent="camGame" unique_id=1834704661 instance=ExtResource("4_55o6w")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.016497612, 0, 8.467769)
+
+[node name="scroll" type="Camera3D" parent="camGame" unique_id=254921380]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15725672, 2.3008246, 11.27621)
+script = ExtResource("5_be2nr")
+
+[node name="boyfriend" type="Node3D" parent="camGame" unique_id=1112969228]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 2.503197, 9.562133)
+script = ExtResource("6_xbp0w")
+curCharacter = "bf"
+json = Dictionary[StringName, Variant]({
+&"animations": Dictionary[StringName, ExtResource("7_ia13n")]({
+&"attack": SubResource("Resource_la416"),
+&"cheer": SubResource("Resource_h2l3i"),
+&"deathConfirm": SubResource("Resource_1lwd4"),
+&"deathLoop": SubResource("Resource_61ir1"),
+&"dodge": SubResource("Resource_nq74e"),
+&"dodge-hold": SubResource("Resource_3nx3y"),
+&"fakeoutDeath": SubResource("Resource_bbixl"),
+&"firstDeath": SubResource("Resource_wvaog"),
+&"hey": SubResource("Resource_xgb0u"),
+&"hit": SubResource("Resource_ntr26"),
+&"hit-hold": SubResource("Resource_2vl2x"),
+&"idle": SubResource("Resource_mq6iw"),
+&"preAttack": SubResource("Resource_qde7e"),
+&"scared": SubResource("Resource_yceev"),
+&"singDOWN": SubResource("Resource_vvp1r"),
+&"singDOWNmiss": SubResource("Resource_qraj0"),
+&"singLEFT": SubResource("Resource_p8mbb"),
+&"singLEFTmiss": SubResource("Resource_884ey"),
+&"singRIGHT": SubResource("Resource_5qpnc"),
+&"singRIGHTmiss": SubResource("Resource_5k7tj"),
+&"singUP": SubResource("Resource_7fysy"),
+&"singUPmiss": SubResource("Resource_fyfao")
+}),
+&"assetPath": "characters/BOYFRIEND",
+&"camera_position": Vector2(0, 0),
+&"flipX": true,
+&"healthIcon": {
+"id": "icon-bf",
+"isPixel": false
+},
+&"healthbar_colors": Color(0.19215687, 0.6901961, 0.81960785, 1),
+&"isPixel": false,
+&"mirror_sing_on_flip": true,
+&"offset_follow_flip": true,
+&"offset_follow_scale": true,
+&"offsets": Vector2(0, 0),
+&"scale": 1.0,
+&"singTime": 8.0
+})
+animation = SubResource("Resource_i53y1")
+mirror_sing_on_flip = true
+imageFile = &"characters/BOYFRIEND"
+self_modulate = Color(0.6784314, 0.7019608, 0.6784314, 1)
+unshaded = true
+pivot_offset = Vector2(0.51, 0.515)
+healthIcon = "icon-bf"
+healthBarColors = Color(0.19215687, 0.6901961, 0.81960785, 1)
+metadata/_custom_type_script = "uid://b71vleqndetjo"
+metadata/_flipped_sing_anims = true
+
+[node name="dad" type="Node3D" parent="camGame" unique_id=1399483037]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.186, 2.494374, 9.562133)
+script = ExtResource("6_xbp0w")
+curCharacter = "bf"
+json = Dictionary[StringName, Variant]({
+&"animations": Dictionary[StringName, ExtResource("7_ia13n")]({
+&"attack": SubResource("Resource_ahui6"),
+&"cheer": SubResource("Resource_qu037"),
+&"deathConfirm": SubResource("Resource_2im0t"),
+&"deathLoop": SubResource("Resource_eid1d"),
+&"dodge": SubResource("Resource_o3sid"),
+&"dodge-hold": SubResource("Resource_5gduu"),
+&"fakeoutDeath": SubResource("Resource_ev8re"),
+&"firstDeath": SubResource("Resource_4co61"),
+&"hey": SubResource("Resource_t51ob"),
+&"hit": SubResource("Resource_ycfx3"),
+&"hit-hold": SubResource("Resource_dhlvi"),
+&"idle": SubResource("Resource_juqrl"),
+&"preAttack": SubResource("Resource_700ej"),
+&"scared": SubResource("Resource_4t52u"),
+&"singDOWN": SubResource("Resource_gs670"),
+&"singDOWNmiss": SubResource("Resource_nhuyv"),
+&"singLEFT": SubResource("Resource_fhqw1"),
+&"singLEFTmiss": SubResource("Resource_2fpyq"),
+&"singRIGHT": SubResource("Resource_bb6md"),
+&"singRIGHTmiss": SubResource("Resource_ew61o"),
+&"singUP": SubResource("Resource_bjdj4"),
+&"singUPmiss": SubResource("Resource_wfsvk")
+}),
+&"assetPath": "characters/BOYFRIEND",
+&"camera_position": Vector2(0, 0),
+&"flipX": true,
+&"healthIcon": {
+"id": "icon-bf",
+"isPixel": false
+},
+&"healthbar_colors": Color(0.19215687, 0.6901961, 0.81960785, 1),
+&"isPixel": false,
+&"mirror_sing_on_flip": true,
+&"offset_follow_flip": true,
+&"offset_follow_scale": true,
+&"offsets": Vector2(0, 0),
+&"scale": 1.0,
+&"singTime": 8.0
+})
+charType = 1
+animation = SubResource("Resource_gu658")
+mirror_sing_on_flip = true
+imageFile = &"characters/BOYFRIEND"
+self_modulate = Color(0.6784314, 0.7019608, 0.6784314, 1)
+unshaded = true
+pivot_offset = Vector2(0.52625, 0.95874995)
+healthIcon = "icon-bf"
+healthBarColors = Color(0.19215687, 0.6901961, 0.81960785, 1)
+metadata/_flipped_sing_anims = true
+metadata/_custom_type_script = "uid://b71vleqndetjo"
+
+[node name="gf" type="Node3D" parent="camGame" unique_id=1782573022]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0905359, 3.1632657, 9.48088)
+script = ExtResource("6_xbp0w")
+curCharacter = "gf"
+json = Dictionary[StringName, Variant]({
+&"animations": Dictionary[StringName, ExtResource("7_ia13n")]({
+&"cheer": SubResource("Resource_t7u2e"),
+&"combo50": SubResource("Resource_l3awn"),
+&"danceLeft": SubResource("Resource_m1wsa"),
+&"danceRight": SubResource("Resource_k6agu"),
+&"drop70": SubResource("Resource_3xu65"),
+&"hairBlow": SubResource("Resource_4qgxf"),
+&"hairFall": SubResource("Resource_7jurn"),
+&"sad": SubResource("Resource_tb0b2"),
+&"scared": SubResource("Resource_nph56"),
+&"singDOWN": SubResource("Resource_4nf1v"),
+&"singLEFT": SubResource("Resource_w8xh5"),
+&"singRIGHT": SubResource("Resource_0j3am"),
+&"singUP": SubResource("Resource_22afp")
+}),
+&"assetPath": "characters/GF_assets",
+&"camera_position": Vector2(0, 0),
+&"flipX": false,
+&"healthIcon": {
+"id": "icon-gf",
+"isPixel": false
+},
+&"healthbar_colors": Color(0.64705884, 0, 0.3019608, 1),
+&"isPixel": false,
+&"mirror_sing_on_flip": false,
+&"offset_follow_flip": false,
+&"offset_follow_scale": false,
+&"offsets": Vector2(0, 0),
+&"origin_offset": [0.0, 0.0],
+&"scale": 1.0,
+&"singTime": 8.0
+})
+charType = 2
+animation = SubResource("Resource_fe5sr")
+imageFile = &"characters/GF_assets"
+self_modulate = Color(0.7764706, 0.75686276, 0.627451, 1)
+unshaded = true
+offset = Vector2(0, -0.022499999)
+offset_follow_flip = false
+offset_follow_scale = false
+pivot_offset = Vector2(0.87375, 0.79249996)
+danceEveryNumBeats = 1
+hasDanceAnim = true
+healthIcon = "icon-gf"
+healthBarColors = Color(0.64705884, 0, 0.3019608, 1)
+metadata/_custom_type_script = "uid://b71vleqndetjo"
+
+[node name="camHUD" type="Node2D" parent="." unique_id=1772871308]
+modulate = Color(1, 1, 0.8117647, 1)
+script = ExtResource("9_sc367")
+size = Vector2(1280, 720)
+try_to_follow_aspect = true
+
+[node name="scroll" type="Node2D" parent="camHUD" unique_id=1664743972]
+script = ExtResource("10_l7fuk")
+pivot_offset = Vector2(640, 360)
+
+[node name="camOther" type="Node2D" parent="." unique_id=1890960877]
+script = ExtResource("9_sc367")
+size = Vector2(1280, 720)
+try_to_follow_aspect = true
+
+[node name="scroll" type="Node2D" parent="camOther" unique_id=1562103320]
+script = ExtResource("10_l7fuk")
+pivot_offset = Vector2(640, 360)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1196795777]
+environment = SubResource("Environment_gs670")

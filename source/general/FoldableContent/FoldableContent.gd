@@ -1,5 +1,5 @@
-@icon("res://icons/FoldableContainer.svg")
 @tool
+@icon("res://icons/FoldableContainer.svg")
 extends Panel
 
 const foldable_style = preload("uid://go6q2nvp2mu1")
@@ -16,13 +16,13 @@ const foldable_style = preload("uid://go6q2nvp2mu1")
 
 func _get_button() -> Button:
 	if button: return button
-	button = get_node_or_null('Button')
+	button = get_node_or_null(^'Button')
 	if button: return button
 	button = Button.new()
 	button.text = '>'
 	button.add_theme_color_override(&'font_color',Color.DARK_GRAY)
 	button.flat = true
-	button.name = 'Button'
+	button.name = &'Button'
 	add_child(button)
 	return button
 

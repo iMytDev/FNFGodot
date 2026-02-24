@@ -2,7 +2,7 @@ extends Node
 
 var back_to: Object
 
-var characters: Dictionary[String,FunkinSprite] = {}
+var characters: Dictionary[String,FunkinSprite2D] = {}
 
 var weeks_data: Dictionary = {}
 var weeks_data_keys: PackedStringArray = []
@@ -57,12 +57,12 @@ func _ready():
 
 func loadWeeks():
 	var folders_to_look: PackedStringArray = ['/assets/weeks']
-	for i in Paths.modsEnabled: folders_to_look.append('/mods/'+i+'/weeks')
+	for i in PathsStore.get_mods_enabled(true): folders_to_look.append(i+'/weeks')
 	
 	for i in folders_to_look:
-		for json_s in Paths.getFilesAtAbsolute(Paths.exePath+i,true,['.json'],true):
+		for json_s in PathsDir.get_files_at_absolute(PathsStore.assetsPath+i,true,['.json'],true):
 			var json = Paths.loadJsonNoCache(json_s)
-			json.mod = Paths.getModFolder(json_s)
+			json.mod = PathsDir.get_mod_folder(json_s)
 			
 			var json_name = json_s.get_file().get_basename()
 			weeks_data[json_name] = json
@@ -74,7 +74,7 @@ func createWeeks():
 	var offset: float = 70
 	for i in weeks_data:
 		var title = 'images/storymenu/titles/'+i+'.png'
-		if Paths.file_exists(title):
+		if PathsStore.file_exists(title):
 			var sprite = Sprite2D.new()
 			sprite.position = Vector2(ScreenUtils.screenCenter.x,offset)
 			sprite.texture = Paths.texture(title)
@@ -113,13 +113,13 @@ func setWeekIndex(index: int):
 			characters.erase(i)
 	
 func createProp(data, prop_index:int =0):
-	var tex_path = Paths.imagePath(data.get('assetPath',''))
-	var sprite: FunkinSprite
+	var tex_path = PathsStore.image(data.get('assetPath',''))
+	var sprite: FunkinSprite2D
 	if characters.has(tex_path):
 		sprite = characters[tex_path]
 		sprite.animation.clearLibrary()
 	else:
-		sprite = FunkinSprite.new()
+		sprite = FunkinSprite2D.new()
 		sprite.image.texture = Paths.texture(tex_path)
 		characters[tex_path] = sprite
 		add_child(sprite)
@@ -150,8 +150,7 @@ func exit():
 	set_process_input(false)
 	Global.swapTree(back_to,true)
 	
-func selectWeek(week: int = cur_week_selected):
-	pass
+func selectWeek(_week: int = cur_week_selected):pass
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey:
 		if not event.pressed: return

@@ -1,4 +1,4 @@
-extends FunkinSprite
+extends FunkinAnimatedSprite2D
 ##A Check Box Class.
 ##
 ##A Example of code using a [Dictionary]: [codeblock]
@@ -30,7 +30,7 @@ var value: bool:
 
 
 func _init():
-	super._init(true,'checkboxThingie')
+	super('checkboxThingie')
 	animation.animation_finished.connect(func(anim):
 		if anim == &'selection': 
 			animation.play(&'unselected' if animation.curAnim.reverse else &'selected')

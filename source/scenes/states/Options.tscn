@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://cd11rd3lihckb"]
+
+[ext_resource type="Script" uid="uid://dfft8nmakp4gn" path="res://source/substates/Options/Options.gd" id="1_abiwa"]
+
+[node name="Options" type="Node2D" unique_id=1528346580]
+script = ExtResource("1_abiwa")

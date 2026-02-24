@@ -1,24 +1,4 @@
-class_name FunkinGD extends "res://source/gdscript/FunkinInternal.gd"
-
-#region Variables
-const TweenerObject = preload("uid://b3wombi1g7mtv")
-const TweenerMethod = preload("uid://buyyxjslew1n1")
-
-const Song = preload("uid://cerxbopol4l1g")
-const Bar = preload("uid://cesg7bsxvgdcm")
-
-const EventNoteUtils = preload("uid://dqymf0mowy0dt")
-const Note = preload("uid://deen57blmmd13")
-const NoteHit = preload("uid://dx85xmyb5icvh")
-const StrumNote = preload("uid://coipwnceltckt")
-
-const Stage = preload("uid://dh7syegxufdht")
-
-const Character = preload("uid://gou2lt74gx0i")
-const Icon = preload("uid://bgqwitowtypkw")
-
-const Graphic = preload("uid://c4kmei8jjkf3n")
-
+class_name FunkinGD extends FunkinInternal
 
 #region Public Vars
 @export_category('Class Vars')
@@ -26,41 +6,16 @@ const Graphic = preload("uid://c4kmei8jjkf3n")
 static var Function_Continue: int
 static var Function_Stop: int = 1
 
-
 static var isStoryMode: bool
-
-static var camGame:
-	get(): return game.camGame
-		
-static var camHUD:
-	get(): return game.camHUD
-		
-static var camOther:
-	get(): return game.camOther
-
-static var botPlay: bool:
-	get(): return game.botplay
-
-##The path of the script.
-var scriptPath: StringName
-
-##The Mod Folder of the script.
-var modFolder: StringName
-
-
-@export_category("Files Saved")
-
+static var botPlay: bool
 
 ##Used to precache the Methods in the script, being more optimized for calling functions in [method callOnScripts]
 
-
 @export_group('Game Data')
-static var isPixelStage: bool:
-	get(): return game.isPixelStage
+static var isPixelStage: bool
 
-static var playAsOpponent:
-	get(): return game.playAsOpponent
-		
+static var playAsOpponent: bool
+
 static var lowQuality: bool: ##low quality.
 	get(): return ClientPrefs.data.lowQuality
 
@@ -73,8 +28,7 @@ static var screenHeight: float: ##The Height of the Screen.
 static var screenSize: Vector2i: ##The Size of the Screen.
 	get(): return ScreenUtils.screenSize
 
-static var inCutscene: bool:
-	get(): return game.inCutscene
+static var inCutscene: bool
 
 static var seenCutscene: bool: ##See [member PlayStateBase.seenCustscene].
 	get(): return game.seenCutscene
@@ -83,10 +37,11 @@ static var inGameOver: bool = false
 
 #region Song Data Properties
 @export_category("Song Data")
-static var curStage: String
+static var curStage: String: 
+	get(): return game.curStage
 
 static var songName: String: ##song name.
-	get(): return Song.songName
+	get(): return Conductor.songData.songName
 
 static var songStarted: bool:
 	get(): return !!Conductor.songs
@@ -96,14 +51,15 @@ static var songLength: float:
 		if songLength == val: return
 		songLength = val
 		songLengthSeconds = val*0.001
+
 static var songLengthSeconds: float:
 	set(val):
 		if songLengthSeconds == val: return
 		songLengthSeconds = val
 		songLength = val*1000.0
 	
-static var difficulty: String: 
-	get(): return Song.difficulty
+static var difficulty: String:
+	get(): return game.songData.difficulty
 
 static var mustHitSection: bool ##If the section is bf focus
 
@@ -115,22 +71,23 @@ static var altAnim: bool ##Alt Section Animation
 #region Conductor Properties
 static var bpm: float
 static var stepCrochet: float
+static var stepCrochetMs: float
 static var crochet: float
 
 static var curBeat: int
 static var curStep: int
 
 static var curSection: int
-static var keyCount: int = Song.keyCount
+static var keyCount: int = 4
+
+static var GameMode: PlayStateBase.GameMode = PlayStateBase.GameMode.MODE_2D
 #endregion
 
 #region Client Prefs Properties
 @export_category("Client Prefs")
 #Scroll
-static var middlescroll: bool:
-	get(): return game.middleScroll
-static var downscroll: bool:
-	get(): return game.downScroll
+static var middlescroll: bool
+static var downscroll: bool
 static var hideHud: bool
 
 #TimeBar
@@ -143,471 +100,209 @@ static var cameraZoomOnBeat: bool = true
 
 static var flashingLights: bool:
 	get(): return ClientPrefs.data.flashingLights
-
-static var framerate: float:
-	get(): return Engine.max_fps
 #endregion
-
-#endregion
-
-static var Conductor_Signals: Dictionary[String,Callable] = {
-	&'section_hit': _section_hit,
-	&'section_hit_once': FunkinGD.callOnScripts.bind(&'onSectionHitOnce'),
-	&'beat_hit': _beat_hit,
-	&'step_hit': _step_hit,
-	&'bpm_changes': _bpm_changes
-}
-static var started: bool
-static func init_gd():
-	if started or !Conductor: return
-	started = true
-	for i in Conductor_Signals: Conductor[i].connect(Conductor_Signals[i])
-	_bpm_changes()
-
-static func _bpm_changes() -> void:
-	bpm = Conductor.bpm
-	stepCrochet = Conductor.stepCrochet
-	crochet = Conductor.crochet
 
 
 #region File Methods
- ##Similar to [method Paths.file_exists].
-static func checkFileExists(path: String) -> bool: return Paths.file_exists(path)
 static func precacheImage(path: String) -> Image: return Paths.image(path) ##Precache a image, similar to [method Paths.image]
 static func precacheMusic(path: String) -> AudioStreamOggVorbis: return Paths.music(path) ##Precache a music, similar to [method Paths.music]
 static func precacheSound(path: String) -> AudioStreamOggVorbis: return Paths.sound(path) ##Precache a sound, similiar to [method Paths.sound]
 static func precacheVideo(path: String) -> VideoStreamTheora: return Paths.video(path) ##Precache a video file.
-	
-static func addCharacterToList(character: StringName, type: Variant = 'bf') -> void: ##Precache character.
-	if type is int: game.addCharacterToList(character, type); return
-	match StringName(type):
-		&'bf',&'boyfriend': game.addCharacterToList(character, 0)
-		&'dad':game.addCharacterToList(character, 1)
-		&'gf':game.addCharacterToList(character, 2)
+static func checkFileExists(path: String) -> bool: return PathsStore.file_exists(path) ##Similar to [method Paths.file_exists].
+static func addCharacterToList(character: StringName) -> void: ##Precache character.
+	var json = Character.load_character_json(character)
+	if json: Paths.image(json.assetPath) #Precache Character image
 #endregion
 
+#endregion
 
 #region Property methods
-
-
 ##Set a Property. If [param target] set, the function will try to set the property from this object.
-static func setProperty(property: String, value: Variant, target: Variant = null) -> void: Reflect.setProperty(property,value,target)
+static func setProperty(property: String, value: Variant, target: Variant = null) -> void: 
+	if target: FunkinProperty.set_object_property_split(property.split('.'),value,target)
+	else: FunkinProperty.set_property(property,value)
 
 ##Set a Property from a group member. If [param target] set, the function will try to set the property from this object.
 static func setPropertyFromGroup(group: Variant, index: Variant, property: Variant, value: Variant) -> void:
-	group = Reflect._find_group_member(group,index)
-	if !group: return
-	Reflect.setProperty(property,value,group)
+	group = FunkinProperty._find_group_member(group,index); if !group: return
+	FunkinProperty.set_object_property_split(property.split('.'),value,group)
 
 static func getPropertyFromGroup(group: Variant, index: Variant, property: String = '') -> Variant: 
-	group = Reflect._find_group_member(group,index)
-	if !property: return group
-	return Reflect.getProperty(property,group) if group else null
+	group = FunkinProperty._find_group_member(group,index); if !property: return group
+	return FunkinProperty.get_object_property_split(property.split('.'),group) if group else null
 
-static func getProperty(property: String, from: Variant = null): 
-	return Reflect.getProperty(property,from)
+static func getProperty(property: String, default: Variant = null) -> Variant: 
+	var value = FunkinProperty.get_property(property)
+	return value if value != null else default
 
 static func setVar(variable: Variant, value: Variant = null) -> void: modVars[variable] = value ##Set/Add a variable to [member modVars].
 
 ##Get a variable from the [member modVars].[br]
 ##Note: If the [param variable] is not in [member modVars], then it will return [param default].
 static func getVar(variable: Variant, default: Variant = null) -> Variant: return modVars.get(variable,default)
-
 #endregion
 
 
 #region Class Methods
 static func getPropertyFromClass(_class: Variant, variable: String) -> Variant:
-	_class = Reflect._find_class(_class); if _class: return Reflect.getProperty(variable,_class)
-	return
+	return FunkinProperty.get_object_property_split(variable.split('.'),FunkinProperty._find_class(_class))
+
 static func setPropertyFromClass(_class: Variant,variable: String,value: Variant) -> void:##Set the variable of the [code]_class[/code]
-	_class = Reflect._find_class(_class); if _class: setProperty(variable,value,_class)
+	_class = FunkinProperty._find_class(_class); if _class: setProperty(variable,value,_class)
 #endregion
 
 #region Group Methods
 ##Add [Sprite] to a [code]group[/code] [SpriteGroup] or [Array].[br][br]
 ##If [code]at = -1[/code], the sprite will be inserted at the last position.
 static func addSpriteToGroup(object: Variant, group: Variant, at: int = -1) -> void:
-	object = Reflect._find_object(object)
-	if !object: return
+	FunkinGroups.add_to_group(object, group, at)
 	
-	if group is String: group = Reflect._find_object(group)
-	if !group: return
-	
-	if group is SpriteGroup:
-		if at != -1: group.insert(at,object)
-		else: group.add(object)
-		return
-	
-	if group is Array:
-		if at != -1: group.insert(at,object)
-		else: group.append(object)
-	
-static func removeFromGroup(group: Variant, index: int):
-	if group is String: group = getProperty(group)
-	if !group: return
-	if group is SpriteGroup or group is Array: group.remove_at(index)
+static func removeFromGroup(group: Variant, at: int) -> Variant: 
+	return FunkinGroups.remove_from_group_at(group, at)
 #endregion
 
 
 #region Timer Methods
-static func runTimer(tag: StringName, time: float, loops: int = 1) -> Timer: ##Runs a timer, return the [Timer] created.
-	loops = maxi(loops,0)
-	if !time: 
-		while loops: loops -= 1; callOnScripts(&'onTimerCompleted',[tag,loops]); 
-		return
-	var data = timersPlaying.get(tag)
-	if !data: return _create_timer(tag,time,loops)[0]
-	data[1] = loops
-	var timer: Timer
-	timer = data[0]
-	timer.start(time)
-	return timer
+static func runTimer(tag: StringName, time: float, loops: int = 0) -> Timer: ##Runs a timer, return the [Timer] created.
+	return FunkinTimerServer.runTimer(tag, time ,loops)
 
-static func getTimerLoops(tag: String) -> int:
-	var data = timersPlaying.get(tag); return data[1] if data else 0
+static func getTimerLoops(tag: String) -> int: 
+	var timer = FunkinTimerServer.timersPlaying.get(tag); 
+	return timer.get_meta(&"loops") if timer else 0
 
-static func cancelTimer(tag: String): ##Cancel Timer. See also [method runTimer].
-	var timer = timersPlaying.get(tag); if !timer: return
-	timer = timer[0]; timer.stop(); timersPlaying.erase(tag); timer.queue_free()
+static func cancelTimer(tag: String): FunkinTimerServer.cancelTimer(tag) ##Cancel Timer. See also [method runTimer].
 #endregion
 
 
 #region Random Methods
-##Return a random [bool].
-static func getRandomBool(chance: int = 50) -> bool: return randi_range(0,100) <= chance
+static func getRandomBool(chance: int = 50) -> bool: return randi_range(0,100) <= chance ##Return a random [bool].
 #endregion
 
 
 #region Sprite Methods
-static func makeSprite(tag: StringName, path: Variant = null, x: float = 0, y: float = 0) -> FunkinSprite:  ##Creates a [Sprite].
-	var sprite = FunkinSprite.new(false,path); 
-	sprite.set(&"position",Vector2(x,y))
-	if tag: sprite.name = tag; _insert_sprite(tag,sprite)
-	return sprite
+static func makeSprite(tag: StringName, path: Variant = null, x: float = 0, y: float = 0) -> FunkinSprite2D:  ##Creates a [Sprite].
+	return FunkinSpritesServer.makeSprite(tag,path,x,y)
 
+static func makeAnimatedSprite(tag: StringName, path: Variant = null, x: float = 0, y: float = 0) -> FunkinSprite2D: ##Creates a animated [Sprite].
+	return FunkinSpritesServer.makeAnimatedSprite(tag,path,x,y)
 
-static func makeAnimatedSprite(tag: StringName, path: Variant = null, x: float = 0, y: float = 0) -> FunkinSprite: ##Creates a animated [Sprite].
-	var sprite = FunkinSprite.new(true,path); 
-	sprite.set(&"position",Vector2(x,y))
-	if tag: sprite.name = tag; _insert_sprite(tag,sprite)
-	return sprite
- 
-	
+static func addSprite(object: Variant, front: bool = false, camera: Variant = &"camGame") -> void: ##Add [Sprite] to game.
+	FunkinSpritesServer.addSprite(object, front, camera)
 
-static func addSprite(object: Variant, front: bool = false, camera: Variant = camGame) -> void: ##Add [Sprite] to game.
-	object = Reflect._find_object(object)
-	if !object: return
-	camera = getCamera(camera)
-	if !camera: return
-	camera.add(object,front)
-
-static func addSpriteToCamera(object: Variant, camera: Variant, front: bool = false) -> void: ##Add a [Sprite] to a [param camera].
-	object = Reflect._find_object(object); if !object: return
-	camera = getCamera(camera)
-	if camera: camera.add(object,front)
-
-static func insertSpriteToCamera(object: Variant, camera: Variant, at: int): ##Insert a [Sprite] to a [param camera] in a specific position.
-	object = Reflect._find_object(object); if !object: return
-	camera = getCamera(camera)
-	if camera: camera.insert(at, object)
+##Insert a [Sprite] to a [param camera] in a specific position.
+static func insertSprite(object: Variant, at: int, camera: Variant) -> void: 
+	FunkinSpritesServer.insertSpriteToCamera(object, camera, at)
 
 static func insertSpriteToGroup(object: Variant, group: Variant, at: int): ##Insert a [Sprite] to a [param camera] in a specific position.
-	object = Reflect._find_object(object); if !object: return
-	group = Reflect._find_object(group)
-	if group: group.insert(at, object)
+	FunkinSpritesServer.insertSpriteToGroup(object, group, at)
 
 ##Remove [Sprite] of the game. When [code]delete[/code] is true, the sprite will be remove completely.
 static func removeSprite(object: Variant, delete: bool = false) -> void:
-	if !object: return
-	var tag: StringName
-	if object is Node: tag = object.name
-	else: tag = object; object = Reflect._find_object(object); if !object: return
-	
-	if object.get_parent(): object.get_parent().remove_child(object)
-	if delete: spritesCreated.erase(tag)
+	FunkinSpritesServer.removeSprite(object, delete)
 
-static func createSpriteGroup(tag: String) -> SpriteGroup: ##Creates a [SpriteGroup].
-	var group = SpriteGroup.new()
-	if groupsCreated.has(tag): groupsCreated[tag].queue_free()
-	groupsCreated[tag] = group
-	return group
 
-static func makeGraphic(object: Variant,width: float = 0.0,height: float = 0.0,color: Variant = Color.BLACK) -> FunkinSprite:
-	if !object: return
-	color = _get_color(color)
-	if object is Object: _make_graphic_no_check(object,width,height,color); return object
-	
-	var _tag = object; object = Reflect._find_object(_tag); 
-	if !object: object = makeSprite(_tag)
-	_make_graphic_no_check(object,width,height,color)
-	return object
+static func createSpriteGroup(tag: String) -> SpriteGroup: return FunkinGroups.create_group(tag) ##Creates a [SpriteGroup].
 
-static func _make_graphic_no_check(object: Node, width: float = 0.0, height: float = 0.0, color: Color = Color.WHITE):
-	if !object is Node: return
-	object.image.set_solid()
-	object.image.modulate = _get_color(color)
-	object.image.region_rect.size = Vector2(width,height)
+static func makeGraphic(object: String, width: float = 0.0,height: float = 0.0,color: Variant = Color.BLACK) -> SolidNode2D:
+	return FunkinSpritesServer.makeGraphic(object,width,height, color)
 
 ##Load image in the sprite.
-static func loadGraphic(object: Variant, image: String, width: float = -1, height: float = -1) -> Texture:
-	object = Reflect._find_object(object); if !object: return
-	
-	if object is FunkinSprite: object = object.image
-	var tex = Paths.texture(image)
-	object.texture = tex
-	if not (object is FunkinSprite or object is NinePatchRect): return tex
-	if width != -1: object.region_rect.size.x = width
-	if height != -1: object.region_rect.size.y = height
-	return tex
+static func loadGraphic(object: Variant, image: Variant, width: float = -1, height: float = -1): 
+	FunkinSpritesServer.loadGraphic(object, image, width, height)
 
 
 ##Changes the image region size of the sprite.[br]
-static func setGraphicSize(object: Variant, sizeX: float = -1, sizeY: float = -1) -> void:
-	object = Reflect._find_object(object); if !object: return
-	
-	if object is FunkinSprite: object = object.image
-	
-	if !object is Sprite2D and !object is NinePatchRect or !object.texture: return
-	object.set(&"region_enabled", true)
-	
-	var tex_size = object.texture.get_size()
-	var size = Vector2(
-		tex_size.x if sizeX == -1 else sizeX,
-		tex_size.y if sizeY == -1 else sizeY
-	)
-	object.region_rect.size = size
+static func setGraphicSize(object: Variant, x: float = -1, y: float = -1) -> void: 
+	FunkinSpritesServer.setGraphicSize(object, x, y)
 
-##Move the [param object] to the center of his camera.[br]
+##Move the [param object] to the center of the screen.[br]
 ##[param type] can be: [code]""xy,x,y[/code]
-static func screenCenter(object: Variant, type: String = &'xy') -> void:
-	object = Reflect._find_object(object); if !object: return
-	var center = (object.get_viewport().size*0.5 if object.is_inside_tree() else ScreenUtils.screenCenter)
-	if object is FunkinSprite: center -= object.image.pivot_offset
-	else:
-		var tex = object.get(&'texture')
-		var size = tex.get_size() if tex else object.get(&'size')
-		if size: center += size*0.5
-	
-	var obj_pos = object.call(&'get_position'); if !obj_pos: return
-	match type:
-		&'x': object.set(&"position",Vector2(center.x,obj_pos.y))
-		&'y': object.set(&"position",Vector2(obj_pos.x,center.y))
-		_: object.set(&"position",center)
+static func screenCenter(object: Variant, type: StringName = &'xy') -> void: FunkinSpritesServer.screenCenter(object, type)
 
 ##Scale object.
 ##If not [param centered], the sprite will scale from his top left corner.
-static func scaleObject(object: Variant,x: float = 1.0,y: float = 1.0, centered: bool = false) -> void:
-	object = Reflect._find_object(object); if !object: return
-	object.set(&'scale',Vector2(x,y))
-	if !centered and object is FunkinSprite: object.offset = object.pivot_offset * (Vector2.ONE - object.scale)
+static func scaleObject(object: Variant,x: float = 1.0,y: float = 1.0) -> void: 
+	FunkinSpritesServer.scale(object, x ,y)
 
 ##Set the scroll factor from the sprite.[br]
 ##This makes the object have a depth effect, [u]the lower the value, the greater the depth[/u].
-static func setScrollFactor(object: Variant, x: float = 1, y: float = 1) -> void:
-	object = Reflect._find_object(object); if object: object.set(&'scrollFactor',Vector2(x,y))
+static func setScrollFactor(object: Variant, x: float = 1, y: float = 1) -> void: FunkinSpritesServer.setScrollFactor(object,x,y)
 
+static func setObjectOrder(object: Variant, order: int)  -> void: FunkinSpritesServer.setObjectOrder(object,order) ##Set the order of the object in the screen.
 
-static func setObjectOrder(object: Variant, order: int)  -> void: ##Set the order of the object in the screen.
-	object = Reflect._find_object(object); if !object: return
-	var parent = object.get_parent(); 
-	var count = parent.call(&"get_child_count")
-	parent.call(&"move_child",object,clampi(order,-count,count))
-
-static func getObjectOrder(object: Variant) -> int: ##Returns the object's order.
-	object = Reflect._find_object(object); if !object: return 0
-	return object.get_index() if object is Node else -1
+static func getObjectOrder(object: Variant) -> int: return FunkinSpritesServer.getObjectOrder(object) ##Returns the object's order.
 
 ##Returns if the sprite, created using [method makeSprite] or [method makeAnimatedSprite] or [method setVar], exists.
-static func spriteExists(tag: StringName) -> bool: return tag in spritesCreated or modVars.get(tag) is FunkinSprite
+static func spriteExists(tag: StringName) -> bool: 
+	return FunkinSpritesServer.spritesCreated.has(tag) or modVars.get(tag) is Node
 
-static func getMidpoint(object: Variant) -> Vector2: ##Returns the midpoint.x of the object. See also [method getMidpointY].
-	object = Reflect._find_object(object)
-	if object is FunkinSprite: return object.getMidpoint()
-	if (object is CanvasItem) and object.get(&'texture'): return object.position + (object.texture.get_size())
-	return Vector2.ZERO
+static func getMidpoint(object: Variant) -> Vector2: ##Returns the 2d midpoint of the object.
+	return FunkinSpritesServer.get_midpoint(object)
+
+static func getMidpoint3D(object: Variant) -> Vector3: ##Returns the 3d midpoint of the object..
+	return FunkinSpritesServer.get_midpoint_3d(object)
 #endregion
 
 
 #region Animation Methods
 ##Add Animation Frames for the [param object], useful if you are creating custom [Icon]s.
-static func addAnimation(object: Variant, animName: StringName, frames: Array = [], frameRate: float = 24, loop: bool = false) -> Dictionary:
-	object = Reflect._find_object(object); if !object or !object.get('animation'): return {}
-	return object.animation.addFrameAnim(animName,frames,frameRate,loop)
+static func addAnimation(object: Variant, animName: StringName, frames: Array = [], frameRate: float = 24, loop: bool = false) -> AnimationData:
+	return FunkinAnimationServer.add_animation(object, animName, frames, frameRate, loop)
 	
 ##Add animation to a [Sprite] using the prefix of his image.
-static func addAnimationByPrefix(object: Variant, animName: StringName, xmlAnim: StringName, frameRate: float = 24, loop: bool = false) -> Dictionary:
-	object = Reflect._find_object(object); if !object or !object.get('animation'): return {}
-	var frames = object.animation.add_animation_by_prefix(animName,xmlAnim,frameRate,loop)
-	return frames
-
-##Add [Animation] using the preffix of the sprite, can set the frames that will be played
-static func addAnimationByIndices(object: Variant, animName: StringName, xmlAnim: StringName, indices: Variant = [], frameRate: float = 24, loop: bool = false) -> Dictionary:
-	object = Reflect._find_object(object); if !object or !object.get('animation'): return {}
-	return object.animation.add_animation_by_prefix(animName,xmlAnim,frameRate,loop,indices)
-
+static func addAnimationByPrefix(object: Variant, animName: StringName, xmlAnim: StringName, frameRate: float = 24, loop: bool = false, indices: Variant = null) -> AnimationData:
+	return FunkinAnimationServer.add_animation_by_prefix(object, animName, xmlAnim, frameRate, loop, indices)
 
 ##Makes the [param object] play a animation, if exists. If [param force] and the current anim as the same name, that anim will be restarted.
 static func playAnim(object: Variant, anim: StringName, force: bool = false, reverse: bool = false) -> void:
-	object = Reflect._find_object(object); if not (object is FunkinSprite and object.animation): return
-	if reverse: object.animation.play_reverse(anim,force)
-	else: object.animation.play(anim,force)
+	FunkinAnimationServer.play_anim(object, anim, force, reverse)
 
 ##Add offset for the animation of the sprite.
-static func addOffset(object: Variant, anim: StringName, offsetX: float, offsetY: float)  -> void:
-	var obj = Reflect._find_object(object);
-	if !object: 
-		if obj is String: debug_message("Error on add animation offset: "+object.name+" don't exists.")
-		else: debug_message("Error on add animation offset: Sprite is not valid.")
-		return
-	var animation = obj.get('animation')
-	if !animation: debug_message("Error on add animation offset: "+obj.name+" are not animated.")
-	animation.set_anim_offset(anim,Vector2(offsetX,offsetY))
+static func addOffset(object: Variant, anim: StringName, offsetX: float, offsetY: float)  -> void: FunkinAnimationServer.add_offset(object, anim, offsetX, offsetY)
 
 #endregion
 
 
 #region Text Methods
 ##Creates a Text
-static func makeText(tag: StringName,text: Variant = '', width: float = 500, x: float = 0, y:float = 0) -> FunkinText:
-	var newText = FunkinText.new(str(text),width)
-	newText.set(&"position",Vector2(x,y))
-	if !tag: return newText
-	removeText(tag)
-	newText.name = tag
-	textsCreated[tag] = newText
-	return newText
-
-
-
-static func setTextString(tag: Variant, text: Variant = '') -> void: ##Set the text string
-	tag = Reflect._find_object(tag); if tag is Label: tag.text = str(text)
-
-##Set the color from the text
-static func setTextColor(text: Variant, color: Variant) -> void:
-	text = Reflect._find_object(text); if text is Label: text.set(&"theme_override_colors/font_color",_get_color(color))
-
-
-static func setTextBorder(text: Variant, border: float, color: Color = Color.BLACK) -> void: ##Set Text Border
-	text = Reflect._find_object(text); if !text is Label: return
-	text.set(&"theme_override_colors/font_outline_color",color)
-	text.set(&"theme_override_constants/outline_size",border)
+static func makeText(tag: StringName,text: Variant = '', width: float = 500, x: float = 0, y:float = 0) -> Label: return FunkinTextServer.makeText(tag, text, width, x, y)
+static func setTextString(tag: Variant, text: Variant = '') -> void: FunkinTextServer.setTextString(tag, text) ##Set the text string
+static func setTextColor(text: Variant, color: Variant) -> void: FunkinTextServer.set_text_color(text, color) ##Set the color from the text
+static func setTextBorder(text: Variant, border: float, color: Color = Color.BLACK) -> void: FunkinTextServer.setTextBorder(text, border, color) ##Set Text Border
 
 ##Set the Font of the Text
-static func setTextFont(text: Variant, font: Variant = 'vcr.ttf') -> void:
-	text = Reflect._find_object(text) as Label; if !text: return
-	font = _find_font(font); if !font: return
-	text.set(&'theme_override_fonts/font',font)
-
-static func getTextFont(text: Variant) -> FontFile:
-	text = Reflect._find_object(text) as Label; return text.get(&"theme_override_fonts/font") if text else ThemeDB.fallback_font
+static func setTextFont(text: Variant, font: Variant = 'vcr.ttf') -> void: FunkinTextServer.set_text_font(text, font)
+static func getTextFont(text: Variant) -> FontFile: return FunkinTextServer.get_text_font(text)
 
 static func _find_font(font: Variant) -> Font: return font if font is Font else Paths.font(font)
 
 ##Set the Text Alignment
 static func setTextAlignment(tag: Variant, alignmentHorizontal: StringName = &'left', alignmentVertical: StringName = &'') -> void:
-	var obj = Reflect._find_object(tag); if !obj is Label: return
-	
-	match alignmentHorizontal:
-		&'left': obj.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		&'center': obj.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		&'right': obj.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		&'fill': obj.horizontal_alignment = HORIZONTAL_ALIGNMENT_FILL
-	
-	match alignmentVertical:
-		&'left': obj.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
-		&'center': obj.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		&'right': obj.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		&'fill': obj.horizontal_alignment = HORIZONTAL_ALIGNMENT_FILL
-	
-	match alignmentVertical:
-		&'top': obj.vertical_alignment = VERTICAL_ALIGNMENT_TOP
-		&'center': obj.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-		&'bottom': obj.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-		&'fill': obj.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
-		
+	FunkinTextServer.setTextAlignment(tag, alignmentHorizontal, alignmentVertical)
 
 ##Set the font's size of the Text
-static func setTextSize(text: Variant, size: float = 15) -> void:
-	text = Reflect._find_object(text); if text: text.set(&"theme_override_font_sizes/font_size",size)
+static func setTextSize(text: Variant, size: float = 15) -> void: FunkinTextServer.set_text_size(text, size)
 
 ##Add Text to game
-static func addText(text: Variant, front: bool = false) -> void:
-	text = Reflect._find_object(text); if !text is Label: return
-	
-	var cam = text.get(&'camera')
-	if !cam: cam = camHUD; if !cam: return
-	if cam is FunkinCamera: cam.add(text,front)
-	else: cam.add_child(text)
+static func addText(text: Variant, front: bool = false) -> void: FunkinTextServer.addText(text, front)
 
 ##Remove Text from the game, if [code]delete[/code] is [code]true[/code], the text will be removed from the memory.
-static func removeText(text: Variant,delete: bool = false) -> void:
-	text = Reflect._find_object(text)
-	if !text: return
-	if delete: textsCreated.erase(text.name); text.queue_free()
-	else: var parent = text.get_parent(); if parent: parent.remove_child(text)
+static func removeText(text: Variant,delete: bool = false) -> void: FunkinTextServer.removeText(text, delete)
 
-static func textsExits(tag: String) -> bool: return textsCreated.has(tag) ##Check if the Text as created
+static func textsExits(tag: String) -> bool: return FunkinTextServer.textsCreated.has(tag) ##Check if the Text as created
 #endregion
 
 
 #region Tween Methods
 ##Start Tween. Similar to [method createTween].[br]
 ##[b]OBS:[/b] if [param time] is [code]0.0[/code], this will cause the function to set the values, without any tween.
-static func startTween(tag: String, object: Variant, what: Dictionary,time: Variant = 1.0, easing: StringName = &'') -> TweenerObject:
-	if !object: return
-	if !object is Object:
-		var split = Reflect._find_object_with_split(object)
-		object = split[0]
-		if !object: return
-		if split[1]: 
-			var split_join = ":".join(split[1]); 
-			for i in what.keys(): DictUtils.rename_key(what,i,NodePath(split_join+':'+i))
-	
-	if !object: return
-	for property in what:
-		if (property is NodePath or property.contains(':'))\
-		and object.get_indexed(property) != null or property in object: continue
-		var alt = Reflect.alternative_variables.get(property); 
-		if alt: what[alt] = what[property]
-		what.erase(property)
-	
-	if time: return startTweenNoCheck(tag,object,what,float(time),easing)
-	
-	for i in what: 
-		if i is NodePath or i.contains(":"): object.set_indexed(i,what[i])
-		else: object.set(i,what[i])
-	return
-
-static func startTweenNoCheck(tag: String,object: Object, what: Dictionary,time: float = 1.0, easing: StringName = &'') -> TweenerObject:
-	var tween = createTween(object,what,time,easing)
-	tween.finished.connect(_tween_completed.bind(tag),CONNECT_ONE_SHOT)
-	if !tag: return tween
-	cancelTween(tag)
-	tweensCreated[tag] = tween
-	return tween
+static func doTween(object: Variant, what: Dictionary,time: Variant = 1.0, easing: StringName = &'', tag: StringName = &"") -> FunkinTweenerObject:
+	return FunkinTweenerServer.create_tween_safe(object, what, time, easing, tag)
 
 ##Create a Tween Method, similar to [Tween.tween_method]
-static func createTweenMethod(from: Variant, to: Variant, time: Variant, ease: String, method: Callable):
-	var tween = TweenService.createTweenMethod(method,from,to,time,ease)
-	tween.bind_node = game
-	return tween
+static func doTweenMethod(from: Variant, to: Variant, time: Variant, ease: String, method: Callable, tag: StringName = &""):
+	return FunkinTweenerServer.create_tween_method(from, to, time, ease, method, tag)
 
-##Create a Tween Interpolation, see more about in [method TweenService.createTween]
-static func createTween(object: Variant, what: Dictionary, time: Variant, easing: StringName = &''):
-	object = Reflect._find_object(object); 
-	var tween = TweenService.createTween(object,what,time,easing); 
-	tween.bind_node = object if object is Node else game
-	return tween
-
-##Similar to [method Tween.tween_method].
-static func startTweenMethod(tag: String, from: Variant, to: Variant, time: Variant, ease: String, method: Callable) -> TweenerMethod:
-	var tween = createTweenMethod(from,to,time,ease,method); if !tag: return tween
-	cancelTween(tag)
-	tweensCreated[tag] = tween
-	return tween
-
-static func _tween_completed(tag: StringName): callOnScripts(&'onTweenCompleted',[tag]); tweensCreated.erase(tag)
 
 ##Do Tween for a [ShaderMaterial].[br][br]
 ##[code]shader[/code] can be a [ShaderMaterial] or a tag([String]) used in [method initShader].
@@ -619,28 +314,19 @@ static func _tween_completed(tag: StringName): callOnScripts(&'onTweenCompleted'
 ##initShader('ChromaticAbberation','chrom')
 ##setShaderFloat('chrom','strength',0.01)
 ##doShaderTween('chrom','strength',0.0,0.2,&'','chrom_tag')[/codeblock]
-static func doShaderTween(shader: Variant, parameter: StringName, value: Variant, time: float, ease: StringName = &'', tag: StringName = '') -> TweenerMethod:
-	var material = _find_shader_material(shader); if !material: return
-	var tween = TweenService.tween_shader(material,parameter,float(value),float(time),ease)
-	tween.bind_node = game
-	
-	if !tag and shader is String: tag = 'shader'+shader+parameter
-	if tag: cancelTween(tag); tweensCreated[tag] = tween
-	return tween
+static func doShaderTween(shader: Variant, parameter: StringName, value: Variant, time: float, ease: StringName = &'', tag: StringName = '') -> FunkinTweenerMethod:
+	return FunkinTweenerServer.create_tween_shader(shader, parameter, value, time, ease, tag)
 
-static func doShadersTween(shaders: Array, parameter: StringName, value: Variant, time: float, ease: StringName = &'') -> Array[TweenerMethod]:
-	var tweens: Array[TweenerMethod]; for i in shaders: tweens.append(doShaderTween(i,parameter,value,time,ease))
+static func doShadersTween(shaders: Array, parameter: StringName, value: Variant, time: float, ease: StringName = &'') -> Array[FunkinTweenerMethod]:
+	var tweens: Array[FunkinTweenerMethod]; for i in shaders: tweens.append(doShaderTween(i,parameter,value,time,ease))
 	return tweens
 
-static func cancelTween(tag: String) -> void: ##Cancel the Tween. See also [method startTween].
-	var tween = tweensCreated.get(tag); if !tween: return
-	TweenService.tweens_to_update.erase(tween)
-	tweensCreated.erase(tag)
-
-static func isTweenRunning(tag: String) -> bool: return tag in tweensCreated ##Detect if the a Tween is running by its tag.
+static func cancelTween(tag: String) -> void: FunkinTweenerServer.cancel_tween(tag) ##Cancel the Tween. See also [method startTween].
+static func isTweenRunning(tag: String) -> bool: return FunkinTweenerServer.is_tween_running(tag) ##Detect if the a Tween is running by its tag.
 
 ##Creates a TweenZoom for cameras.
-static func doTweenZoom(tag: String,object: Variant, toZoom, time = 1.0, easing: StringName = &'') -> TweenerObject: return startTween(tag,object,{&'zoom': float(toZoom)},float(time),easing)
+static func doTweenZoom(tag: String,object: Variant, toZoom, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(object, {&'zoom': float(toZoom)}, float(time), easing, tag)
 
 ##Create a Tween changing the x value, can be usefull not just for positions, but for anothers variables too, the same for the different tweens.
 ##Example: [codeblock]
@@ -648,292 +334,219 @@ static func doTweenZoom(tag: String,object: Variant, toZoom, time = 1.0, easing:
 ##doTweenX('tween','boyfriend.offset',2) #Make a tween of the boyfriend offset.
 ##[/codeblock]
 ##See also [method doTweenY] and [method doTweenAngle].
-static func doTweenX(tag: String,object: Variant, to: Variant, time: float = 1.0, easing: StringName = &'') -> TweenerObject: return startTween(tag,object,{&'x': float(to)},float(time),easing)
+static func doTweenX(tag: String,object: Variant, to: Variant, time: float = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(object,{&'x': float(to)},float(time),easing, tag)
 
 ##Creates a Tween for the y value. See also [method doTweenX] and [method doTweenAngle].
-static func doTweenY(tag: String,object: Variant, to: Variant, time = 1.0, easing: StringName = &'') -> TweenerObject: return startTween(tag,object,{&'y': float(to)},float(time),easing)
+static func doTweenY(tag: String,object: Variant, to: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(object,{&'y': float(to)},float(time),easing, tag)
 
 ##Creates a Tween for the alpha of a [Node]. See also [method doTweenColor].
-static func doTweenAlpha(tag: String, object: Variant, to: Variant, time: Variant = 1.0, easing: StringName = &'') -> TweenerObject: return startTween(tag,object,{^"modulate:a": float(to)},float(time),easing)
+static func doTweenAlpha(tag: String, object: Variant, to: Variant, time: Variant = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(object,{^"modulate:a": float(to)},float(time),easing, tag)
 	
 ##Creates a Tween for the color of a [Node]. See also [method doTweenAlpha].
-static func doTweenColor(tag: String, object: Variant,color: Variant, time = 1.0, easing: StringName = &'') -> TweenerMethod:
-	object = Reflect._find_object(object); if !object: return null
-	return startTweenMethod(tag,object.modulate,_get_color(color),float(time),easing,_modulate_method.bind(object))
+static func doTweenColor(tag: String, object: Variant,color: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerMethod:
+	object = FunkinProperty._find_object(object); if !object: return null
+	return doTweenMethod(object.modulate,_get_color(color),float(time),easing,_modulate_method.bind(object), tag)
 
 static func _modulate_method(col: Variant, obj: CanvasItem) -> void: obj.modulate = Color(col.r,col.b,col.g,obj.modulate.a)
 
 ##Creates a Tween for the rotation of a [Node]. See also [method doTweenX] and [method doTweenY].
-static func doTweenAngle(tag: String, object: Variant, to: Variant, time = 1.0, easing: StringName = &'') -> TweenerObject: return startTween(tag,object,{&'angle': float(to)},time,easing)
+static func doTweenAngle(tag: String, object: Variant, to: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	object = FunkinProperty._find_object(object)
+	if !object: return
+	if object is Node3D: return doTween(object,{^'rotation_degrees:z': float(to)},time,easing, tag)
+	return doTween(object,{&'angle': float(to)},time,easing, tag)
 #endregion
 
 
 #region Note Tween Methods
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenY] and [method noteTweenAngle].
-static func noteTweenX(tag: String,noteID: Variant = 0,target = 0.0,time = 1.0,easing: StringName = &'') -> TweenerObject: return startNoteTween(tag,noteID,{&'x': float(target)},float(time),easing)
+static func noteTweenX(tag: String, id: Variant,target = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(
+		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
+		{^'position:x': float(target)},
+		float(time),
+		easing, 
+		tag
+	)
 
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenX] and [method noteTweenAngle].
-static func noteTweenY(tag: String,noteID,target = 0.0,time = 1.0,easing: StringName = &'') -> TweenerObject: return startNoteTween(tag,noteID,{&'y': float(target)},float(time),easing)
+static func noteTweenY(tag: String, id: Variant,target: Variant  = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(
+		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
+		{^'position:y': float(target)},
+		float(time),
+		easing, 
+		tag
+	)
 
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenColor].
-static func noteTweenAlpha(tag: String,noteID,target = 0.0,time = 1.0,easing: StringName = &'') -> TweenerObject: 
-	return startNoteTween(tag,noteID,{^"modulate:a": float(target)},float(time),easing)
+static func noteTweenAlpha(tag: String,id: Variant,target: Variant = 0.0, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(
+		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
+		{^'modulate:a': float(target)},
+		float(time),
+		easing, 
+		tag
+	)
 
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenY] and [method noteTweenAngle].
-static func noteTweenAngle(tag: String,noteID,target = 0.0,time = 1.0,easing: StringName = &'') -> TweenerObject: 
-	return startNoteTween(tag,noteID,{&'rotation_degrees': float(target)},float(time),easing)
+static func noteTweenAngle(tag: String, id: Variant,target = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(
+		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
+		{&"rotation_degrees": float(target)},
+		float(time),
+		easing, 
+		tag
+	)
 
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenY] and [method noteTweenAngle].
-static func noteTweenDirection(tag: String,noteID: Variant,target: Variant = 0.0,time: Variant = 1.0,easing: StringName = &'') -> TweenerObject: return startNoteTween(tag,noteID,{&'direction': float(target)},float(time),easing)
+static func noteTweenDirection(tag: String, id: Variant,target: Variant = 0.0, time: Variant = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(
+		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
+		{&"direction": float(target)},
+		float(time),
+		easing, 
+		tag
+	)
 
 ##Creates a Tween for the color of a Note. See also [method noteTweenAlpha].
-static func noteTweenColor(tag: String,noteID: Variant,color: Variant = 0.0,time: Variant = 1.0,easing: StringName = &'') -> TweenerMethod: 
-	noteID = getProperty('strumLineNotes.members['+str(noteID)+']'); 
-	return startTweenMethod(tag,noteID.modulate,_get_color(color),float(time),easing,_modulate_method.bind(noteID))
-
-static func startNoteTween(tag: String, noteID: Variant, values: Dictionary, time, ease: String) -> TweenerObject:
-	noteID = getProperty('strumLineNotes.members['+str(noteID)+']'); 
-	return startTween(tag,noteID,values,float(time),ease)
+static func noteTweenColor(tag: String,id: Variant,color: Variant = 0.0,time: Variant = 1.0,easing: StringName = &'') -> FunkinTweenerMethod: 
+	id = FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)); if !id: return
+	color = _get_color(color)
+	return doTweenMethod(
+		Vector3(id.modulate.r,id.modulate.g,id.modulate.b),
+		Vector3(color.r,color.g,color.b),
+		float(time),
+		easing,
+		_modulate_method.bind(id),
+		tag
+	)
 #endregion
 
 #region Note Methods
 static func createStrumNote(note_data: int, style: StringName = &'funkin', tag: StringName = &''): ##Returns a new Strum Note. If you want to add the Strum to a group, see also [method addSpriteToGroup].
-	if !NoteStyleData._load_style(style):
-		debug_message("Error creating Strum Note: '"+style+"' style don't exists!",Color.RED)
-		return
+	if !NoteStyleData._load_style(style): debug_error("Error creating Strum Note: '"+style+"' style don't exists!"); return
 	var strum: StrumNote = StrumNote.new(note_data)
 	strum.loadFromStyle(style)
-	if tag: _insert_sprite(tag,strum)
+	if tag: modVars[tag] = strum
 	return strum
 #endregion
 
 #region Shader Methods
-##Create Shader using tags, making it possible to create several shaders from the same material;[br][br]
-##Example: [codeblock]
+##Create Shader using tags, making it possible to create several shaders from the same material;[codeblock]
 ##initShader('shader1','Chrom');
-##initShader('shader2','Chrom');
-##setShaderFloat('shader2','strength',1.0);
-##[/codeblock][br]
-##[b]OBS:[/b] if [code]obrigatory[/code], the shader will be started 
-##even [code]shadersEnabled[/code] is false.
-static func initShader(shader: String, tag: StringName = &'', obrigatory: bool = false) -> ShaderMaterial:
-	if !obrigatory and !shadersEnabled: return
-	if !tag: tag = shader
-	if tag in shadersCreated and shadersCreated[tag].shader.resource_name == shader: return shadersCreated[tag]
-	
-	var shader_material: ShaderMaterial = Paths.loadShader(shader)
-	if !shader_material: return
-	shadersCreated[tag] = shader_material
-	callOnScripts(&'onLoadShader',[shader,shader_material,tag])
-	return shader_material
-	
+##initShader('shader2','Chrom');##[/codeblock]
+##[b]OBS:[/b] if [code]obrigatory[/code] is set to [code]true[/code], the shader will be created even [code]shadersEnabled[/code] is false.
+static func initShader(shader: String, tag: StringName = &'', obrigatory: bool = false) -> ShaderMaterial: return FunkinShadersServer.init(shader,tag,obrigatory)
+
 ##Add [Material] to a [code]camera[/code], [code]shader[/code] can be a [String] or a [Array].[br][br]
 ##[b]OBS:[/b] If the [code]shader[/code] was not started using [method initShader], this function will call automatically.
 ##[br][br]Example of code:[codeblock]
 ##var shader_material1 = ShaderMaterial.new()
 ##var shader_material2 = ShaderMaterial.new()
-##addShaderCamera('game',shader_material1)
-##addShaderCamera('game',shader_material2)
+##addShaderToCamera('game',shader_material1)
+##addShaderToCamera('game',shader_material1,shader_material2)
 ###or
-##addShaderCamera('game',[shader_material1,shader_material2])
-###or
-##addShaderCamera('game',['ChromaticAberration',shader_material2])
+##addShaderToCamera('game','ChromaticAberration',shader_material2)
 ##[/codeblock][br]
 ##If you want to add the same shader in more cams:
 ##[codeblock]
-##addShaderCamera(['game','hud'],shader_material2)
+##addShaderToCamera(['game','hud'],shader_material2)
 ##[/codeblock]
 ##[b]Note:[/b] The same works for [method removeShaderCamera].
 ##[br][br]See also [method setSpriteShader].
-static func addShaderCamera(camera: Variant, shader: Variant) -> void:
-	if !shader: return
-	
-	if shader is String: 
-		shader = _find_shader_material(shader); 
-		if !shader: return
-	elif shader is Array or shader is PackedStringArray: addShadersCamera(camera,shader); return
-	elif !shader is ShaderMaterial: return
-	if camera is Array: 
-		for i in camera: var cam = getCamera(i); if cam: cam.addFilter(shader); 
-		return
-	
-	if camera is String: camera = getCamera(camera)
-	if camera: camera.addFilter(shader)
+static func addShadersToCamera(camera: Variant, ...shaders: Array) -> void: FunkinShadersServer.add_shaders_to_camera(camera,shaders)
 
-static func addShadersCamera(camera: Variant, shaders: Array):
-	_check_shaders_array(shaders)
-	if camera is Array: 
-		for i in camera: var cam = getCamera(i); if cam: cam.addFilters(shaders);
-		return
-	
-	if camera is String: camera = getCamera(camera)
-	if camera: camera.addFilters(shaders)
+static func setBlendMode(object: Variant, blend: String) -> void: FunkinShadersServer.setBlendMode(object, blend) ##Sets Object Blend mode, can be: [code]add,subtract,mix[/code]
 
-
-
-##Remove shader from the camera, [code]shader[/code] can be a [String] or a [Array].
-##[br]See also [method addShaderCamera].
-static func removeShaderCamera(camera: Variant, shader: Variant) -> void:
-	var cam = getCamera(camera)
-	if !cam: return
-	shader = _find_shader_material(shader)
-	
-	if !shader: return
-	cam.removeFilter(shader)
-
-##Set the sprite's shader, [code]shader[/code] can be a [ShaderMaterial] or a [String].
-##[br][br]See also [method addShaderCamera].
-static func setSpriteShader(object: Variant, shader: Variant) -> void: 
-	object = Reflect._find_object(object); 
-	if object: object.set(&'material',_find_shader_material(shader))
-
-static func removeSpriteShader(object: Variant) -> void: object = Reflect._find_object(object); if object: object.set(&'material',null) ##Remove the current shader from the object
-
-#region Shader Values Methods
-static func setShaderParameter(shader: Variant, parameter: String, value: Variant): shader = _find_shader_material(shader); if shader: shader.set_shader_parameter(parameter,value)
-
-static func addShaderFloat(shader: Variant, parameter: String, value: float): ##Add [code]value[/code] to a [u][float] parameter[/u] of a [code]shader[/code] created using [method initShader].
-	shader = _find_shader_material(shader); if !shader: return
-	var vars = shader.get_shader_parameter(parameter); if vars == null: vars = 0.0
-	shader.set_shader_parameter(parameter,vars+value)
-
-static func getShaderParameter(shader: Variant, shaderVar: String) -> Variant: 
-	shader = _find_shader_material(shader); 
-	return shader.get_shader_parameter(shaderVar) if shader else null
-#endregion
-
-static func setBlendMode(object: Variant, blend: String) -> void: ##Sets Object Blend mode, can be: [code]add,subtract,mix[/code]
-	object = Reflect._find_object(object); if !object is CanvasItem: return
-	var material = ShaderUtils.get_blend(blend)
-	if material: object.set(&'material', material)
+##Remove shader from the camera, [code]shader[/code] can be a [String] or a [Array].[br]See also [method addShaderCamera].
+static func addShaderFloat(shader: Variant, parameter: String, value: float): FunkinShadersServer.addShaderFloat(shader, parameter, value) ##Add [code]value[/code] to a [u][float] parameter[/u] of a [code]shader[/code] created using [method initShader].
+static func setShaderParameter(shader: Variant, parameter: String, value: Variant): FunkinShadersServer.setShaderParameter(shader, parameter, value)
+static func getShaderParameter(shader: Variant, shaderVar: String) -> Variant: return FunkinShadersServer.getShaderParameter(shader, shaderVar)
+static func removeShaderCamera(camera: Variant, shader: Variant) -> void: FunkinShadersServer.remove_camera_shader(camera, shader)
 #endregion
 
 
 #region Camera Methods
-static func createCamera(tag: String, order: int = 5) -> FunkinCamera:
-	if tag in modVars: return modVars[tag]
-	var cam = FunkinCamera.new()
-	cam.name = tag
-	modVars[tag] = cam
-	game.add_child(cam)
-	game.move_child(cam,order)
-	return cam
+static func createCamera(tag: String, order: int = 5) -> FunkinCamera2D: return FunkinCameraServer.createCamera(tag, order)
+static func cameraFlash(cam: Variant, flashColor: Variant = Color.WHITE, time = 1.0) -> void: ##Do Camera Flash
+	FunkinCameraServer.camera_flash(FunkinCameraServer.camera_get(cam), flashColor, time) 
+static func cameraShake(cam: Variant, intensity: float = 0.0, time: float = 1.0) -> CameraShake: 
+	return FunkinCameraServer.camera_shake(FunkinCameraServer.camera_get_controller(cam), intensity, time) ##Make a camera shake.
+static func cameraFade(cam: Variant, color: Variant = Color.BLACK, time: Variant = 1.0, fadeIn: bool = true): 
+	FunkinCameraServer.camera_fade(FunkinCameraServer.camera_get(cam), color, time, fadeIn) ##Make a fade in, or out, in the camera.
+static func cameraSetTarget(target: String = 'boyfriend') -> void: game.moveCamera(target) ##Move the game camera for the [code]target[/code].
+static func setObjectCamera(object: Variant, camera: Variant): FunkinSpritesServer.set_object_camera(object, camera)##Set the object camera.
+static func cameraAsString(string: StringName) -> StringName: return FunkinCameraServer.camera_get_name(string)##Detect the camera name using a String.
+#endregion
 
-##Do Camera Flash
-static func cameraFlash(cam: Variant, flashColor: Variant = Color.WHITE, time = 1.0, force: bool = false) -> void:
-	cam = getCamera(cam); if cam: cam.flash(_get_color(flashColor),float(time),force)
-
-##Make a camera shake.
-static func cameraShake(cam: Variant, intensity: float = 0.0, time: float = 1.0) -> void:
-	cam = getCamera(cam); if cam is FunkinCamera: cam.shake(float(intensity),float(time))
-
-##Make a fade in, or out, in the camera.
-static func cameraFade(cam: Variant, color: Variant = Color.BLACK, time: Variant = 1.0, force: bool = false, fadeIn: bool = true):
-	cam = getCamera(cam); if cam is FunkinCamera: cam.fade(color,float(time),force,fadeIn)
-
-##Move the game camera for the [code]target[/code].
-static func cameraSetTarget(target: String = 'boyfriend') -> void: game.moveCamera(target)
-	
-
-static func setObjectCamera(object: Variant, camera: Variant = 'game'):##Set the object camera.
-	object = Reflect._find_object(object); if !object: return
-	var cam: Node = getCamera(camera); if !cam: return
-	if object is FunkinSprite: object.set(&'camera',cam)
-	else: cam.add(object)
-
+#region Position Methods
 static func getCenterBetween(object1: Variant, object2: Variant) -> Vector2:
-	object1 = Reflect._find_object(object1); if !object1: return Vector2.ZERO
-	object2 = Reflect._find_object(object2); if !object2: return Vector2.ZERO
-	
-	var pos_1 = object1.get_position() if object1.has_method(&'get_position') else Vector2.ZERO
-	var pos_2 = object2.get_position() if object2.has_method(&'get_position') else Vector2.ZERO
-	return pos_1 + (pos_2 - pos_1)*0.5
+	object1 = FunkinProperty._find_object(object1); if !object1: return Vector2.ZERO
+	object2 = FunkinProperty._find_object(object2); if !object2: return Vector2.ZERO
+	return _get_center_between(object1.position, object2.position)
 
+static func getCenterBetween3D(object1: Variant, object2: Variant) -> Vector3:
+	object1 = FunkinProperty._find_object(object1); if !object1: return Vector3.ZERO
+	object2 = FunkinProperty._find_object(object2); if !object2: return Vector3.ZERO
+	return _get_center_between(object1.position, object2.position)
 
+static func _get_center_between(pos_1: Variant, pos_2: Variant) -> Variant: return pos_1 + (pos_2 - pos_1) * 0.5
 
+static func getCharStagePos(char: StringName): return game.get_char_stage_position(char)
 
-static func cameraAsString(string: StringName) -> StringName:##Detect the camera name using a String.
-	match StringName(string.to_lower()):
-		&'hud', &'camhud': return &'camHUD'
-		&'other', &'camother': return &'camOther'
-		&'game',&'camgame': return &'camGame'
-		_: return string
-
-static func getCharacterCamPos(char: Variant): ##Returns the camera position from [param char].
-	if char is String: char =  Reflect._find_object(char)
+static func getFocusPosition(char: Variant) -> Variant: ##Returns the camera position from [param char].
+	if char is String: char =  FunkinProperty._find_object(char)
 	if !char: return Vector2.ZERO
 	if game: return game.get_focus_position(char)
 	if char is String: char = getProperty(char)
-	if char is Character: return char.getCameraPosition()
-	if char is FunkinSprite: return char.getMidpoint()
-	
+	if char is Character2D: return char.getCameraPosition()
+	if char is FunkinSprite2D: return char.getMidpoint()
 	return char.position
 
-
-static func getCamera(camera: Variant) -> Node: ##Returns a [FunkinCamera] created using [method createCamera] or the game's camera named with [param camera]
-	return camera if camera is Node else getProperty(cameraAsString(camera))
+static func getFocusPosition3D(char: Variant) -> Vector3: ##Returns the camera position from [param char].
+	if char is String: char =  FunkinProperty._find_object(char)
+	if !char: return Vector3.ZERO
+	if game: return game.get_focus_position(char)
+	if char is String: char = getProperty(char)
+	if char is CharacterSprite3D: return char.getCameraPosition()
+	return char.position
 #endregion
 
-
 #region Game Methods
-##Starts the song count down.
-static func startCountdown() -> void: callScript("scripts/Countdown",&"start_count_down")
-static func endSong(skip_transition: bool = false) -> void: game.endSound(skip_transition) ##Ends the game song.
-static func setHealth(value: float) -> void: game.health = value ##Sets the player health.
-static func getHealth() -> float: return game.health ##Returns the player health.
-
-static func setHealthBarColors(left: Variant = null, right: Variant = null):
-	if !game: return
-	var healthBar: Bar = game.get(&'healthBar'); if !healthBar: return
-	if left: left = _get_color(left)
-	if right: right = _get_color(right)
-	
-	healthBar.set_colors(left,right)
-
-static func startVideo(path: Variant, isCutscene: bool = true) -> VideoStreamPlayer: return game.startVideo(path, isCutscene) ##Starts a video.
+static func startCountdown() -> void: callScript(&"scripts/Countdown",&"start_count_down") ##Starts the song count down.
+static func restartSong(transition: bool = true): if game: game.reloadPlayState(transition) ##Restarts the game song.
+static func endSong(skip_transition: bool = false) -> void: if game: game.endSound(skip_transition) ##Ends the game song.
+static func exitSong(skip_transition: bool = false): if game: game.exit(skip_transition) 
+static func setHealth(value: float) -> void: if game: game.health = value ##Sets the player health.
+static func getHealth() -> float: return game.health if game else 0.0 ##Returns the player health.
+static func detectSection() -> StringName: return game.detectSection() if game else &"boyfriend" ##Returns the current character section name of the song.
+static func startVideo(path: Variant, isCutscene: bool = true) -> VideoStreamPlayer: return game.startVideo(path, isCutscene) if game else null ##Starts a video.
 #endregion
 
 
 #region Sound Methods
-static func is_audio(value: Object): return value and value.get_class().begins_with('AudioStreamPlayer')
-
 ##Skip the song to [code]time[/code].[br]
 ##If [code]kill_notes[/code], the notes before that time will be destroyed, avoiding missing them and ending up dying.
-static func setSongPosition(time: Variant, kill_notes: bool = false): game.seek_to(float(time),kill_notes)
 
+static func setSongPosition(time: Variant, kill_previous_notes: bool = false): game.seek_to(float(time), kill_previous_notes)
+static func setSoundPosition(sound: Variant, position: float) -> void: FunkinAudioServer.setSoundPosition(sound, position) ##Set the [param sound] position in seconds.
+static func setSoundVolume(sound: Variant, volume: float = 1) -> void: FunkinAudioServer.setSoundVolume(sound, volume)
+static func getSoundTime(sound: Variant) -> float: return FunkinAudioServer.getSoundTime(sound) ##Get the Sound Length.
 static func getSongPosition() -> float: return Conductor.songPositionDelayed ##Get Song Position.
 
-static func getSoundTime(sound: Variant) -> float:##Get the Sound Time.
-	if sound is String and sound in soundsPlaying: sound = soundsPlaying[sound]
-	return sound.get_playback_position() if is_audio(sound) else 0.0
-
-static func setSoundVolume(sound: Variant, volume: float = 1) -> void:
-	if sound is String: sound = getProperty(sound)
-	if !is_audio(sound): return
-	sound.volume_db = -80 + (80*volume)
-
-
-static func detectSection() -> String: return game.detectSection() ##Returns the current character section name of the song.
-
-##Play a sound. [code]path[/code] can be a [String] or a [AudionStreamOggVorbis].
+##Play a sound. [code]path[/code] can be a [String] or a [AudioStream].
 ##[br]Example of code: [codeblock]
 ##playSound('noise',1.0,'noise_sound')
 ##
 ##var audio = Paths.sound('noise2')
-##playSound(audio,1.0,'noise_sound2')
+##playSound(audio,1.0)
 ##[/codeblock]
-static func playSound(path, volume: float = 1.0, tag: String = "", force: bool = false, loop: bool = false) -> AudioStreamPlayer:
-	if !path: return null
-	var audio: AudioStreamPlayer = soundsPlaying.get(tag)
-	
-	if !audio: audio = _create_audio(path,tag)
-	elif audio.playing and !force: return audio
-	
-	if audio.stream: audio.stream.loop = loop
-	
-	audio.play(0)
-	audio.volume_db = linear_to_db(volume)
-	return audio
+static func playSound(path: Variant, volume: float = 1.0, tag: String = "", force: bool = false, loop: bool = false) -> AudioStreamPlayer:
+	return FunkinAudioServer.playSound(path, volume, tag, force, loop)
 #endregion
 
 #region Keyboard Methods
@@ -943,60 +556,45 @@ static func keyboardJustReleased(key: String) -> bool: return InputUtils.isKeyJu
 
 
 #region Script Methods
-##Detect if a script[u],created using [method addScript],[/u] is running.
+##Detect if a script[u], created using [method addScript], [/u] is running.
 static func scriptIsRunning(path: StringName) -> bool: return _script_path(path) in scriptsCreated
 
-static func callMethod(object: Variant, function: String, variables: Array = []) -> Variant:
-	object = Reflect._find_object(object); if !(object and object.has_method(function)): return
+static func callMethod(object: Variant, function: String, ...variables: Array) -> Variant:
+	object = FunkinProperty._find_object(object); if !(object and object.has_method(function)): return
 	return object.callv(function,variables)
-
-
-static func getScript(path: String) -> Object: ##Get a script created from the [method addScript].
-	if !path: return
-	path = _script_path(path)
-	var script = scriptsCreated.get(path)
-	return script if script else addScript(path)
-
 
 ##Returning a new [Object] with the script created, useful if you want to call a function without using [method callScript] or want to change a variable of the script.
 ##Example of code:[codeblock]
 ##var script = addScript('scenes/effects/particles/Particles')
 ##script.lifetime = 1.0
 ##[/codeblock]
-static func addScript(path: String) -> Object:
-	path = _script_path(path)
-	
-	var script = scriptsCreated.get(path)
-	if script: return script
-	
-	var absl_path = Paths.detectFileFolder(path)
-	#prints('Adding ',path,' script')
-	if !absl_path: return
-	
-	script = _load_script_no_check(absl_path)
-	
-	var resource = script.new()
-	resource.set(&'scriptPath',path)
-	resource.set(&'modFolder',Paths.getModFolder(path))
-	return resource if registerScript(resource,path) else null
+static func addScript(path: String, tag: StringName = &'') -> Object:
+	path = _script_path(path); if !tag: tag = StringName(path)
+	var script = scriptsCreated.get(tag); if script: return script
+	script = _load_script_from_path(path); if !script: return
+	registerScript(script,tag)
+	return script
+
+static func getScriptCode(path: String) -> GDScript:
+	if !path.ends_with(".gd"): path += ".gd"
+	return _get_script_code(path)
+
+
+##Returns the script added using [method addScript].
+static func getScript(path: String): return scriptsCreated.get(path)
 
 static func registerCallback(script: Object, function: StringName) -> void: 
 	if !script: return
-	var args = arguments.get(script.get_instance_id())
-	if !args: 
-		debug_message("Error on Register Callback: Script is not registred yet.");
-		return
-	
-	if !function in args: 
-		debug_message("Error on Register Callback: Script don't have "+function+" method.");
-		return
+	var args = script.get_meta(&"arguments")
+	if !args: debug_error("Error on Register Callback: Script don't have methods registred."); return
+	if !function in args: debug_error("Error on Register Callback: Script don't have "+function+" method.");return
 	
 	var list = method_list.get(function)
 	if list and script in list:  
-		debug_message("Error on Register Callback: Callback already registred in this script.");
+		debug_error("Error on Register Callback: Callback already registred in this script.");
 		return
 	_register_callback_no_check(script,function)
-	
+
 ##Disables callbacks, useful if you no longer need to use them. Example:
 ##[codeblock]
 ##disableCallback(self,'onUpdate') #This disable the game to call "onUpdate" in this script
@@ -1008,87 +606,86 @@ static func unregisterCallback(script: Variant, function: StringName):
 
 ##Creates a new script from [param path].
 static func loadScript(path: String) -> GDScript: 
-	path = Paths.detectFileFolder(_script_path(path))
-	return _load_script_no_check(path) if path else null
-
-
-static func _load_script_no_check(path_absolute: String) -> GDScript:
-	var script: GDScript = GDScript.new()
-	script.source_code = FileAccess.get_file_as_string(path_absolute)
-	script.take_over_path(path_absolute)
-	script.reload()
-	return script
-	#return ResourceLoader.load(path_absolute,"",ResourceLoader.CACHE_MODE_REPLACE)
+	path = PathsStore.detectFileFolder(_script_path(path))
+	return _load_script_code(path) if path else null
 
 ##Calls a function in the script, returning a [Variant] that the function returns.
-static func callScript(script: Variant,function: StringName = &'', parameters: Variant = null) -> Variant:
-	script = _get_script(script); if !script: return
-	return _call_script_no_check(script,function,parameters)
+static func callScript(script: Variant, function: StringName, ...parameters: Array) -> Variant:
+	return _callv_script(_get_script(script), function ,parameters)
+
+static func _callv_script(script: Variant, function: StringName, parameters: Array):
+	if !script: return
+	var args = script.get_meta(&"arguments"); if !args: return
+	if !args.has(function): return
+	args = args[function] 
+	if !args: return script.call(function)
+	
+	parameters = _sign_parameters(args, parameters)
+	return _call_script_no_check(script, function, parameters) 
 
 ##Calls a function for every script created.
-static func callOnScripts(function: StringName, parameters: Variant = null) -> Variant:
-	var func_args = method_list.get(function); if !func_args: return
-	for i in func_args: _call_script_no_check(i,function,parameters)
-	return
+static func callOnScripts(function: StringName, ...parameters: Array) -> void:
+	var scripts = method_list.get(function); if !scripts: return
+	var i = scripts.size()
+	while i: i -=1; _callv_script(scripts[i],function, parameters)
 
+static func _sign_parameters(args: Array, parameters: Array) -> Array:
+	var i: int = 0
+	var params: Array
+	var args_size = args.size()
+	var length = mini(args_size,parameters.size())
+	
+	while i < length: 
+		params.append(_sign_value(parameters[i],args[i].type)); 
+		i += 1;
+	
+	_insert_default_args_to_params(params,args,i)
+	return params
+
+static func _insert_default_args_to_params(parameters: Array, args: Array, from: int = 0):
+	while from < args.size(): 
+		var i = args[from]
+		if i.has(&'default'): break
+		parameters.append(MathUtils.get_new_value(i.type));
+		from += 1
+
+static func _sign_value(value: Variant, type_to_convert: Variant.Type) -> Variant:
+	return value if type_to_convert == TYPE_NIL else type_convert(value,type_to_convert)
 
 ##Calls a function for every script created.[br]
 ##returns a [Array] with the values returned from each call.
-static func callOnScriptsWithReturn(function: StringName, parameters: Variant = null) -> Array:
-	var func_args = method_list.get(function); if !func_args: return []
-	var returns: Array = []
-	for i in func_args: returns.append(_call_script_no_check(i,function,parameters))
+static func callOnScriptsWithReturn(function: StringName, ...parameters: Array) -> Array:
+	var returns: Array
+	var func_args = method_list.get(function); if !func_args: return returns
+	var i = func_args.size()
+	while i: i -=1; returns.append(_callv_script(func_args[i],function,parameters))
 	return returns
 
 
-static func _get_script(script: Variant) -> Object:
-	if script is Object: return script 
-	return scriptsCreated.get(_script_path(script))
-
-##Close this script.
-func close() -> void: removeScript(self)
+func close() -> void: removeScript(self); ##Close this script.
 #endregion
 
 
 #region Event Methods
-##Trigger Event. [codeblock]
-##triggerEvent('Change Character','gf','gf-dead')
-##triggerEvent('UIFade',0.0,1.0,true)
-##[/codeblock]
+##Trigger Event from arguments. 
+##This method will convert the [param args] to a Dictionary with value that match the event.
+##[codeblock]
+##triggerEvent('Change Character', 'gf', 'gf-dead') 
+###Converts the arguments to {"char": "gf", "json": "gf-dead"}
+##
+##triggerEvent('Add Camera Zoom', '0.015', '0.03')
+###Converts the arguments to {"game_zoom": 0.015, "hud_zoom": 0.03}
+##[/codeblock] See also [method triggerEventData].
 static func triggerEvent(event: StringName,...args: Array) -> void:
-	var default_values: Dictionary = EventNoteUtils.get_event_variables(event)
-	var keys: Array = default_values.keys()
-	
-	var parameters: Dictionary[StringName, Variant]
-	if !args: 
-		var i = default_values.size()
-		while i: 
-			i -= 1; 
-			var key = keys[i]; 
-			parameters[key] = default_values[key].default_value
-		game.triggerEvent(event,parameters)
-		return
-	var index = 0
-	var keys_length = keys.size()
-	var args_length = minf(args.size(),keys_length)
-	while index < args_length:
-		var key = keys[index]
-		parameters[key] = EventNoteUtils._convert_event_value_type(args[index],default_values[key].type)
-		index += 1
-	
-	while index < keys_length: var key = keys[index]; parameters[key] = default_values[key].default_value; index += 1
-	game.triggerEvent(event,parameters)
+	game.trigger_event(event, EventNote.get_values_from_array(event,args))
 
-##Trigger Event using [Dictionary].
-##triggerEvent('UIFade',{"alpha": 0.0, "time": 1.0,"strums": true)
-##triggerEvent('Change Character',{"char": "bf", "json": "bf-dead"})
-##[/codeblock]
-static func triggerEventData(event: StringName, variables: Dictionary) -> void:
-	var default_values: Dictionary = EventNoteUtils.get_event_variables(event)
-	for i in default_values: 
-		var val = default_values[i]
-		variables[i] = type_convert(variables[i],val.type) if i in variables else val.default_value
-	game.triggerEvent(event,variables)
+##Trigger Event using a [Dictionary].[codeblock]
+##triggerEventData('Change Character',{"char": "bf", "json": "bf-dead"})
+##triggerEventData('Add Camera Zoom',{"game_zoom": 0.015, "hud_zoom": 0.03})
+##[/codeblock]See also [method triggerEvent].
+static func triggerEventData(event: StringName, values: Dictionary) -> void: 
+	EventNote.fix_variables(event, values)
+	game.trigger_event(event,values)
 #endregion
 
 #region Color Methods
@@ -1108,31 +705,17 @@ static func getColorFromArray(array: Array, divided_by_255: bool = true) -> Colo
 static func getColorFromName(color_name: String, default: Color = Color.WHITE) -> Color: return Color.from_string(color_name.to_lower(),default)
 #endregion
 
-#region Internal Methods
-
-#region Signals
-static func _beat_hit() -> void: curBeat = Conductor.beat; callOnScripts(&'onBeatHit')
-static func _step_hit() -> void: curStep = Conductor.step; callOnScripts(&'onStepHit')
-static func _section_hit() -> void: curSection = Conductor.section;callOnScripts(&'onSectionHit')
-#endregion
-
-static func registerScript(script: Object, path: String = '') -> bool:
-	var inserted = super.registerScript(script,path)
-	if inserted: init_gd()
-	return inserted
-
-static func _clear_scripts(absolute: bool = false):
-	super._clear_scripts(absolute)
-	if !started: return
-	started = false
-	debugMode = OS.is_debug_build()
-	for i in Conductor_Signals: Conductor[i].disconnect(Conductor_Signals[i])
-#endregion
 
 #region Utils
-static func getArrayIndex(array,index: int,default: Variant) -> Variant:
+static func getArrayIndex(array: Variant, index: int, default: Variant) -> Variant:
 	if index >= 0 and index < array.size(): return array[index]
 	return default
 
-static func debugPrint(string: Variant, color: Color = Color.WHITE): 
-	debug_message(str(string),color,false)
+static func debugPrint(string: Variant, color: Color = Color.WHITE): debug_message(str(string),color,false)
+#endregion
+
+static func reset(absolute: bool = false):
+	inCutscene = false
+	inGameOver = false
+	if absolute: seenCutscene = false
+ 

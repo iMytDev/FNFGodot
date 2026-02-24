@@ -1,6 +1,4 @@
 extends Node2D
-const AlphabetText = preload("res://source/objects/AlphabetText/AlphabetText.gd")
-
 var allTexts: Array = []
 signal resume_song
 signal restart_song
@@ -53,7 +51,7 @@ func _ready():
 	curText = 0
 	
 func createText(text: String):
-	var newAlphabet = AlphabetText.new(text)
+	var newAlphabet = FunkinText.new(text)
 	newAlphabet.x = 100
 	newAlphabet.y = 250
 	newAlphabet.name = text

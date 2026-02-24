@@ -1,17 +1,13 @@
 extends Node2D
-const AlphabetText = preload("res://source/objects/AlphabetText/AlphabetText.gd")
 
 const StoryMenu = preload("res://source/states/StoryMenu/StoryMenu.gd")
-const Freeplay = preload("res://source/states/Freeplay.gd")
+const Freeplay = preload("uid://c5emumn8mkcd5")
 const Options = preload("uid://by3jq4hq8gst8")
 
 #region Editors
 const CharacterEditorScene = preload("uid://droixhbemd0xd")
-const CharEditorScript = preload("uid://dkyvojm86n535")
 
-const ChartEditorScene = preload("uid://eonsf5cks44n")
-const ChartEditorScript = preload("uid://cyotiath61hou")
-const ModchartEditorScene = preload("uid://dgigti34bmg6s")
+const ChartEditorScene = preload("uid://bw5vas6axpdqk")
 
 const menu_options_name: PackedStringArray = ['story_mode','freeplay','mods','options']
 const mods_options: PackedStringArray = ['Character Editor','Chart Editor','Modchart Editor']
@@ -33,19 +29,19 @@ var treeSwap: Timer = Timer.new()
 @onready var mods_parent: OptionScroll = OptionScroll.new()
 @onready var cur_tab: OptionScroll = option_parent
 
+@onready var version: Label = Label.new()
 var tab_tweens: Dictionary[OptionScroll,Tween]
 
 var return_tabs: Array[OptionScroll]
 
-var freeplay_node: Freeplay
 func spawn():
-	do_tab_tween(option_parent,{'modulate:a': 1.0},0.5,true)
+	do_tab_tween(option_parent,{^'modulate:a': 1.0},0.5,true)
 	create_tween().tween_property(self,'modulate',Color.WHITE,0.5)
 	set_process_input(true)
 	canSwap = true
 
 func transparent():
-	do_tab_tween(option_parent,{'modulate:a': 0.0},0.5,true)
+	do_tab_tween(option_parent,{^'modulate:a': 0.0},0.5,true)
 	stop_blink()
 	create_tween().tween_property(self,'modulate',Color.DIM_GRAY,0.5)
 
@@ -57,17 +53,25 @@ func stop_blink() -> void:
 	bg.modulate = Color.WHITE
 	if cur_tab.option_node: cur_tab.option_node.visible = true
 
+
+func _update_bg_scale():
+	var val = ScreenUtils.screenSize/ScreenUtils.defaultSize
+	var val_max = maxf(val.x,val.y)
+	bg.scale = Vector2(val_max,val_max)
+	bg.position = ScreenUtils.screenSize * 0.5
+	version.position.y = ScreenUtils.screenHeight-50
+
 func _ready():
 	bg.texture = Paths.texture('menuBG')
-	bg.scale = ScreenUtils.screenSize/ScreenUtils.defaultSize
-	bg.centered = false
+	bg.centered = true
+	
+	_update_bg_scale()
+	get_window().size_changed.connect(_update_bg_scale)
 	add_child(bg)
 	
 	treeSwap.name = &'treeSwap'
 	treeSwap.timeout.connect(func():
-		stop_blink()
-		set_process_input(false)
-		exitTo(cur_tab.option_node)
+		stop_blink(); set_process_input(false); exitTo(cur_tab.option_node)
 	)
 	add_child(treeSwap)
 	
@@ -79,7 +83,6 @@ func _ready():
 	_create_version()
 
 func _create_version():
-	var version: Label = Label.new()
 	version.label_settings = LabelSettings.new()
 	version.label_settings.outline_size = 6
 	version.label_settings.outline_color = Color.BLACK
@@ -87,7 +90,7 @@ func _create_version():
 	version.text = 'FNF: Godot Engine v'+ProjectSettings.get_setting("application/config/version")+'\nby n_Myt'
 	
 	add_child(version)
-	version.position.y = ScreenUtils.screenHeight-50
+	
 
 func loadModeSelectOptions():
 	option_parent.name = &'Options'
@@ -98,15 +101,16 @@ func loadModeSelectOptions():
 	option_parent.camera_limit_y = menu_data.camera_limit_y
 	for menus in menu_options_name:
 		var menu_pos = menu_data.get(menus+'_position',[0,0])
-		var menu: FunkinSprite = FunkinSprite.new(true,'mainmenu/menu_'+menus)
+		var menu: FunkinAnimatedSprite2D = FunkinAnimatedSprite2D.new('mainmenu/menu_'+menus)
 		menu.name = menus
 		menu.modulate = OptionScroll.UNSELECTED_COLOR
 		menu.animation.add_animation_by_prefix(&'static',menus+' basic',24,true)
 		menu.animation.add_animation_by_prefix(&'selected',menus+' white',24,true)
+		menu.animation.add_animation_offset(&"static",Vector2.ZERO)
+		menu.animation.add_animation_offset(&"selected", menu.pivot_offset/3.0)
+		
 		menu.offset_follow_scale = true
-		menu.animation.set_anim_offset(&'selected',menu.pivot_offset/3.0)
-		menu.animation.set_anim_offset(&'static',Vector2.ZERO)
-		menu._position = Vector2(menu_pos[0] - menu.pivot_offset.x,menu_pos[1]) - ScreenUtils.screenOffset*0.5
+		menu.position = Vector2(menu_pos[0] - menu.pivot_offset.x,menu_pos[1]) - ScreenUtils.screenOffset*0.5
 		option_parent.add_child(menu)
 		option_parent.options.append(menu)
 		options.append(menu)
@@ -121,7 +125,8 @@ func loadModeSelectOptions():
 func loadModsOptions():
 	var index: int = 0
 	for i in mods_options:
-		var text = AlphabetText.new(i)
+		var text = Label.new()
+		text.text = i
 		
 		var icon_texture = Paths.texture('editors/icons/'+i.to_lower().replace(' ','_'))
 		if icon_texture:
@@ -152,53 +157,51 @@ func set_option(index: int = cur_tab.option_index):
 	if index > optionSize: index = 0
 	elif index < 0:index = optionSize
 	cur_tab.option_index = index
-	FunkinGD.playSound('scrollMenu')
+	FunkinGD.playSound(&'scrollMenu')
 
 #region Tabs
 func select_tab(tab: OptionScroll):
-	do_tab_tween(cur_tab,{'modulate:a': 0.5,'scale': Vector2(0.8,0.8)},1.0,true)
+	do_tab_tween(cur_tab,{^'modulate:a': 0.5,^'scale': Vector2(0.8,0.8)},1.0,true)
 	return_tabs.append(cur_tab)
 	
 	var index: int = 1
 	for i in return_tabs:
-		i.create_tween().tween_property(i,'position:x',-300*index,1.0).set_trans(Tween.TRANS_CUBIC)
+		i.create_tween().tween_property(i,^'position:x',-300*index,1.0).set_trans(Tween.TRANS_CUBIC)
 		index += 1
 	cur_tab = tab
 	cur_tab.position.x = 0.0
 	cur_tab.scale = Vector2.ONE
-	do_tab_tween(tab,{'modulate:a': 1.0,'scale': Vector2.ONE},0.8,true)
+	do_tab_tween(tab,{^'modulate:a': 1.0,&'scale': Vector2.ONE},0.8,true)
 
 func return_tab():
 	if !return_tabs: return
 	
-	do_tab_tween(cur_tab,{'modulate:a': 0.0},0.3,true)
+	do_tab_tween(cur_tab,{^'modulate:a': 0.0},0.3,true)
 	
 	cur_tab = return_tabs.pop_back()
-	do_tab_tween(cur_tab,{'position:x': 0.0,'modulate:a': 1.0,'scale': Vector2.ONE},0.8,true)
+	do_tab_tween(cur_tab,{^'position:x': 0.0,^'modulate:a': 1.0,&'scale': Vector2.ONE},0.8,true)
 	var index: int = return_tabs.size()
 	for i in return_tabs:
-		do_tab_tween(i,{'position:x': -200*index},0.8,true)
+		do_tab_tween(i,{^'position:x': -200*index},0.8,true)
 		index -= 1
 	
 func do_tab_tween(tab: OptionScroll, properties: Dictionary, duration: float, kill: bool = false):
 	var tween: Tween = tab_tweens.get(tab)
-	if tween and kill: 
-		tween.stop()
-		tween = null
+	if tween and kill: tween.stop(); tween = null
 	if !tween: 
 		tween = tab.create_tween().set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN_OUT)
 		tween.set_parallel(true)
 		tab_tweens[tab] = tween
 		tween.finished.connect(func(): tab_tweens.erase(tab))
 	
-	for i in properties: tween.tween_property(tab,i,properties[i],duration)
+	for i in properties: tween.tween_property(tab,str(i),properties[i],duration)
 	return tween
 #endregion
 
 func selectOption(node: Node = cur_tab.option_node):
 	if cur_tab == option_parent:
 		canSwap = false
-		FunkinGD.playSound('confirmMenu')
+		FunkinGD.playSound(&'confirmMenu')
 		blink()
 		treeSwap.start(1)
 	else: exitTo(node)
@@ -211,12 +214,11 @@ func exitTo(option_node: Node):
 			&'story_mode':
 				var story_menu = StoryMenu.new()
 				story_menu.back_to = get_script()
-				Global.swapTree(story_menu,true)
+				Global.swapTree(story_menu)
 			&'freeplay':
-				freeplay_node = Freeplay.new()
-				freeplay_node.exiting.connect(spawn)
-				add_child(freeplay_node)
-				transparent()
+				var node = Freeplay.new()
+				Freeplay.back_to = get_script()
+				Global.swapTree(node)
 			&'mods':
 				select_tab(mods_parent)
 				set_process_input(true)
@@ -230,15 +232,11 @@ func exitTo(option_node: Node):
 	
 	if cur_tab == mods_parent:
 		match option_node.name:
-			'Character Editor': 
+			&'Character Editor': 
 				Global.swapTree(CharacterEditorScene)
-				CharEditorScript.back_to = get_script()
-			'Chart Editor': 
+				CharacterEditorScene.get_state().get_node_property_value(0,0).back_to = get_script()
+			&'Chart Editor': 
 				Global.swapTree(ChartEditorScene)
-				#ChartEditorScript.back_to = get_script()
-			'Modchart Editor': Global.swapTree(ModchartEditorScene)
-		Global.onSwapTree.connect(FunkinGD.stopSound.bind('freakyMenu'),CONNECT_ONE_SHOT)
-	
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
@@ -290,6 +288,7 @@ class OptionScroll extends Node2D:
 		scrolled.emit(index,option_index)
 		option_index = index
 		option_node.modulate = SELECTED_COLOR
+	
 	func _process(delta: float) -> void:
 		position.y = lerpf(
 			position.y,

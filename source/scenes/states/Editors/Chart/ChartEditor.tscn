@@ -1,0 +1,1328 @@
+[gd_scene format=3 uid="uid://bw5vas6axpdqk"]
+
+[ext_resource type="Script" uid="uid://cerxbopol4l1g" path="res://source/backend/Song/SongData.gd" id="1_7u5q8"]
+[ext_resource type="Script" uid="uid://dsm0luhaq03go" path="res://source/custom_nodes/controls/ChessScroll.gd" id="1_xm7wr"]
+[ext_resource type="Script" uid="uid://bpf603wdt3lms" path="res://source/scenes/states/Editors/Chart/ChartChess.gd" id="2_xm7wr"]
+[ext_resource type="Script" uid="uid://cvvli26q7wviq" path="res://source/custom_nodes/popup/DynamicFileMenuButton.gd" id="3_xm7wr"]
+[ext_resource type="Script" uid="uid://dwv308bcl0hv" path="res://source/scenes/states/Editors/Chart/ChartIcon.gd" id="4_tlhgc"]
+[ext_resource type="Script" uid="uid://ja2qx7no6wad" path="res://source/custom_nodes/controls/Chess.gd" id="4_vy4m0"]
+[ext_resource type="Script" uid="uid://bxu1ahcd17pxh" path="res://source/custom_nodes/2d/SolidNode2D.gd" id="6_hjguf"]
+[ext_resource type="Script" uid="uid://br8wh5do7l62w" path="res://source/utils/animation/AnimationData.gd" id="6_ktl22"]
+[ext_resource type="Script" uid="uid://bv8xd8nuxerrp" path="res://source/utils/animation/FunkinAnimator.gd" id="7_31rpt"]
+[ext_resource type="Texture2D" uid="uid://v434y5imjqvi" path="res://icons/BPMChanges.svg" id="7_a2nyq"]
+[ext_resource type="Script" uid="uid://bscbt2dibch22" path="res://source/custom_nodes/controls/ButtonRange/ButtonRange.gd" id="7_tg5ha"]
+[ext_resource type="Texture2D" uid="uid://d3ler7oyh2kc5" path="res://icons/Remove.svg" id="8_7u5q8"]
+[ext_resource type="Texture2D" uid="uid://4atisssy4a5c" path="res://icons/icon.svg" id="8_ivd3g"]
+[ext_resource type="Texture2D" uid="uid://cggfq2j244bhe" path="res://icons/ArrowDown.svg" id="10_rgpvr"]
+[ext_resource type="Script" uid="uid://djppt66esh217" path="res://source/custom_nodes/FunkinFileDialog.gd" id="11_ivd3g"]
+
+[sub_resource type="GDScript" id="GDScript_dn6nv"]
+resource_name = "ChartEditor"
+script/source = "@tool
+extends Node
+
+static var song_position: float
+@export var song_data: SongData = SongData.new():
+	set(val): song_data = val; song_position = 0.0;
+
+
+func _ready() -> void:
+	if Engine.is_editor_hint(): return
+	_load_song_data(); Conductor.seek(song_position)
+
+func _update_rich_presence():
+	if !DiscordRPC.get_is_discord_working(): return
+	DiscordRPC.details = 'Chart Editor'
+	DiscordRPC.state = 'Idle'
+	if Conductor.songData.json: DiscordRPC.state = 'Editing: '+Conductor.songData.json.get_file()
+	DiscordRPC.refresh()
+
+func _load_song_data():
+	if !song_data: _update_rich_presence(); return
+	PathsStore.curMod = song_data.mod
+	Conductor.loadSongFromData(song_data)
+	_update_rich_presence()
+
+func _get_round_step(f: float): return roundf(f / Conductor.bpm_data.stepCrochet) * Conductor.bpm_data.stepCrochet
+
+func _enter_song():
+	if !song_data.packedScene: return
+	song_position = Conductor.songPosition
+	process_mode = Node.PROCESS_MODE_DISABLED
+	Conductor.pauseSongs()
+	Global.doTransition().finished.connect(func():
+		var state = load(song_data.packedScene); if !state: return
+		Global.swapTree(state.new(song_data),false)
+		Conductor.seek(0.0)
+	)
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if !event.pressed: return
+		match event.keycode:
+			KEY_SPACE: 
+				if Conductor.is_playing: Conductor.pauseSongs()
+				else: Conductor.resumeSongs()
+			
+			#region Sections
+			KEY_A:
+				var sub = 4 if event.shift_pressed else 1
+				Conductor.seek(Conductor.get_section_time(Conductor.section-sub))
+			KEY_D:
+				var add = 4 if event.shift_pressed else 1
+				Conductor.seek(Conductor.get_section_time(Conductor.section+add))
+			
+			KEY_ENTER: _enter_song()
+			#endregion
+	
+	elif event is InputEventMouseButton:
+		match event.button_index:
+			4: Conductor.seek(_get_round_step(
+					maxf(0.0,Conductor.songPosition - Conductor.bpm_data.stepCrochet))
+				)
+			5: Conductor.seek(
+				_get_round_step(maxf(0.0,Conductor.songPosition + Conductor.bpm_data.stepCrochet))
+				)
+"
+
+[sub_resource type="Resource" id="Resource_rgpvr"]
+script = ExtResource("1_7u5q8")
+
+[sub_resource type="GDScript" id="GDScript_vy4m0"]
+resource_name = "ChessPositions"
+script/source = "extends Control; 
+
+const CHESS_SIZE = 30.0
+@onready var chess_container = $ChessManager/Chess
+@onready var time_line = $TimeLine
+@onready var notes_manager = $NotesManager
+
+var offset: float
+func _ready() -> void: 
+	offset = position.y; 
+	Conductor.song_position_changed.connect(_update_pos); _update_pos();
+	resized.connect(_update_line_size); _update_size()
+
+func _update_pos(): 
+	var step: float = Conductor.step_float
+	if Conductor.beat_reduced: step += Conductor.beat_reduced.cutback
+	step *= CHESS_SIZE
+	position.y = offset - step * scale.y; time_line.position.y = step + notes_manager.position.y
+
+func _update_size(): size.x = chess_container.get_minimum_size().x; _update_line_size()
+func _update_line_size() -> void: time_line.size.x = size.x
+"
+
+[sub_resource type="GDScript" id="GDScript_a2nyq"]
+resource_name = "ChessManager"
+script/source = "@tool
+extends Node2D
+
+@onready var gf_icon = $gf
+@onready var gf_chess = $Chess/ChessGF
+@onready var parent = $\"..\"
+func _ready() -> void: Conductor.section_hit_once.connect(_on_section_hit)
+func _on_section_hit(): position.y = Conductor.section * 16.0 * parent.CHESS_SIZE
+
+func show_gf_section(_show: bool): gf_icon.visible = _show; gf_chess.visible = _show
+func _validate_property(property: Dictionary) -> void:
+	match StringName(property.name):
+		&\"rotation\": property.usage = PROPERTY_USAGE_NONE
+"
+
+[sub_resource type="GDScript" id="GDScript_ti7k3"]
+resource_name = "MouseRect"
+script/source = "extends SolidNode2D
+
+@export var chess_interatives: Array[Chess]
+
+var CHESS_DIV: Vector2 = Vector2.ONE
+var cur_chess: Chess
+func _ready() -> void: for i in chess_interatives: i.gui_input.connect(_chess_input.bind(i))
+
+func _process(_d: float) -> void: if cur_chess: _rect_follow_mouse()
+
+func _rect_follow_mouse():
+	var local_pos = cur_chess.get_local_mouse_position()
+	var mouse_pos = cur_chess.position
+	
+	var chess_div = cur_chess.rect_size / CHESS_DIV
+	var floor = (local_pos / chess_div).floor()
+	var div =  (local_pos / chess_div).floor() / CHESS_DIV * cur_chess.rect_size
+	
+	if Input.is_key_pressed(KEY_SHIFT): mouse_pos += Vector2(div.x, local_pos.y)
+	else: mouse_pos += div
+	position = mouse_pos
+	visible = Rect2(cur_chess.position,cur_chess.size).has_point(mouse_pos)
+
+func _chess_input(_event: InputEvent, chess: Chess): cur_chess = chess
+
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_WM_WINDOW_FOCUS_IN: set_process(true)
+		NOTIFICATION_WM_WINDOW_FOCUS_OUT: set_process(false)
+"
+
+[sub_resource type="Resource" id="Resource_ktl22"]
+script = ExtResource("6_ktl22")
+frames = [{
+&"region_rect": Rect2(150, 0, 150, 150),
+&"size": Vector2(150, 150)
+}]
+asset = null
+
+[sub_resource type="Resource" id="Resource_31rpt"]
+script = ExtResource("6_ktl22")
+frames = [{
+&"region_rect": Rect2(0, 0, 150, 150),
+&"size": Vector2(150, 150)
+}]
+asset = null
+
+[sub_resource type="Resource" id="Resource_ti7k3"]
+script = ExtResource("7_31rpt")
+animationsArray = {
+&"losing": SubResource("Resource_ktl22"),
+&"normal": SubResource("Resource_31rpt")
+}
+curAnim = SubResource("Resource_31rpt")
+current_animation = &"normal"
+
+[sub_resource type="Resource" id="Resource_lre2i"]
+script = ExtResource("6_ktl22")
+frames = [{
+&"region_rect": Rect2(150, 0, 150, 150),
+&"size": Vector2(150, 150)
+}]
+asset = null
+
+[sub_resource type="Resource" id="Resource_ujo7s"]
+script = ExtResource("6_ktl22")
+frames = [{
+&"region_rect": Rect2(0, 0, 150, 150),
+&"size": Vector2(150, 150)
+}]
+asset = null
+
+[sub_resource type="Resource" id="Resource_ycyqd"]
+script = ExtResource("7_31rpt")
+animationsArray = {
+&"losing": SubResource("Resource_lre2i"),
+&"normal": SubResource("Resource_ujo7s")
+}
+curAnim = SubResource("Resource_ujo7s")
+current_animation = &"normal"
+
+[sub_resource type="Resource" id="Resource_lepeh"]
+script = ExtResource("6_ktl22")
+frames = [{
+&"region_rect": Rect2(150, 0, 150, 150),
+&"size": Vector2(150, 150)
+}]
+asset = null
+
+[sub_resource type="Resource" id="Resource_8p7vw"]
+script = ExtResource("6_ktl22")
+frames = [{
+&"region_rect": Rect2(0, 0, 150, 150),
+&"size": Vector2(150, 150)
+}]
+asset = null
+
+[sub_resource type="Resource" id="Resource_mb8ok"]
+script = ExtResource("7_31rpt")
+animationsArray = {
+&"losing": SubResource("Resource_lepeh"),
+&"normal": SubResource("Resource_8p7vw")
+}
+curAnim = SubResource("Resource_8p7vw")
+current_animation = &"normal"
+
+[sub_resource type="GDScript" id="GDScript_tg5ha"]
+resource_name = "NotesControl"
+script/source = "extends Node2D
+const ChartChess = preload(\"uid://bpf603wdt3lms\")
+const CHESS_SIZE: Vector2 = Vector2(30.0,30.0)
+var CHESS_DIV: Vector2 = Vector2(1.0,1.0)
+
+const NOTE_SELECTED_COLOR = Color.DARK_GRAY
+const NOTE_UNSELECTED_COLOR = Color.WHITE
+const NoteChart = preload(\"uid://dxl7cofy02rr5\")
+
+@export var chess_opponent: Chess
+@export var chess_player: Chess
+@export var chess_girlfriend: Chess
+@onready var notes_group = $\"Notes\"
+
+
+@onready var mouse_rect: Node2D = %MouseRect
+var cur_mouse_chess: Chess
+
+var _notes_per_section_created: Array
+var _cur_note_hitted: int
+var _cur_notes_section: Array[NoteChart]
+var _notes_created: Array
+
+var mustHitSection: bool
+var gfSection: bool
+
+var cur_section_data: Dictionary
+var arrowStyle: StringName = SongData.DEFAULT_ARROW_STYLE
+var keyCount: int = 4
+
+var is_removing_notes: bool
+
+var _notes_selected: Array[NoteChart]
+signal on_notes_selected(note: Array[NoteChart])
+signal on_note_hit(note: NoteChart)
+
+func _init() -> void:
+	if Engine.is_editor_hint(): return
+	Conductor.song_loaded.connect(_on_song_loaded)
+	Conductor.section_hit_once.connect(_on_section_hit_once)
+	Conductor.song_position_changed.connect(_check_notes_hit)
+
+func _on_song_loaded():
+	_notes_per_section_created.resize(Conductor.songData.data.get(&\"notes\",[]).size())
+	arrowStyle = Conductor.songData.getArrowStyle()
+	keyCount = Conductor.songData.data.get(&\"keyCount\",4)
+	if is_node_ready(): _on_section_hit_once.call_deferred()
+
+func _ready() -> void: 
+	for i in [chess_opponent,chess_player,chess_girlfriend]: if i: i.gui_input.connect(_chess_input.bind(i))
+	if chess_girlfriend: chess_girlfriend.visibility_changed.connect(_update_notes_positions.call_deferred)
+	_on_song_loaded()
+
+func _on_section_hit_once() -> void:
+	var length = Conductor.songData.sections.size()-1
+	while length < Conductor.section:
+		Conductor.songData.sections.append(FunkinChartParser.getSectionBase())
+		_notes_per_section_created.append(null)
+		length += 1
+	
+	_erase_notes()
+	_spawn_notes_from_section(Conductor.section)
+	if Conductor.section < length: _spawn_notes_from_section(Conductor.section + 1, true)
+	
+	_cur_note_hitted = 0
+	_cur_notes_section = _notes_per_section_created[Conductor.section]
+	cur_section_data = Conductor.get_section_data(Conductor.section)
+
+func _process(_d: float) -> void: if _notes_selected: _process_note_selected_colors()
+
+
+
+func _process_note_selected_colors() -> void:
+	var col = Color.WEB_GRAY.lerp(Color.DIM_GRAY, sin(Time.get_ticks_msec()*0.005))
+	for i in _notes_selected: i.modulate = col
+
+#region Notes
+func _add_note(note: NoteChart) -> int: notes_group.add_child(note); return _add_note_to_array(note, _notes_created)
+
+func _add_note_to_array(note: NoteChart, array: Array) -> int:
+	var i: int = array.size()
+	while i:
+		if array[i-1].strumTime < note.strumTime: break
+		i -= 1
+	array.insert(i,note)
+	_update_note_position(note)
+	return i
+
+func _spawn_notes_from_section(sec: int, is_next: bool = false):
+	var notes = _notes_per_section_created[sec]
+	if notes == null: notes = _create_notes_from_section(sec)
+	for i in notes:
+		if !i.is_inside_tree(): _add_note(i);
+		else: _update_note_position(i)
+		i.modulate = Color.DARK_GRAY if is_next else Color.WHITE
+
+func _update_notes_positions(): for i in _notes_created: _update_note_position(i)
+
+func _update_note_position(note: NoteChart): 
+	var note_chess = _get_note_chess(note)
+	var _x = CHESS_SIZE.x * note.noteData
+	if note_chess: _x += note_chess.position.x
+	note.position = Vector2(_x, Conductor.get_step(note.strumTime) * CHESS_SIZE.y)
+
+func _get_note_chess(note: NoteChart) -> Chess:
+	if note.gfNote and chess_girlfriend and chess_girlfriend.visible: return chess_girlfriend
+	return chess_player if note.mustPress else chess_opponent
+
+func _create_notes_from_section(sec: int) -> Array[NoteChart]:
+	var n = _notes_per_section_created[sec]; if n != null: return n
+	var notes: Array[NoteChart]
+	_notes_per_section_created[sec] = notes
+	for i in Conductor.get_section_data(sec).get('sectionNotes',[]): _create_note_chart(i,sec)
+	return notes
+
+func _create_note_from_chess(chess: ChartChess, pos: Vector2):
+	if !Conductor.bpm_data.bpm: Global.show_label_warning(\"BPM cannot be zero!\"); return
+	
+	var data: Dictionary
+	var step = pos.y
+	step += (Conductor.section * 16.0)
+	if Conductor.beat_reduced: step -= Conductor.beat_reduced.cutback * 4.0
+	
+	data.t = Conductor.get_step_time(step)
+	data.d = int(pos.x)
+	
+	if chess.mustPress != mustHitSection: 
+		data.d += keyCount
+	
+	var note = _create_note_chart(data,Conductor.section)
+	
+	if chess.gfSection: note.gfNote = true
+	var index = _add_note(note)
+	
+	if index <= _cur_note_hitted: _cur_note_hitted += 1
+	cur_section_data.sectionNotes.insert(index,data)
+
+func remove_note(note: NoteChart):
+	_notes_created.erase(note)
+	_notes_selected.erase(note)
+	_notes_per_section_created[note.note_section].erase(note)
+	note.section_parent.erase(note.chart_data)
+	note.queue_free()
+
+func _create_note_chart(noteData: Dictionary, sec: int) -> NoteChart: 	
+	var note_chart = NoteChart.new(noteData)
+	var section_data = Conductor.get_section_data(sec)
+	note_chart.loadFromStyle(arrowStyle)
+	note_chart.mustPress = Note.note_is_must_press(
+		noteData.get('d',0),
+		section_data.get(&\"mustHitSection\",false)
+	)
+	note_chart.stepCrochet = Conductor.bpm_data.stepCrochet
+	note_chart.section_parent = section_data.sectionNotes
+	note_chart.note_section = sec
+	note_chart.interator.gui_input.connect(_note_gui_event.bind(note_chart))
+	_add_note_to_array(note_chart,_notes_per_section_created[sec])
+	return note_chart
+
+func _erase_notes():
+	for i in _notes_created: notes_group.remove_child(i)
+	_notes_created.clear()
+
+func _clear_notes():
+	var i = _notes_per_section_created.size()
+	while i:
+		i -= 1
+		var sec_data = Conductor.get_section_data(i)
+		var _notes_section = _notes_per_section_created[i]
+		if _notes_section != null: 
+			while _notes_section: remove_note(_notes_section.pop_back())
+			_notes_per_section_created[i] = null
+		else: sec_data.sectionNotes.clear()
+	_notes_selected.clear()
+	_on_section_hit_once()
+
+func _check_notes_hit():
+	if !_cur_notes_section: return
+	
+	_cur_note_hitted = min(_cur_note_hitted,_cur_notes_section.size())
+	while _cur_note_hitted:
+		var i = _cur_notes_section[_cur_note_hitted-1]
+		if i.strumTime < Conductor.songPosition: break
+		i.set_meta(&\"hitted\",false)
+		i.modulate = Color.WHITE
+		_cur_note_hitted -= 1
+	
+	while _cur_note_hitted < _cur_notes_section.size():
+		var i = _cur_notes_section[_cur_note_hitted]
+		if i.strumTime >= Conductor.songPosition: break
+		_on_note_hit(i)
+		i.set_meta(&\"hitted\",true)
+		_cur_note_hitted += 1
+
+func _on_note_hit(note: NoteChart) -> void: note.modulate = Color.DARK_GRAY; on_note_hit.emit(note)
+
+func select_note(note: NoteChart, multiple_selection: bool = false):
+	if note.get_meta(&\"selected\",false): unselect_note(note, true); return
+	if !multiple_selection: 
+		for i in _notes_selected: unselect_note(i,false)
+		_notes_selected.clear()
+	_notes_selected.append(note)
+	note.set_meta(&\"selected\",true)
+	on_notes_selected.emit(_notes_selected);
+
+func unselect_note(note: NoteChart, remove_from_selected_array: bool = true):
+	if remove_from_selected_array: _notes_selected.erase(note)
+	note.modulate = _get_note_modulate(note)
+	note.set_meta(&\"selected\",false)
+
+func _get_note_modulate(n: NoteChart): return NOTE_SELECTED_COLOR if n.get_meta(&\"hitted\",false) else NOTE_UNSELECTED_COLOR
+
+func _note_gui_event(event: InputEvent, note: NoteChart):
+	if is_removing_notes: remove_note(note); return
+	if event is InputEventMouseButton:
+		if !event.pressed: return
+		match event.button_index:
+			1: select_note(note, event.shift_pressed)
+			2: remove_note(note)
+#endregion
+
+
+#region Chess Events
+func _chess_input(event: InputEvent, chess: Chess):
+	cur_mouse_chess = chess
+	if event is InputEventMouseButton:
+		if !event.pressed or event.button_index != 1: return
+		_create_note_from_chess(chess, (mouse_rect.position - chess.position) / CHESS_SIZE)
+#endregion
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventMouseButton:
+		if event.button_index == 2: is_removing_notes = event.pressed
+
+func _unhandled_input(event: InputEvent) -> void:
+	if event is InputEventKey:
+		if !event.pressed: return
+		match event.keycode:
+			KEY_LEFT: if CHESS_DIV.y > 1.0: CHESS_DIV.y -= 1.0
+			KEY_RIGHT: if CHESS_DIV.y < 5.0: CHESS_DIV.y += 1.0
+"
+
+[sub_resource type="GDScript" id="GDScript_7u5q8"]
+resource_name = "StrumsManager"
+script/source = "extends Node2D
+
+@onready var parent = $\"..\"
+var strums_created: Array[StrumNote]
+var _strums_sustains: Array[StrumNote]
+
+func _on_show_strums_toggled(toggled_on: bool) -> void:
+	if toggled_on: _create_strums()
+	else: _erase_strums()
+
+func _ready() -> void: Conductor.song_position_changed.connect(_update_pos); Conductor.step_hit.connect(_on_step_hit)
+
+func _erase_strums():
+	for i in strums_created: i.queue_free()
+	_strums_sustains.clear(); strums_created.clear()
+
+func _create_strums():
+	_erase_strums()
+	for c in parent.chess_array:
+		if !c.visible: continue
+		for i in Conductor.songData.data.get(&\"keyCount\",4):
+			var strum = StrumNote.new(i)
+			strum.loadFromStyle(parent.arrowStyle)
+			var _off: Vector2 = (parent.CHESS_SIZE / (strum.pivot_offset*2.0))
+			var _max_value = _off[_off.max_axis_index()]
+			strum.image.scale = Vector2(_max_value,_max_value)
+			strum.position.x = parent.CHESS_SIZE.x * i + c.position.x
+			strums_created.append(strum)
+			add_child(strum)
+
+func _update_pos(): position.y = parent.CHESS_SIZE.y * Conductor.step_float
+
+func _on_step_hit():
+	if !_strums_sustains: return
+	var i = _strums_sustains.size()
+	while i: 
+		i -= 1
+		var strum = _strums_sustains[i]
+		var time = strum.get_meta(&\"sustain_time\",0.0)
+		var end = strum.get_meta(&\"sustain_end\")
+		if time > Conductor.songPosition or Conductor.songPosition >= end:
+			strum.strumConfirm(); _strums_sustains.remove_at(i); continue
+		strum.animation.play(&\"confirm\",true)
+
+func _on_notes_manager_on_note_hit(note: Node2D) -> void:
+	if !Conductor.is_playing: return
+	
+	var id = note.noteData
+	if note.gfNote: id += Conductor.songData.keyCount*2
+	elif note.mustPress: id += Conductor.songData.keyCount
+	
+	
+	if id < strums_created.size(): 
+		var strum = strums_created[id]
+		if note.sustainLength: 
+			strum.set_meta(&\"sustain_time\",note.strumTime)
+			strum.set_meta(&\"sustain_end\",note.strumTime+note.sustainLength)
+			_strums_sustains.append(strum)
+			strum.animation.play(&\"confirm\")
+		else: strum.strumConfirm()
+"
+
+[sub_resource type="GDScript" id="GDScript_lre2i"]
+resource_name = "EventsManager"
+script/source = "extends Node2D
+const CHESS_SIZE = Vector2(30,30)
+
+
+var event_index: int = 0
+var events_loaded: Array[EventChart]
+var events_showed: Array[EventChart]
+@export var events_menu: MenuButton
+var events: Dictionary = {}
+
+var section_time: float = 0.0
+var section_end_time: float = 0.0
+
+func _ready() -> void:
+	Conductor.section_hit_once.connect(_on_section_hit) 
+	_refresh_events_menu()
+
+func _refresh_events_menu():
+	if !events_menu: return
+	var popup = events_menu.get_popup()
+	DynamicFileMenuButton.add_items_from_dir(events_menu.get_popup(),\"custom_events\",\"json\")
+	
+	popup.add_separator(\"2D\")
+	DynamicFileMenuButton.add_items_from_dir(events_menu.get_popup(),\"custom_events/2d\",\"json\")
+	
+	popup.add_separator(\"3D\")
+	DynamicFileMenuButton.add_items_from_dir(events_menu.get_popup(),\"custom_events/3d\",\"json\")
+
+func _on_section_hit():
+	section_time = Conductor.get_section(Conductor.section)
+	section_end_time = Conductor.get_section(Conductor.section+2)
+	_show_events()
+
+func _show_events():
+	for i in events_loaded: remove_child(i)
+	events_loaded.clear()
+	
+	if !events_showed: return
+	while event_index:
+		var i = events_loaded[event_index-1]
+		if i.strumTime > section_time: break
+		event_index -= 1
+		_show_event(i)
+	
+	var length = events_loaded.size()
+	while event_index < length:
+		var i = events_loaded[event_index+1]
+		if i.strumTime >= section_end_time: break
+		event_index += 1
+		_show_event(i)
+
+
+func _show_event(event: EventChart) -> void:
+	events_loaded.append(event); add_child(event)
+
+func _create_event():
+	pass
+
+func _remove_event(event: EventChart): pass
+
+func _event_gui_input(event: InputEvent, _chess: Chess):
+	if event is InputEventMouseButton:
+		match event.button_index:
+			1: print((event.position / CHESS_SIZE).floor())
+
+
+class EventChart extends Sprite2D:
+	var interator: Control = Control.new()
+	var strumTime: float
+	var data: Dictionary
+	func _init() -> void:
+		texture_changed.connect(
+			func():
+				if !texture: return
+				scale = texture.get_size() / CHESS_SIZE
+				interator.size = CHESS_SIZE / scale
+		)
+		add_child(interator)
+		
+	
+"
+
+[sub_resource type="GDScript" id="GDScript_rgpvr"]
+script/source = "extends PopupMenu
+
+@onready var dialog: FunkinFileDialog = %FunkinFileDialog
+@onready var clear_chart_popup = $ClearChart
+@onready var submenu = $SetMod
+
+func _ready() -> void: set_item_submenu_node(2,submenu)
+func _on_index_pressed(index: int) -> void:
+	match index:
+		0: 
+			dialog.add_filter(\"*.json\")
+			dialog.show()
+			dialog.file_mode = FileDialog.FILE_MODE_SAVE_FILE
+			dialog.file_selected.connect(func(file):Paths.saveFile(Conductor.songData.data,file))
+		1: 
+			dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+			dialog.add_filter(\"*.json\")
+			dialog.show()
+			dialog.file_selected.connect(func(file): 
+				Conductor.loadSongFromData(SongData.load_from_json(file))
+			)
+		2: 
+			clear_chart_popup.call_deferred(\"show\")
+"
+
+[sub_resource type="GDScript" id="GDScript_31rpt"]
+resource_name = "Mods"
+script/source = "extends PopupMenu
+
+
+signal on_mod_selected(mod: String)
+func _ready() -> void: 
+	add_item(\"None\")
+	for i in PathsStore.get_mods_enabled(): add_item(i)
+
+
+func _on_index_pressed(index: int) -> void: 
+	var mod = get_item_text(index) if index > 0 else ''
+	PathsStore.curMod = mod
+	Conductor.songData.mod = PathsStore.curMod
+	on_mod_selected.emit(mod)
+"
+
+[sub_resource type="GDScript" id="GDScript_753ln"]
+resource_name = "AudioFile"
+script/source = "extends PopupMenu
+
+
+@onready var dialog: FunkinFileDialog = %FunkinFileDialog
+func _on_index_pressed(index: int) -> void:
+	match index:
+		0:
+			dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+			dialog.add_filter(\"*.ogg\")
+			dialog.add_filter(\"*.mp3\")
+			dialog.add_filter(\"*.wav\")
+			dialog.show()
+			dialog.file_selected.connect(func(file):
+				Conductor.loadSong(file,\"Inst\"), CONNECT_ONE_SHOT
+			)
+		1:
+			dialog.file_mode = FileDialog.FILE_MODE_OPEN_FILE
+			dialog.add_filter(\"*.ogg\")
+			dialog.add_filter(\"*.mp3\")
+			dialog.add_filter(\"*.wav\")
+			dialog.show()
+			dialog.file_selected.connect(func(file):
+				Conductor.loadSong(file,\"Voice\")
+				, CONNECT_ONE_SHOT
+			)
+"
+
+[sub_resource type="GDScript" id="GDScript_8p7vw"]
+resource_name = "HelpDialog"
+script/source = "extends PopupMenu
+
+
+@onready var note_shortcuts: PopupPanel = $NoteShortcuts
+func _on_index_pressed(index: int) -> void:
+	match index:
+		0: note_shortcuts.show()
+"
+
+[sub_resource type="GDScript" id="GDScript_ivd3g"]
+resource_name = "SectionInfo"
+script/source = "extends Label
+
+
+@onready var must_hit_section: CheckBox = $VBoxContainer/MustHitSection
+@onready var gf_section: CheckBox = $VBoxContainer/GFSection
+@onready var alt_section: CheckBox = $VBoxContainer/AltSection
+
+@onready var section_beats = $VBoxContainer/SectionBeats
+var cur_sec_data: Dictionary
+func _ready() -> void:
+	Conductor.section_hit_once.connect(_on_section_hit)
+
+func _on_section_hit():
+	cur_sec_data = Conductor.get_section_data(Conductor.section)
+	must_hit_section.set_pressed_no_signal(cur_sec_data.get(&\"mustHitSection\",false))
+	gf_section.set_pressed_no_signal(cur_sec_data.get(&\"gfSection\",false))
+	alt_section.set_pressed_no_signal(cur_sec_data.get(&\"alt_section\",false))
+	section_beats.set_value_no_signal(cur_sec_data.get(&\"section_beats\",4.0))
+
+func _on_must_hit_section_toggled(toggled_on: bool) -> void: cur_sec_data.mustHitSection = toggled_on
+func _on_gf_section_toggled(toggled_on: bool) -> void: cur_sec_data.gfSection = toggled_on
+func _on_alt_section_toggled(toggled_on: bool) -> void: cur_sec_data.altAnim = toggled_on
+"
+
+[sub_resource type="GDScript" id="GDScript_hjguf"]
+resource_name = "NoteEditor"
+script/source = "extends Label
+
+
+@onready var note_type = $\"NoteType\"
+@onready var note_sustain = $\"Sustain\"
+
+var cur_notes_selected: Array
+
+func _ready() -> void:
+	Conductor.on_bpm_changes.connect(update_bpm)
+	update_bpm()
+
+func update_bpm(): note_sustain.step = Conductor.bpm_data.stepCrochet
+
+func _on_notes_selected(notes: Array):
+	cur_notes_selected = notes
+	if !notes: reset_properties(); return
+	var note = notes.back(); if !note: reset_properties(); return
+	note_sustain.set_value_no_signal(note.sustainLength)
+	note_type.text = note.noteType
+
+func reset_properties():
+	note_type.text = ''
+	note_sustain.set_value_no_signal(0.0)
+
+func _on_sustain_value_added(value: float) -> void:
+	for i in cur_notes_selected: if i: i.sustainLength = maxf(i.sustainLength + value,0.0)
+
+
+func _on_gf_note_toggled(toggled_on: bool) -> void:
+	for i in cur_notes_selected: if i: i.gfNote = toggled_on; print(toggled_on)
+"
+
+[sub_resource type="GDScript" id="GDScript_ktl22"]
+resource_name = "SongManager"
+script/source = "extends Label
+
+@onready var bpm = $BPM
+@onready var player: DynamicFileMenuButton = $player
+@onready var opponent: DynamicFileMenuButton = $opponent
+@onready var girlfriend: DynamicFileMenuButton = $girlfriend
+@onready var stage: DynamicFileMenuButton = $stage
+
+
+func _ready() -> void:
+	Conductor.song_loaded.connect(_load_song_data)
+	player.popup.index_pressed.connect(_on_player_selected)
+	opponent.popup.index_pressed.connect(_on_opponent_selected)
+	girlfriend.popup.index_pressed.connect(_on_gf_selected)
+	stage.popup.index_pressed.connect(_on_stage_selected)
+	_load_song_data()
+
+func _load_song_data(): 
+	bpm.set_value_no_signal(Conductor.default_bpm_data.bpm)
+	stage.text = Conductor.songData.data.get(\"stage\",\"\")
+	player.text = Conductor.songData.data.get(\"player1\",\"bf\")
+	opponent.text = Conductor.songData.data.get(\"player2\",\"bf\")
+	girlfriend.text = Conductor.songData.data.get(\"gfversion\",\"bf\")
+
+func _on_bpm_value_changed(value: float) -> void:
+	Conductor.default_bpm_data.bpm = value
+	Conductor.songData.data.bpm = value
+
+func _on_player_selected(i: int): 
+	player.text = player.popup.get_item_text(i); Conductor.songData.data.player1 = player.text
+func _on_opponent_selected(i: int): 
+	opponent.text = opponent.popup.get_item_text(i); Conductor.songData.data.player2 = opponent.text
+	
+func _on_gf_selected(i: int): 
+	girlfriend.text = girlfriend.popup.get_item_text(i); 
+	Conductor.songData.data.gfVersion = girlfriend.text
+func _on_stage_selected(i: int): 
+	stage.text = stage.popup.get_item_text(i); Conductor.songData.data.stage = stage.text
+"
+
+[node name="ChartEditor" type="Node" unique_id=1948906866]
+script = SubResource("GDScript_dn6nv")
+song_data = SubResource("Resource_rgpvr")
+
+[node name="BG" type="Control" parent="." unique_id=1097765130]
+layout_mode = 3
+anchors_preset = 0
+offset_top = 26.0
+offset_right = 1281.0
+offset_bottom = 720.0
+script = ExtResource("1_xm7wr")
+primary_color = Color(0.06053035, 0.06053035, 0.060530342, 1)
+secondary_color = Color(0.01773239, 0.017732393, 0.017732384, 1)
+metadata/_custom_type_script = "uid://dsm0luhaq03go"
+
+[node name="ChessControl" type="Control" parent="." unique_id=2128776684]
+layout_mode = 3
+anchors_preset = 0
+offset_top = 39.0
+offset_right = 350.0
+offset_bottom = 608.6667
+scale = Vector2(1.2, 1.2)
+script = SubResource("GDScript_vy4m0")
+
+[node name="ChessManager" type="Node2D" parent="ChessControl" unique_id=342099412]
+script = SubResource("GDScript_a2nyq")
+
+[node name="Chess" type="HBoxContainer" parent="ChessControl/ChessManager" unique_id=536535915]
+clip_contents = true
+offset_top = 87.00001
+offset_right = 350.0
+offset_bottom = 1012.00006
+mouse_filter = 2
+theme_override_constants/separation = 40
+
+[node name="ChessOpponent" type="Control" parent="ChessControl/ChessManager/Chess" unique_id=1190605352]
+texture_filter = 1
+texture_repeat = 2
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+script = ExtResource("2_xm7wr")
+metadata/_custom_type_script = "uid://ja2qx7no6wad"
+
+[node name="ChessOpponentBG" type="Control" parent="ChessControl/ChessManager/Chess/ChessOpponent" unique_id=854120747]
+custom_minimum_size = Vector2(120, 0)
+anchors_preset = 0
+offset_top = 479.615
+offset_right = 120.0
+offset_bottom = 1079.6149
+script = ExtResource("4_vy4m0")
+primary_color = Color(0.10747967, 0.10747974, 0.10747973, 1)
+secondary_color = Color(0.033853274, 0.03385328, 0.033853255, 1)
+metadata/_custom_type_script = "uid://ja2qx7no6wad"
+
+[node name="ChessPlayer" type="Control" parent="ChessControl/ChessManager/Chess" unique_id=171054544]
+texture_filter = 1
+texture_repeat = 2
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+script = ExtResource("2_xm7wr")
+mustPress = true
+metadata/_custom_type_script = "uid://ja2qx7no6wad"
+
+[node name="ChessPlayerNext" type="Control" parent="ChessControl/ChessManager/Chess/ChessPlayer" unique_id=2027559982]
+custom_minimum_size = Vector2(120, 0)
+anchors_preset = 0
+offset_top = 479.615
+offset_right = 120.0
+offset_bottom = 1079.6149
+script = ExtResource("4_vy4m0")
+primary_color = Color(0.10747967, 0.10747974, 0.10747973, 1)
+secondary_color = Color(0.033853274, 0.03385328, 0.033853255, 1)
+metadata/_custom_type_script = "uid://ja2qx7no6wad"
+
+[node name="ChessGF" type="Control" parent="ChessControl/ChessManager/Chess" unique_id=1994922884]
+texture_filter = 1
+texture_repeat = 2
+custom_minimum_size = Vector2(120, 0)
+layout_mode = 2
+script = ExtResource("2_xm7wr")
+gfSection = true
+metadata/_custom_type_script = "uid://ja2qx7no6wad"
+
+[node name="ChessGFNext" type="Control" parent="ChessControl/ChessManager/Chess/ChessGF" unique_id=570666519]
+custom_minimum_size = Vector2(120, 0)
+anchors_preset = 0
+offset_top = 479.66666
+offset_right = 120.0
+offset_bottom = 960.0
+script = ExtResource("4_vy4m0")
+primary_color = Color(0.10747967, 0.10747974, 0.10747973, 1)
+secondary_color = Color(0.033853274, 0.03385328, 0.033853255, 1)
+metadata/_custom_type_script = "uid://ja2qx7no6wad"
+
+[node name="MouseRect" type="Node2D" parent="ChessControl/ChessManager" unique_id=1013743647 node_paths=PackedStringArray("chess_interatives")]
+unique_name_in_owner = true
+position = Vector2(-33.333332, 87.000046)
+script = SubResource("GDScript_ti7k3")
+chess_interatives = [NodePath("../Chess/ChessOpponent"), NodePath("../Chess/ChessPlayer"), NodePath("../Chess/ChessGF")]
+size = Vector2(30, 30)
+metadata/_custom_type_script = "uid://bxu1ahcd17pxh"
+
+[node name="bf" type="Node2D" parent="ChessControl/ChessManager" unique_id=1544899668]
+position = Vector2(152, -14.999996)
+scale = Vector2(0.5, 0.5)
+script = ExtResource("4_tlhgc")
+default_scale = Vector2(0.5, 0.5)
+scale_lerp = true
+cur_icon = &"bf"
+animation = SubResource("Resource_ti7k3")
+velocity = Vector2(999999, 99999)
+flipX = false
+flipY = false
+region_rect = Rect2(0, 0, 150, 150)
+pivot_offset = Vector2(75, 75)
+metadata/_custom_type_script = "uid://bgqwitowtypkw"
+
+[node name="dad" type="Node2D" parent="ChessControl/ChessManager" unique_id=1018816793]
+position = Vector2(-14.333333, -22)
+scale = Vector2(0.5, 0.5)
+script = ExtResource("4_tlhgc")
+default_scale = Vector2(0.5, 0.5)
+scale_lerp = true
+cur_icon = &"dad"
+animation = SubResource("Resource_ycyqd")
+velocity = Vector2(999999, 99999)
+flipX = false
+flipY = false
+region_rect = Rect2(0, 0, 150, 150)
+pivot_offset = Vector2(75, 75)
+metadata/_custom_type_script = "uid://bgqwitowtypkw"
+
+[node name="gf" type="Node2D" parent="ChessControl/ChessManager" unique_id=961929300]
+position = Vector2(304.66663, -15)
+scale = Vector2(0.5, 0.5)
+script = ExtResource("4_tlhgc")
+default_scale = Vector2(0.5, 0.5)
+scale_lerp = true
+cur_icon = &"gf"
+animation = SubResource("Resource_mb8ok")
+velocity = Vector2(999999, 99999)
+flipX = false
+flipY = false
+region_rect = Rect2(0, 0, 150, 150)
+pivot_offset = Vector2(75, 75)
+metadata/_custom_type_script = "uid://bgqwitowtypkw"
+
+[node name="TimeLine" type="Node2D" parent="ChessControl" unique_id=1510188784]
+process_mode = 4
+position = Vector2(4.7683713e-07, -44.999996)
+script = ExtResource("6_hjguf")
+size = Vector2(50, 5)
+metadata/_custom_type_script = "uid://bxu1ahcd17pxh"
+
+[node name="NotesManager" type="Node2D" parent="ChessControl" unique_id=1528414848 node_paths=PackedStringArray("chess_opponent", "chess_player", "chess_girlfriend")]
+position = Vector2(0, 87.000046)
+script = SubResource("GDScript_tg5ha")
+chess_opponent = NodePath("../ChessManager/Chess/ChessOpponent")
+chess_player = NodePath("../ChessManager/Chess/ChessPlayer")
+chess_girlfriend = NodePath("../ChessManager/Chess/ChessGF")
+
+[node name="StrumsManager" type="Node2D" parent="ChessControl/NotesManager" unique_id=330534077]
+process_priority = -1
+script = SubResource("GDScript_7u5q8")
+
+[node name="Notes" type="Node2D" parent="ChessControl/NotesManager" unique_id=475995971]
+process_priority = -1
+
+[node name="EventsManager" type="Node2D" parent="ChessControl" unique_id=1438181990]
+script = SubResource("GDScript_lre2i")
+
+[node name="Files" type="PanelContainer" parent="." unique_id=1807153992]
+offset_right = 1283.0
+offset_bottom = 26.0
+mouse_filter = 2
+
+[node name="Container" type="HBoxContainer" parent="Files" unique_id=1336806884]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 50
+
+[node name="Files" type="Button" parent="Files/Container" unique_id=1003222594]
+layout_mode = 2
+focus_mode = 0
+text = "   Files"
+flat = true
+
+[node name="Files" type="PopupMenu" parent="Files/Container/Files" unique_id=1072638094]
+oversampling_override = 1.0
+position = Vector2i(20, 25)
+size = Vector2i(144, 87)
+theme_override_constants/icon_max_width = 16
+item_count = 4
+item_0/text = "Save Chart"
+item_0/icon = ExtResource("7_a2nyq")
+item_0/id = 1
+item_1/text = "Load Chart"
+item_1/icon = ExtResource("7_a2nyq")
+item_1/id = 0
+item_2/text = "Set Mod"
+item_2/id = 3
+item_3/text = "Clear Chart"
+item_3/icon = ExtResource("8_7u5q8")
+item_3/id = 2
+script = SubResource("GDScript_rgpvr")
+
+[node name="SetMod" type="PopupMenu" parent="Files/Container/Files/Files" unique_id=530861870]
+oversampling_override = 1.0
+script = SubResource("GDScript_31rpt")
+
+[node name="ClearChart" type="ConfirmationDialog" parent="Files/Container/Files/Files" unique_id=656454933]
+oversampling_override = 1.0
+title = "You sure?"
+initial_position = 1
+size = Vector2i(200, 70)
+
+[node name="Audio" type="Button" parent="Files/Container" unique_id=507965542]
+layout_mode = 2
+focus_mode = 0
+text = "Audio"
+flat = true
+
+[node name="Audio" type="PopupMenu" parent="Files/Container/Audio" unique_id=1803902444]
+oversampling_override = 1.0
+position = Vector2i(130, 25)
+size = Vector2i(281, 100)
+theme_override_constants/icon_max_width = 16
+item_count = 3
+item_0/text = "Load Inst"
+item_0/icon = ExtResource("7_a2nyq")
+item_0/id = 0
+item_1/text = "Load Voice/Player Voice"
+item_1/icon = ExtResource("8_ivd3g")
+item_1/id = 1
+item_2/text = "Load Opponent Voice"
+item_2/icon = ExtResource("8_ivd3g")
+item_2/id = 2
+script = SubResource("GDScript_753ln")
+
+[node name="Help" type="Button" parent="Files/Container" unique_id=903224436]
+layout_mode = 2
+focus_mode = 0
+text = "Help"
+flat = true
+
+[node name="Help" type="PopupMenu" parent="Files/Container/Help" unique_id=188809644]
+oversampling_override = 1.0
+position = Vector2i(240, 25)
+size = Vector2i(228, 100)
+theme_override_constants/icon_max_width = 16
+item_count = 2
+item_0/text = "Note Shortcuts"
+item_0/icon = ExtResource("10_rgpvr")
+item_0/id = 0
+item_1/id = 1
+script = SubResource("GDScript_8p7vw")
+
+[node name="NoteShortcuts" type="PopupPanel" parent="Files/Container/Help/Help" unique_id=1477425618]
+oversampling_override = 1.0
+initial_position = 1
+size = Vector2i(500, 221)
+
+[node name="RichTextLabel" type="RichTextLabel" parent="Files/Container/Help/Help/NoteShortcuts" unique_id=1450203379]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 496.0
+offset_bottom = 217.0
+bbcode_enabled = true
+text = "•[u]Ctrl + Left Click[/u]: Create Note for Both Sections
+
+•[u]Right Click[/u]: Erase Notes
+"
+
+[node name="TabContainer" type="TabContainer" parent="." unique_id=436669499]
+offset_left = 852.0
+offset_top = 295.0
+offset_right = 1280.0
+offset_bottom = 721.0
+current_tab = 1
+
+[node name="Section" type="Label" parent="TabContainer" unique_id=913554650]
+visible = false
+layout_mode = 2
+text = "
+
+
+
+
+
+
+
+"
+script = SubResource("GDScript_ivd3g")
+metadata/_tab_index = 0
+
+[node name="VBoxContainer" type="VBoxContainer" parent="TabContainer/Section" unique_id=1040787751]
+layout_mode = 0
+offset_top = 8.0
+offset_right = 178.0
+offset_bottom = 197.0
+
+[node name="MustHitSection" type="CheckBox" parent="TabContainer/Section/VBoxContainer" unique_id=819127112]
+layout_mode = 2
+tooltip_text = "If enabled, the game will focus the camera in Boyfriend."
+text = "Must Hit Section"
+
+[node name="GFSection" type="CheckBox" parent="TabContainer/Section/VBoxContainer" unique_id=324194092]
+layout_mode = 2
+tooltip_text = "If enabled, the game will focus the camera in Girlfriend."
+text = "GF Section"
+
+[node name="AltSection" type="CheckBox" parent="TabContainer/Section/VBoxContainer" unique_id=953058586]
+layout_mode = 2
+tooltip_text = "When enabled, the characters hit the notes, them will play alt-sing animations"
+text = "Alt Section"
+
+[node name="Label" type="Label" parent="TabContainer/Section/VBoxContainer" unique_id=752144193]
+layout_mode = 2
+text = "
+-- Editor Only -- "
+
+[node name="CheckBox" type="CheckBox" parent="TabContainer/Section/VBoxContainer" unique_id=699788331]
+layout_mode = 2
+text = "Show GF Section"
+
+[node name="SectionBeats" type="Label" parent="TabContainer/Section/VBoxContainer" unique_id=1869253156]
+custom_minimum_size = Vector2(328, 40)
+layout_mode = 2
+text = "Section Beats: "
+vertical_alignment = 1
+script = ExtResource("7_tg5ha")
+min = 1.0
+max = 4.0
+value = 4.0
+metadata/_custom_type_script = "uid://bscbt2dibch22"
+
+[node name="Notes" type="Label" parent="TabContainer" unique_id=1612962233]
+layout_mode = 2
+text = "
+Note Type:
+
+
+Sustain Length:
+
+GF Note:
+
+---Editor Only---
+
+Show Strums: "
+script = SubResource("GDScript_hjguf")
+metadata/_tab_index = 1
+
+[node name="NoteType" type="MenuButton" parent="TabContainer/Notes" unique_id=1506833308]
+layout_mode = 0
+offset_left = 95.0
+offset_top = 11.0
+offset_right = 190.0
+offset_bottom = 40.0
+flat = false
+script = ExtResource("3_xm7wr")
+dir_to_look = "custom_notetypes"
+filters = PackedStringArray("gd")
+metadata/_custom_type_script = "uid://cvvli26q7wviq"
+
+[node name="Sustain" type="Label" parent="TabContainer/Notes" unique_id=1345842949]
+custom_minimum_size = Vector2(188, 40)
+layout_mode = 0
+offset_left = 140.0
+offset_top = 60.0
+offset_right = 328.0
+offset_bottom = 100.0
+vertical_alignment = 1
+script = ExtResource("7_tg5ha")
+metadata/_custom_type_script = "uid://bscbt2dibch22"
+
+[node name="GFNote" type="CheckBox" parent="TabContainer/Notes" unique_id=1250010089]
+layout_mode = 0
+offset_left = 75.0
+offset_top = 105.0
+offset_right = 99.0
+offset_bottom = 129.0
+
+[node name="ShowStrums" type="CheckBox" parent="TabContainer/Notes" unique_id=1253592880]
+layout_mode = 0
+offset_left = 109.0
+offset_top = 177.0
+offset_right = 133.0
+offset_bottom = 201.0
+focus_mode = 0
+
+[node name="Song" type="Label" parent="TabContainer" unique_id=610515454]
+visible = false
+layout_mode = 2
+text = "
+
+BPM:
+
+
+
+--Characters--
+
+Player:
+
+Opponent:
+
+Girlfriend:
+
+
+---Stages---
+
+Stage:"
+script = SubResource("GDScript_ktl22")
+metadata/_tab_index = 2
+
+[node name="BPM" type="Label" parent="TabContainer/Song" unique_id=479615241]
+custom_minimum_size = Vector2(188, 40)
+layout_mode = 0
+offset_left = 39.0
+offset_top = 25.0
+offset_right = 227.0
+offset_bottom = 65.0
+vertical_alignment = 1
+script = ExtResource("7_tg5ha")
+metadata/_custom_type_script = "uid://bscbt2dibch22"
+
+[node name="player" type="MenuButton" parent="TabContainer/Song" unique_id=1614634554]
+layout_mode = 0
+offset_left = 66.0
+offset_top = 140.0
+offset_right = 192.0
+offset_bottom = 166.0
+flat = false
+script = ExtResource("3_xm7wr")
+dir_to_look = "characters"
+filters = PackedStringArray("json")
+metadata/_custom_type_script = "uid://cvvli26q7wviq"
+
+[node name="opponent" type="MenuButton" parent="TabContainer/Song" unique_id=573146538]
+layout_mode = 0
+offset_left = 88.0
+offset_top = 177.0
+offset_right = 214.0
+offset_bottom = 203.0
+flat = false
+script = ExtResource("3_xm7wr")
+dir_to_look = "characters"
+filters = PackedStringArray("json")
+metadata/_custom_type_script = "uid://cvvli26q7wviq"
+
+[node name="girlfriend" type="MenuButton" parent="TabContainer/Song" unique_id=1286519759]
+layout_mode = 0
+offset_left = 106.0
+offset_top = 211.0
+offset_right = 232.0
+offset_bottom = 237.0
+flat = false
+script = ExtResource("3_xm7wr")
+dir_to_look = "characters"
+filters = PackedStringArray("json")
+metadata/_custom_type_script = "uid://cvvli26q7wviq"
+
+[node name="stage" type="MenuButton" parent="TabContainer/Song" unique_id=1730736265]
+layout_mode = 0
+offset_left = 57.0
+offset_top = 301.0
+offset_right = 183.0
+offset_bottom = 327.0
+flat = false
+script = ExtResource("3_xm7wr")
+dir_to_look = "stages"
+filters = PackedStringArray("json")
+metadata/_custom_type_script = "uid://cvvli26q7wviq"
+
+[node name="FunkinFileDialog" type="FileDialog" parent="." unique_id=1097156079]
+unique_name_in_owner = true
+oversampling_override = 1.0
+initial_position = 1
+access = 2
+use_native_dialog = true
+script = ExtResource("11_ivd3g")
+metadata/_custom_type_script = "uid://djppt66esh217"
+
+[connection signal="minimum_size_changed" from="ChessControl/ChessManager/Chess" to="ChessControl" method="_update_size"]
+[connection signal="gui_input_chess" from="ChessControl/ChessManager/Chess/ChessOpponent" to="ChessControl/ChessManager/MouseRect" method="_chess_input"]
+[connection signal="gui_input_chess" from="ChessControl/ChessManager/Chess/ChessPlayer" to="ChessControl/ChessManager/MouseRect" method="_chess_input"]
+[connection signal="gui_input_chess" from="ChessControl/ChessManager/Chess/ChessGF" to="ChessControl/ChessManager/MouseRect" method="_chess_input"]
+[connection signal="on_note_hit" from="ChessControl/NotesManager" to="ChessControl/NotesManager/StrumsManager" method="_on_notes_manager_on_note_hit"]
+[connection signal="on_notes_selected" from="ChessControl/NotesManager" to="TabContainer/Notes" method="_on_notes_selected"]
+[connection signal="button_down" from="Files/Container/Files" to="Files/Container/Files/Files" method="show"]
+[connection signal="index_pressed" from="Files/Container/Files/Files" to="Files/Container/Files/Files" method="_on_index_pressed"]
+[connection signal="index_pressed" from="Files/Container/Files/Files/SetMod" to="Files/Container/Files/Files/SetMod" method="_on_index_pressed"]
+[connection signal="on_mod_selected" from="Files/Container/Files/Files/SetMod" to="ChessControl/EventsManager" method="_refresh_events_menu" unbinds=1]
+[connection signal="on_mod_selected" from="Files/Container/Files/Files/SetMod" to="TabContainer/Song/player" method="_refresh" unbinds=1]
+[connection signal="on_mod_selected" from="Files/Container/Files/Files/SetMod" to="TabContainer/Song/opponent" method="_refresh" unbinds=1]
+[connection signal="on_mod_selected" from="Files/Container/Files/Files/SetMod" to="TabContainer/Song/girlfriend" method="_refresh" unbinds=1]
+[connection signal="on_mod_selected" from="Files/Container/Files/Files/SetMod" to="TabContainer/Song/stage" method="_refresh" unbinds=1]
+[connection signal="confirmed" from="Files/Container/Files/Files/ClearChart" to="ChessControl/NotesManager" method="_clear_notes"]
+[connection signal="button_down" from="Files/Container/Audio" to="Files/Container/Audio/Audio" method="show"]
+[connection signal="index_pressed" from="Files/Container/Audio/Audio" to="Files/Container/Audio/Audio" method="_on_index_pressed"]
+[connection signal="button_down" from="Files/Container/Help" to="Files/Container/Help/Help" method="show"]
+[connection signal="index_pressed" from="Files/Container/Help/Help" to="Files/Container/Help/Help" method="_on_index_pressed"]
+[connection signal="toggled" from="TabContainer/Section/VBoxContainer/MustHitSection" to="TabContainer/Section" method="_on_must_hit_section_toggled"]
+[connection signal="toggled" from="TabContainer/Section/VBoxContainer/GFSection" to="TabContainer/Section" method="_on_gf_section_toggled"]
+[connection signal="toggled" from="TabContainer/Section/VBoxContainer/AltSection" to="TabContainer/Section" method="_on_alt_section_toggled"]
+[connection signal="toggled" from="TabContainer/Section/VBoxContainer/CheckBox" to="ChessControl/ChessManager" method="show_gf_section"]
+[connection signal="value_added" from="TabContainer/Notes/Sustain" to="TabContainer/Notes" method="_on_sustain_value_added"]
+[connection signal="toggled" from="TabContainer/Notes/GFNote" to="TabContainer/Notes" method="_on_gf_note_toggled"]
+[connection signal="toggled" from="TabContainer/Notes/ShowStrums" to="ChessControl/NotesManager/StrumsManager" method="_on_show_strums_toggled"]
+[connection signal="value_changed" from="TabContainer/Song/BPM" to="TabContainer/Song" method="_on_bpm_value_changed"]

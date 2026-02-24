@@ -1,0 +1,23 @@
+[gd_scene format=3 uid="uid://djnpw2tvo2ipl"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_m6n71"]
+albedo_color = Color(0.4745098, 0, 0, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_5mapj"]
+material = SubResource("StandardMaterial3D_m6n71")
+size = Vector3(3, 10, 3)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fefip"]
+albedo_color = Color(0, 1, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_26w61"]
+material = SubResource("StandardMaterial3D_fefip")
+radius = 4.0
+height = 15.0
+
+[node name="MeshInstance3D" type="MeshInstance3D" unique_id=1907235022]
+mesh = SubResource("BoxMesh_5mapj")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=71036095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 11.688624, 0)
+mesh = SubResource("CapsuleMesh_26w61")

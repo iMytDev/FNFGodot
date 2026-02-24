@@ -1,6 +1,4 @@
 extends Sprite2D
-const EventNoteUtils = preload("uid://dqymf0mowy0dt")
-
 var events: Array[Dictionary] = []
 
 var strumTime: float:
@@ -33,7 +31,7 @@ func selectEvent(index: int = event_index):
 	event_selected = ArrayUtils.get_array_index(events,index,['',{}])
 
 func addEvent(event_name: StringName = &'', variables: Dictionary = {},at: int = -1) -> Array:
-	var event_default_vars = EventNoteUtils.get_event_variables(event_name)
+	var event_default_vars = EventData.get_event_default_variables(event_name)
 	var event_vars: Dictionary
 	var event_data = [event_name,event_vars]
 	

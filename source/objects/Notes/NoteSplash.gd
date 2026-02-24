@@ -1,9 +1,6 @@
-#@icon("res://icons/splash.png")
-extends FunkinSprite
 
-const Note = preload("uid://deen57blmmd13")
-const NoteStyleData = preload("uid://by78myum2dx8h")
-const NoteSplash = preload("uid://cct1klvoc2ebg")
+@icon("res://icons/splash.png")
+class_name NoteSplash extends FunkinAnimatedSprite2D
 
 const HOLD_ANIMATIONS: Array = [&'start',&'hold',&'end']
 static var mosaicShader: Material
@@ -26,17 +23,12 @@ var splashPrefix: StringName
 var splashData: Dictionary
 
 func _init(): 
-	super._init(true)
+	super()
 	animation.animation_finished.connect(_on_animation_finished)
 	visibility_changed.connect(_on_visibility_changed)
 
-func _ready() -> void:
-	if holdSplash: _update_animation_scale()
-	followStrum()
-
-func _on_visibility_changed(): 
-	process_mode = PROCESS_MODE_INHERIT if visible else PROCESS_MODE_DISABLED; 
-	if visible: followStrum()
+func _ready() -> void: super(); if holdSplash: _update_animation_scale()
+func _on_visibility_changed(): process_mode = PROCESS_MODE_INHERIT if visible else PROCESS_MODE_DISABLED; 
 
 func show_splash() -> void:
 	if holdSplash: animation.play(&'start',false); _update_animation_scale();
@@ -44,7 +36,8 @@ func show_splash() -> void:
 	visible = true
 
 func _update_animation_scale() -> void: 
-	animation.setAnimDataValue(&'hold',&'speed_scale',minf(1.0 / (Conductor.stepCrochetMs*8.0),3.0))
+	var data = animation.animationsArray.get(&"hold"); 
+	if data: data.speed_scale = minf(1.0 / (Conductor.bpm_data.stepCrochetMs*8.0),3.0)
 
 func _set_pixel(isPixel: bool):
 	if isPixel == isPixelSplash: return
@@ -65,15 +58,14 @@ func _on_animation_finished(anim_name: StringName) -> void:
 		&'end': visible = false
 
 func _process(_d) -> void:
-	super._process(_d)
-	if !visible or !holdSplash or !strum: return
+	super(_d)
+	if !(visible and holdSplash and strum): return
 	followStrum()
 
 func followStrum() -> void:
 	if !strum: return
 	modulate.a = strum.modulate.a
-	_position = strum._position
-	#if holdSplash: rotation = strum.rotation
+	position = strum.position
 
 ##Add animation to splash. Returns [code]true[/code] if the animation as added successfully.
 static func loadSplash(style: StringName, splash_name: StringName = &'default', prefix: StringName = &'', holdSplash: bool =false) -> NoteSplash:
@@ -94,16 +86,14 @@ static func loadSplashFromNote(note: Note) -> NoteSplash:
 static func _load_splash_animation(splash: NoteSplash,prefix: StringName) -> bool:
 	var data = splash.splashData.data.get(prefix)
 	if !data: data = splash.splashData.data.get(&'default'); if !data: return false
-	
 	if data is Array: data = data.pick_random()
 	
 	var asset = data.get(&'assetPath')
-	
 	if !asset: asset = splash.splashData.assetPath; if !asset: return false
 	
-	splash.image.texture = Paths.texture(asset)
-	
-	if !splash.image.texture: return false
+	asset = Paths.texture(asset)
+	if !asset: return false
+	splash.image.texture = asset
 	
 	var offsets = splash.splashData.get(&'offsets',Vector2.ZERO)
 	var scale = data.get(&'scale',splash.splashData.get(&'scale',1.0))
@@ -116,11 +106,11 @@ static func _load_splash_animation(splash: NoteSplash,prefix: StringName) -> boo
 		return true
 
 	for i in HOLD_ANIMATIONS:
-		var anim_data = data.get(i)
-		if !data: continue
-		var sprefix = anim_data.get(&'prefix')
-		if !sprefix: continue
-		splash.animation.add_animation_by_prefix(i,sprefix,24.0,i==&'hold')
-		splash.animation.set_anim_offset(i,data.get(&'offsets',offsets))
+		var hold_data = data.get(i); if !data: continue
+		var sprefix = hold_data.get(&'prefix'); if !sprefix: continue
+		
+		var is_hold: bool = i==&'hold'
+		splash.animation.add_animation_by_prefix(i,sprefix,24.0, is_hold)
+		splash.animation.add_animation_offset(i, data.get(&'offsets',offsets))
 		splash.animation.auto_loop = true
 	return true

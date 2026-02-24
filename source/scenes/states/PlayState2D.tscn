@@ -1,0 +1,34 @@
+[gd_scene format=3 uid="uid://ckiryac52s0pv"]
+
+[ext_resource type="Script" uid="uid://bo0fdh4ajdrir" path="res://source/states/PlayState2D.gd" id="1_mi7bh"]
+[ext_resource type="Script" uid="uid://dxuhy4065ximc" path="res://source/objects/ui/display/camera/FunkinCamera2D.gd" id="2_rh8k3"]
+[ext_resource type="Script" uid="uid://sp0gefpiyn7t" path="res://source/objects/ui/display/camera/FunkinScroll2D.gd" id="3_mi7bh"]
+
+[node name="PlayState2D" type="Node" unique_id=1856856060]
+script = ExtResource("1_mi7bh")
+playAsOpponent = false
+botplay = false
+
+[node name="camGame" type="Node2D" parent="." unique_id=1638400396]
+script = ExtResource("2_rh8k3")
+size = Vector2(1280, 720)
+
+[node name="scroll" type="Node2D" parent="camGame" unique_id=2124962795]
+script = ExtResource("3_mi7bh")
+pivot_offset = Vector2(640, 360)
+
+[node name="camHUD" type="Node2D" parent="." unique_id=1744953719]
+script = ExtResource("2_rh8k3")
+size = Vector2(1280, 720)
+
+[node name="scroll" type="Node2D" parent="camHUD" unique_id=1237965157]
+script = ExtResource("3_mi7bh")
+pivot_offset = Vector2(640, 360)
+
+[node name="camOther" type="Node2D" parent="." unique_id=701760791]
+script = ExtResource("2_rh8k3")
+size = Vector2(1280, 720)
+
+[node name="scroll" type="Node2D" parent="camOther" unique_id=1186905380]
+script = ExtResource("3_mi7bh")
+pivot_offset = Vector2(640, 360)

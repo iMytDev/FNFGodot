@@ -1,4 +1,4 @@
-extends "res://source/objects/AlphabetText/AlphabetText.gd"
+extends FunkinText
 
 var value: Variant = 0: set = set_value
 

@@ -1,71 +1,80 @@
 @abstract
-extends FunkinSprite
+class_name NoteBase extends FunkinAnimatedSprite2D
 
-const NoteStyleData = preload("uid://by78myum2dx8h")
-const Note = preload("uid://deen57blmmd13")
 const Song = preload("uid://cerxbopol4l1g")
 
 const directions: PackedStringArray = ['left','down','up','right']
 const note_colors: PackedStringArray = ['Purple','Blue','Green','Red']
 
-var styleData: Dictionary
-var styleName: StringName: set = setStyleName
+var styleData: NoteStyleData = NoteStyleData.new()
+var styleName: StringName
 var stylePrefix: String
 
-var noteData: int = 0: set = setNoteData ##The direction of this Note.
+var noteData: int = 0: set = set_note_data ##The direction of this Note.
 var noteDirection: String = ''
+var sustainLength: float: set = _set_sustain_length
+
+#region Note Styles
+var isPixelNote: bool = false: set = set_pixel_note ##Is Pixel Note
+var texture: String: set = set_note_texture ##Note Texture
 
 var noteScale: float = NoteStyleData.DEFAULT_NOTES_SCALE
-#region Note Styles
-var isPixelNote: bool = false: set = setPixelNote ##Is Pixel Note
-var texture: String: set = setTexture ##Note Texture
+var noteAngle: float = 0.0
 #endregion
 
-func _init(): super._init(true)
+#region Rhytm Properties
+var stepCrochet: float ##The stepCrochet of the note, is set in [NoteParser].
+var mustPress: bool
 
-func setNoteRect(region: Rect2):
-	image.region_rect = region
-	image.pivot_offset = region.size*0.5
-	pivot_offset = image.pivot_offset
+func _init(): super(); image.texture_changed.connect(animation.clearLibrary)
 
-func loadFromStyle(noteStyle: String,prefix: String = stylePrefix):
-	stylePrefix = prefix
+func loadFromStyle(noteStyle: StringName):
 	styleName = noteStyle
-	if !styleData: return
-	isPixelNote = styleData.get(&'isPixel',false)
-	texture = styleData.assetPath
- 
-func _update_style_data() -> void: styleData = NoteStyleData.getStyleData(styleName,&'notes')
+	styleData.load_from_style_json(noteStyle, _get_note_style_key())
+	
+	set_style_prefix()
+	_update_note_from_style()
+
+#region Setters
+func set_style_prefix(prefix: StringName = _get_style_prefix_name()):
+	stylePrefix = prefix; _update_note_from_style()
+
+func _set_sustain_length(l: float): #Replaced in NoteSustain/NoteChart
+	if l < 0.0: l = 0.0
+	sustainLength = l;
 
 ##Reload the Note animation and his texture.
 @abstract func reloadNote() -> void
 
 #region Setters
-func setStyleName(_name: String) -> void: styleName = _name; _update_style_data()
+func set_note_data(_data: int) -> void: noteData = _data; noteDirection = directions[_data]; set_style_prefix()
 
-func setNoteData(_data: int) -> void: 
-	noteData = _data; 
-	noteDirection = directions[_data]
-	stylePrefix = noteDirection
+func _get_style_prefix_name() -> StringName: #Replaced in NoteSustain
+	if styleData.data.has(noteDirection): return noteDirection
+	return &"default" if styleData.data.has(&"default") else &""
 
-func setPixelNote(isPixel: bool) -> void:
-	antialiasing = !isPixel 
+func set_pixel_note(isPixel: bool) -> void:
+	texture_filter = TEXTURE_FILTER_NEAREST if isPixel else TEXTURE_FILTER_LINEAR
 	isPixelNote = isPixel
 
-func setTexture(_new_texture: String) -> void:
+func set_note_texture(_new_texture: String) -> void:
 	if texture == _new_texture: return
 	texture = _new_texture
-	image.texture = Paths.texture(texture)
+	image.texture = Paths.texture(_new_texture)
 	reloadNote()
 
-func _on_texture_changed() -> void: super._on_texture_changed(); animation.clearLibrary();
+func _update_note_from_style():
+	noteAngle = deg_to_rad(styleData.get_angle(noteDirection))
+	offset = styleData.get_offsets(noteDirection)
+	isPixelNote = styleData.is_pixel(noteDirection)
+	noteScale = styleData.get_scale(noteDirection)
+	rotation = noteAngle
+	image.scale = Vector2(noteScale,noteScale)
+	texture = styleData.get_asset_path(noteDirection)
 
+#Replaced in NoteSustain
+func _get_note_style_key() -> StringName: return &"notes"
 
 #region Static Funcs
-static func sameNote(note1: Note, note2: Note) -> bool: ##Detect if [param note1] is the same as [param note2].
-	return note1 and note2 and \
-	note1.strumTime == note2.strumTime and \
-	note1.noteData == note2.noteData and \
-	note1.mustPress == note2.mustPress and \
-	note1.isSustainNote == note2.isSustainNote and \
-	note1.noteType == note2.noteType
+static func note_is_must_press(note_direction: int, must_hit_section: bool, keycount: int = Conductor.songData.keyCount) -> bool:
+	return note_direction < keycount if must_hit_section else note_direction >= keycount

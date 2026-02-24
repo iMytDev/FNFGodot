@@ -1,98 +1,103 @@
-static var dance_sprites: Array
-static var danced: bool = false
+class_name FunkinStage extends Resource
+static func loadStage(path: String) -> Dictionary:
+	var j = Paths.loadJsonNoCache(path); return fixStageJson(j) if j else j
 
-static var json: Dictionary
-##Load Sprites from the stage json.[br]
-##[b]OBS:[/b] Is recommended to [u]call this function after the characters group are added in PlayState.[/u][br][codeblock]
-##loadSprites(
-##{"props":
-##	   [
-##       {
-##         "zIndex": 10,
-##         "danceEvery": 0,
-##         "position": [-220, -80],
-##         "scale": [0.9, 0.9],
-##         "name": "limoSunset",
-##         "animType": "sparrow",
-##         "isPixel": false,
-##         "scroll": [0.1, 0.1],
-##         "assetPath": "limo/erect/limoSunset",
-##         "animations": []
-##       }
-##    ]
-##)[/codeblock]
-##[b]Tip:[/b] The sprites created using this function can be acessed by his [param name] from functions like 
-##[method FunkinGD.getProperty] and [method FunkinGD.setProperty].
-
-static func loadStage(stage: String) -> Dictionary:
-	json.assign(convert_old_to_new(Paths.loadJson(Paths.stage(stage))))
+static func fixStageJson(json: Dictionary) -> Dictionary:
+	for i in json.get("characters",[]):
+		var char_data = json.characters[i]
+		char_data.position = Vector2(char_data.position[0],char_data.position[1])
+		if char_data.has("cameraOffsets"): char_data.cameraOffsets = Vector2(char_data.cameraOffsets[0],char_data.cameraOffsets[1])
+		else: char_data.cameraOffsets = Vector2.ZERO
 	json.merge(getStageBase(),false)
-	Paths.extraDirectory = json.get('directory','')
-	json.path = stage
 	return json
 
-static func convert_old_to_new(json: Dictionary):
-	var new_json: Dictionary = getStageBase()
+static var dance_sprites: Array
+static func loadStageSprites(json: Dictionary) -> void:
+	if !json: return
+	var props = json.get('props'); if !props: return
 	
-	for i in json: if new_json.has(i): new_json[i] = json[i]
-	
-	
-	if json.has('camera_girlfriend'): new_json.characters.gf.cameraOffsets = json.camera_girlfriend
-	if json.has('camera_boyfriend'): new_json.characters.bf.cameraOffsets = json.camera_boyfriend
-	if json.has('camera_opponent'): new_json.characters.dad.cameraOffsets = json.camera_opponent
-	
-	#var chars = new_json.characters
-	#for i in chars:
-		#var pos = chars[i].position
-		#if i == 'gf': pos[0] -= 280; pos[1] -= 700
-		#else: pos[0] -= 180; pos[1] -= 750
-	
-	new_json.cameraZoom = json.get('defaultZoom',new_json.cameraZoom)
-	new_json.cameraSpeed = json.get('camera_speed',new_json.cameraSpeed)
-	new_json.characters.bf.position = json.get('boyfriend',new_json.characters.bf.position)
-	new_json.characters.dad.position = json.get('opponent',new_json.characters.dad.position)
-	new_json.characters.gf.position = json.get('girlfriend',new_json.characters.gf.position)
-	return new_json
+	for data in props:
+		var name = data.get('name','')
+		var image = data.get('assetPath')
+		var has_anim = !!data.get('animations')
+		var position = data.get('position'); 
+		if position: position = Vector2(position[0],position[1])
+		else: position = Vector2.ZERO
+		
+		var sprite: FunkinSprite2D
+		if has_anim: sprite = FunkinGD.makeAnimatedSprite(name,image,position.x,position.y)
+		else: sprite = FunkinGD.makeSprite(name,image,position.x,position.y)
+		
+		_set_sprite_properties_from_data(sprite,data)
+		FunkinGD.addSprite(sprite,data.get('front',false))
+		
+		if image.begins_with("#"): sprite.modulate = Color(image);
+		else: sprite.image.texture = Paths.texture(image)
+		
+		if has_anim: _load_sprite_animations(sprite, data)
+		
+		
 
-static func getPsychStageBase() -> Dictionary:
-	return {
-		"directory": "",
-		"isPixelStage": false,
-		"hide_girlfriend": false,
-		"hide_boyfriend": false,
-		"hide_opponent": false,
-		"defaultZoom": 1.0,
-		"camera_speed": 1.0,
-		"boyfriend": [770.0,100.0],
-		"opponent": [100.0,100.0],
-		"girlfriend": [0.0,90.0],
-		"camera_boyfriend": [0.0,0.0],
-		"camera_opponent": [0.0,0.0],
-		"camera_girlfriend": [0.0,0.0],
-		'path': ''
-	}
+static func _set_sprite_properties_from_data(sprite: FunkinSprite2D, data: Dictionary):
+	var scale = data.get('scale'); 
+	if scale: sprite.scale = Vector2(scale[0],scale[1])
+	
+	var scroll = data.get('scroll');
+	if scroll: FunkinParallax.set_parallax(sprite, Vector2(scroll[0],scroll[1]))
+	
+	sprite.antialiasing = !data.get('isPixel',false)
+	sprite.modulate.a = data.get('alpha',1.0)
+
+static func _load_sprite_animations(sprite: FunkinAnimatedSprite2D, data: Dictionary):
+	for anim in data.animations:
+		var anim_name = anim.get('name','')
+		var fps = anim.get('frameRate',24)
+		var looped = anim.get('looped',false)
+		var indices = anim.get('frameIndices')
+		var offsets = anim.get('offsets'); 
+		offsets = Vector2(offsets[0],offsets[1]) if offsets else Vector2.ZERO
+		
+		var prefix = anim.get('prefix')
+		if prefix: 
+			if indices: sprite.animation.add_animation_by_prefix(anim_name,anim.prefix,fps,looped,indices)
+			else: sprite.animation.add_animation_by_prefix(anim_name,anim.prefix,fps,looped)
+		elif indices: sprite.animation.add_frame_animation(anim_name,indices)
+		
+		sprite.animation.add_animation_offset(anim_name,offsets)
+	
+	var startAnim = data.get('startingAnimation'); if startAnim: sprite.animation.play(startAnim,true)
+		
+	if sprite.animation.has_any_animations([&'danceLeft',&'danceRight']): sprite.set_meta(&"has_dance_anim",true)
+	
+	var danceEvery = data.get('danceEvery')
+	if danceEvery: sprite.set_meta(&"danceEvery",danceEvery)
 
 static func getStageBase() -> Dictionary:
 	return {
-		"cameraZoom": 1.0,
-		"cameraSpeed": 1.0,
-		"props": [],
-		"hide_girlfriend": false,
-		"isPixelStage": false,
-		"characters": {
-			"gf": { 
-				"position": [808.5, 854], 
-				"cameraOffsets": [0, 0]
-			},
-			"bf": {
-				"position": [1297.5, 871],
-				"cameraOffsets": [-100, -100]
-			},
-				
-			"dad": {
-				"position": [290.5, 869],
-				"cameraOffsets": [150, -100]
-			}
+		&"cameraZoom": 1.0,
+		&"cameraSpeed": 1.0,
+		&"props": [],
+		&"hide_girlfriend": false,
+		&"isPixelStage": false,
+		&"characters": {
+			&"gf": { &"position": Vector2(808.5, 854), &"cameraOffsets": Vector2.ZERO},
+			&"dad": {&"position": Vector2(290.5, 869),&"cameraOffsets": Vector2.ZERO},
+			&"bf": {&"position": Vector2(1297.5, 871),&"cameraOffsets": Vector2.ZERO}
 		},
-		"directory": ""
+		&"directory": ""
+	}
+
+static func getStageBaseJson() -> Dictionary:
+	return {
+		&"cameraZoom": 1.0,
+		&"cameraSpeed": 1.0,
+		&"props": [],
+		&"hide_girlfriend": false,
+		&"isPixelStage": false,
+		&"characters": {
+			&"gf": { &"position": [808.5, 854], &"cameraOffsets": [0.0,0.0]},
+			&"dad": {&"position": [290.5, 869],&"cameraOffsets": [0.0,0.0]},
+			&"bf": {&"position": [1297.5, 871],&"cameraOffsets": [0.0,0.0]}
+		},
+		&"directory": ""
 	}
