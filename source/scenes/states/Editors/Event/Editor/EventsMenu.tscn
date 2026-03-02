@@ -1,0 +1,69 @@
+[gd_scene format=3 uid="uid://ct3f5uumfhssf"]
+
+[ext_resource type="Script" uid="uid://civxp6sn4g58h" path="res://source/scenes/states/Editors/Event/Editor/EventsMenu.gd" id="1_0a2kk"]
+
+[node name="EventSelected" type="Button" unique_id=120520037]
+custom_minimum_size = Vector2(160, 35)
+offset_right = 160.0
+offset_bottom = 35.0
+size_flags_horizontal = 0
+focus_mode = 0
+theme_override_constants/icon_max_width = 23
+clip_text = true
+
+[node name="Popup" type="PopupPanel" parent="." unique_id=1848539916]
+oversampling_override = 1.0
+position = Vector2i(908, 176)
+size = Vector2i(250, 300)
+script = ExtResource("1_0a2kk")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="Popup" unique_id=1138411965]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 246.0
+offset_bottom = 296.0
+
+[node name="Container" type="VBoxContainer" parent="Popup/ScrollContainer" unique_id=1620112271]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="General" type="FoldableContainer" parent="Popup/ScrollContainer/Container" unique_id=1407357352]
+layout_mode = 2
+tooltip_text = "Events that runs in both of the game modes(2D & 3D)."
+theme_override_colors/font_color = Color(0, 0.88235295, 0, 1)
+theme_override_colors/hover_font_color = Color(0.5607121, 0.99999994, 0.52922046, 1)
+theme_override_colors/collapsed_font_color = Color(0, 0.88235295, 0, 1)
+title = "General"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Popup/ScrollContainer/Container/General" unique_id=673030077]
+layout_mode = 2
+theme_override_constants/separation = 0
+
+[node name="2D" type="FoldableContainer" parent="Popup/ScrollContainer/Container" unique_id=507571671]
+layout_mode = 2
+tooltip_text = "Events that only run in 2D game."
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+theme_override_colors/hover_font_color = Color(0.8720066, 0.9999997, 0.9968024, 1)
+theme_override_colors/collapsed_font_color = Color(0, 1, 1, 1)
+folded = true
+title = "2D"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Popup/ScrollContainer/Container/2D" unique_id=167514976]
+visible = false
+layout_mode = 2
+
+[node name="3D" type="FoldableContainer" parent="Popup/ScrollContainer/Container" unique_id=1180218109]
+layout_mode = 2
+tooltip_text = "Events that only run in 3D game."
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+theme_override_colors/hover_font_color = Color(1.6199999, 0.39675102, 0.30887237, 1)
+theme_override_colors/collapsed_font_color = Color(1, 0, 0, 1)
+folded = true
+title = "3D"
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Popup/ScrollContainer/Container/3D" unique_id=526412106]
+visible = false
+layout_mode = 2
+
+[connection signal="button_down" from="." to="Popup" method="show"]

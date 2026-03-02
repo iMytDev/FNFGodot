@@ -1,10 +1,22 @@
 [gd_scene format=3 uid="uid://bspxvt7njpdgx"]
 
+[ext_resource type="Material" uid="uid://db1erfski0kuu" path="res://assets/shaders/3d/sky.tres" id="6_5w4ow"]
 [ext_resource type="Material" uid="uid://dg37l8jl6upxn" path="res://assets/shaders/3d/materials/water/water.tres" id="8_85jng"]
 [ext_resource type="Texture2D" uid="uid://be0eh8bbm3tg2" path="res://mods/City/materials/Sand/GroundSand005_AO_2K.jpg" id="11_1ti4u"]
 [ext_resource type="Texture2D" uid="uid://bs0h888j1qmf1" path="res://mods/City/materials/Sand/GroundSand005_COL_2K.jpg" id="11_04jyy"]
 [ext_resource type="Texture2D" uid="uid://dpp4nhgo0ojtn" path="res://mods/City/materials/Sand/GroundSand005_NRM_2K.jpg" id="12_04jyy"]
 [ext_resource type="Texture2D" uid="uid://b4vk3a2v8amvu" path="res://mods/City/materials/Sand/GroundSand005_DISP_2K.jpg" id="13_04jyy"]
+
+[sub_resource type="Sky" id="Sky_k7oai"]
+sky_material = ExtResource("6_5w4ow")
+
+[sub_resource type="Environment" id="Environment_81846"]
+background_mode = 2
+sky = SubResource("Sky_k7oai")
+tonemap_exposure = 1.5
+sdfgi_read_sky_light = false
+glow_enabled = true
+glow_strength = 0.8
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5hhhl"]
 vertex_color_use_as_albedo = true
@@ -20,16 +32,19 @@ uv1_scale = Vector3(2000, 30, 50)
 
 [sub_resource type="CapsuleMesh" id="CapsuleMesh_5w4ow"]
 material = SubResource("StandardMaterial3D_5hhhl")
-radius = 8.465
-height = 32.858
+radius = 8.4
+height = 33.0
 
 [sub_resource type="BoxMesh" id="BoxMesh_k7oai"]
 material = ExtResource("8_85jng")
-size = Vector3(200, 1, 50)
+size = Vector3(200, 3, 50)
 subdivide_width = 70
 subdivide_depth = 70
 
 [node name="Beach" type="Node3D" unique_id=1834704661]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=553593988]
+environment = SubResource("Environment_81846")
 
 [node name="Sun" type="DirectionalLight3D" parent="." unique_id=658042719]
 transform = Transform3D(-1, 1.9665837e-08, -8.518213e-08, 2.2696653e-09, 0.9798817, 0.19957855, 8.739328e-08, 0.19957855, -0.9798817, 0, 3.758412, 0)
@@ -46,11 +61,11 @@ shadow_opacity = 0.6
 sky_mode = 1
 
 [node name="Sand" type="MeshInstance3D" parent="." unique_id=377828061]
-transform = Transform3D(30, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -6.855811, 9.9858265)
+transform = Transform3D(13, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, -6.855811, 9.9858265)
 mesh = SubResource("CapsuleMesh_5w4ow")
 
 [node name="water" type="MeshInstance3D" parent="." unique_id=1483575606]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.40858912, -24.382837)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.9175904, -24.382837)
 cast_shadow = 0
 gi_mode = 0
 mesh = SubResource("BoxMesh_k7oai")

@@ -1,5 +1,6 @@
 @tool
 extends Camera3D
+const DEFAULT_FOV = 75.0
 
 func _validate_property(property: Dictionary) -> void:
 	match StringName(property.name):

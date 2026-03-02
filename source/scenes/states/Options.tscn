@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cd11rd3lihckb"]
 
-[ext_resource type="Script" uid="uid://dfft8nmakp4gn" path="res://source/substates/Options/Options.gd" id="1_abiwa"]
+[ext_resource type="Script" uid="uid://bf7b2xysqcv0i" path="res://source/substates/Options/OptionState.gd" id="1_lt5vp"]
 
 [node name="Options" type="Node2D" unique_id=1528346580]
-script = ExtResource("1_abiwa")
+script = ExtResource("1_lt5vp")

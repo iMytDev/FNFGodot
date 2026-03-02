@@ -39,7 +39,7 @@ static func get_tween_presets() -> PackedStringArray:
 
 var tweens_to_update: Array[RefCounted]
 
-func createTween(object: Object,properties: Dictionary, time: float = 1.0, easing: String = &'') -> FunkinTweenerObject:
+func create_object_tween(object: Object,properties: Dictionary, time: float = 1.0, easing: String = &'') -> FunkinTweenerObject:
 	if !object: return null
 	var new_tween = FunkinTweenerObject.new(object,time,detect_trans(easing),detect_ease(easing))
 	for property in properties: new_tween.tween_property(property,properties[property])
@@ -47,7 +47,7 @@ func createTween(object: Object,properties: Dictionary, time: float = 1.0, easin
 	return new_tween
 
 
-func createTweenMethod(method: Callable, from: Variant, to: Variant, time: float = 1.0, ease: String = &'') -> FunkinTweenerMethod:
+func create_tween_method(method: Callable, from: Variant, to: Variant, time: float = 1.0, ease: String = &'') -> FunkinTweenerMethod:
 	var tween_method = FunkinTweenerMethod.new(method,from,to,time,detect_trans(ease),detect_ease(ease))
 	tweens_to_update.append(tween_method)
 	return tween_method

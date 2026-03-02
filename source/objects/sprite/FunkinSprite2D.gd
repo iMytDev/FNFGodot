@@ -35,8 +35,8 @@ var _real_offset: Vector2: set = _set_real_offset
 ##The Node that will be animated. [br]
 ##Can be a [Sprite2D] with [member Sprite2D.region_enabled] enabled
 ## or a [NinePatchRect]
-var image: CanvasItem = SparrowSprite.new():
-	set(val): image = val; _on_image_node_changed()
+var image: SparrowSprite = SparrowSprite.new():
+	set(f): return
 
 ##If [code]true[/code], 
 ##the region_rect of the [param image] will be resized automatically 
@@ -51,8 +51,9 @@ var imageSize: Vector2 ##The texture size of the [member image]
 #region Native Methods
 func _init(texture: Variant = null): 
 	super(); 
-	_on_image_node_changed(); 
-	set_texture(texture); add_child(image,false,Node.INTERNAL_MODE_FRONT)
+	image.texture_changed.connect(_on_texture_changed)
+	set_texture(texture); 
+	add_child(image,false,Node.INTERNAL_MODE_FRONT)
 
 func _update_pivot() -> void: super(); _update_real_offset()
 func _enter_tree() -> void: parent = get_parent();
@@ -99,12 +100,9 @@ func _get(property: StringName) -> Variant:
 func getMidpoint() -> Vector2: return position + pivot_offset ##Returns the [u]center[/u] of the sprite in the scene.
 
 #region Image Setters
-func _on_image_node_changed(): image.texture_changed.connect(_on_texture_changed)
-
 func set_texture(tex: Variant):
 	if !tex: image.texture = null; return;
 	image.texture = tex if tex is Texture2D else Paths.texture(tex)
-
 #endregion
 
 #region Updaters

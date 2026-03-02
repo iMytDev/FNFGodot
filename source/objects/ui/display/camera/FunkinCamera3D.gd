@@ -2,7 +2,6 @@
 @icon("res://icons/Camera3D.svg")
 class_name FunkinCamera3D extends Node3D
 const LockedCamera3D = preload("uid://duup8gtapd1")
-const DEFAULT_FOV = 70.0
 
 var controller: FunkinCameraController = FunkinCameraController.new()
 var scroll_camera: LockedCamera3D = LockedCamera3D.new()
@@ -29,6 +28,7 @@ func _init() -> void:
 	controller.camera = self
 	modulate_node.material = CanvasItemMaterial.new()
 	modulate_node.material.blend_mode = CanvasItemMaterial.BLEND_MODE_MUL
+	set_zoom()
 
 func _ready() -> void: FunkinCameraServer._camera_setup_scroll(controller); _check_modulate()
 func _process(delta: float) -> void: controller._process(delta)
@@ -39,7 +39,7 @@ func _input(event: InputEvent) -> void: if controller.main_viewport: controller.
 #region Setters
 func set_size(s: Vector2): size = s
 func set_scroll(v: Transform3D): scroll_camera.transform = v
-func set_zoom(v: float): scroll_camera.fov = DEFAULT_FOV / v; zoom = v
+func set_zoom(v: float = zoom): scroll_camera.fov = LockedCamera3D.DEFAULT_FOV / v; zoom = v
 func _set_shake_pos(s: Vector2): 
 	var s_r = s * 0.0025
 	_shake_pos = s; scroll_camera.h_offset = s_r.x; scroll_camera.v_offset = s_r.y

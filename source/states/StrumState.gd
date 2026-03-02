@@ -76,7 +76,7 @@ var splashHoldStyle: StringName = SongData.DEFAULT_SPLASH_HOLD_STYLE
 @export_group("Play Options")
 ##Play as Opponent, reversing the sides.
 @export var playAsOpponent: bool = ClientPrefs.data.playAsOpponent: set = _set_play_opponent
-
+@export var updateStrumPositionOnScrollChange: bool = true
 
 @export var botplay: bool = ClientPrefs.data.botplay: set = _set_botplay ##When activate, the notes will be hitted automatically.
 
@@ -102,7 +102,8 @@ func _init(data: SongData = null):
 	splashesEnabled = ClientPrefs.data.splashesEnabled
 	opponentSplashes = splashesEnabled and ClientPrefs.data.opponentSplashes
 	downScroll = ClientPrefs.data.downscroll
-	middleScroll = ClientPrefs.data.middlescroll
+	#middleScroll = ClientPrefs.data.middlescroll
+	middleScroll = true
 	
 	add_child(uiGroup)
 	uiGroup.name = &'uiGroup'
@@ -202,17 +203,30 @@ func seek_to(time: float, kill_notes: bool = true):
 #endregion
 
 #region Strums
-func _update_strums_position(): 
-	defaultStrumPos = getDefaultStrumPos(); defaultStrumAlpha = getDefaultStrumAlpha()
+func refresh_strums_position(set_strums_position: bool = true): 
+	defaultStrumPos = getDefaultStrumPos(); 
+	if !set_strums_position: return
+	var i = strumLineNotes.members.size()
+	while i: 
+		i -= 1; 
+		strumLineNotes.members[i].position = defaultStrumPos[i]
 
+func refresh_strums_alpha(set_strums_alpha:bool = true): 
+	defaultStrumAlpha = getDefaultStrumAlpha()
+	if !set_strums_alpha: return
+	var i = strumLineNotes.members.size()
+	while i: 
+		i -= 1; 
+		strumLineNotes.members[i].modulate.a = defaultStrumAlpha[i]
+	
 func getDefaultStrumAlpha(middlescroll: bool = middleScroll) -> PackedFloat32Array:
 	var value = PackedFloat32Array()
 	var length = keyCount * 2
 	if middlescroll:
 		var i = 0
 		while i < length:
-			if i >= keyCount: value.append(0.3 if playAsOpponent else 1.0)
-			else: value.append(1.0 if playAsOpponent else 3.0)
+			if i >= keyCount: value.append(0.35 if playAsOpponent else 1.0)
+			else: value.append(1.0 if playAsOpponent else 0.35)
 			i += 1
 	else:
 		value.resize(length)
@@ -221,11 +235,11 @@ func getDefaultStrumAlpha(middlescroll: bool = middleScroll) -> PackedFloat32Arr
 
 func getDefaultStrumPos(middlescroll: bool = middleScroll, downscroll: bool = downScroll) -> PackedVector2Array:
 	var positions: PackedVector2Array
-	positions.resize(keyCount*2)
+	var key_length = keyCount * 2
+	positions.resize(key_length)
 	positions.fill(Vector2(0.0,getDefaultStrumY(downscroll)))
 	
 	var strum_off = StrumOffset
-	var key_length = keyCount * 2
 	var strums_full_width = StrumOffset * (key_length)
 	strum_off *= minf(
 		ScreenUtils.screenWidth / strums_full_width,
@@ -235,39 +249,54 @@ func getDefaultStrumPos(middlescroll: bool = middleScroll, downscroll: bool = do
 		ScreenUtils.screenWidth / strum_off - (key_length + 0.5),
 		0.0,
 		2.0
-	)
+	) * 0.5
 	
 	var i: int = 0
 	while i < keyCount: #Opponent Position
-		var strumPos: float = getDefaultStrumX(i,strum_off,space_between_strums,middleScroll,playAsOpponent)
-		if middlescroll and !playAsOpponent: defaultStrumAlpha[i] = 0.35
+		var strumPos: float = getDefaultStrumX(
+			i,
+			strum_off,
+			space_between_strums,
+			middlescroll,
+			(middlescroll and playAsOpponent)
+		)
 		positions[i].x = strumPos
 		i += 1
 	
 	i = 0
 	while i < keyCount: #Player Position
-		var strumIndex: int = i+keyCount
-		if middleScroll and playAsOpponent:defaultStrumAlpha[strumIndex] = 0.35
-		positions[strumIndex].x = getDefaultStrumX(i,strum_off,space_between_strums,middleScroll,!playAsOpponent)
+		var strumIndex: int = i + keyCount
+		positions[strumIndex].x = getDefaultStrumX(
+			i,
+			strum_off,
+			space_between_strums,
+			middlescroll,
+			not (middlescroll and playAsOpponent)
+		)
 		i += 1
 	return positions
 
 func getDefaultStrumX(
 	data: int, 
 	offset: float = StrumOffset, 
-	space_between_notes: float = 3.0, middle: bool = middleScroll, must_press: bool = false
+	space_between_notes: float = 1.5, middle: bool = middleScroll, player_side: bool = false
 ):
-	var first_pos: float
+	var strum_position: float = ScreenUtils.screenCenter.x + offset * data
 	if middle: 
-		if must_press: first_pos = -offset * keyCount * 0.5
+		if player_side: 
+			strum_position -= offset * keyCount * 0.5
 		else:
-			if data < keyCount*0.5: first_pos = -offset * (keyCount * 2 + space_between_notes*0.5)
-			else: first_pos = offset * (keyCount * 2 + space_between_notes*0.5)
+			if data < keyCount * 0.5: 
+				strum_position -= offset * (keyCount + space_between_notes)
+			else: 
+				strum_position += offset * (keyCount * 0.5 - space_between_notes) 
 	else:
-		if must_press: first_pos = offset * (space_between_notes * 0.5)
-		else: first_pos = -offset * (keyCount + space_between_notes * 0.5)
-	
-	return ScreenUtils.screenCenter.x + first_pos + offset * data 
+		if player_side: 
+			strum_position += offset * space_between_notes
+		else: 
+			strum_position -= offset * (keyCount + space_between_notes)
+	return strum_position
+
 func getDefaultStrumY(downscroll: bool = downScroll): return (ScreenUtils.screenHeight - 50.0) if downscroll else 50.0
 
 func _create_strums() -> void:
@@ -277,9 +306,10 @@ func _create_strums() -> void:
 	playerStrums.members.clear()
 	opponentStrums.members.clear()
 	
-	_update_strums_position()
+	refresh_strums_position(false)
+	refresh_strums_alpha(false)
 	var i: int = keyCount
-	i = keyCount*2
+	i = keyCount * 2
 	while i > keyCount: #Player Strums
 		i -= 1
 		var strum = createStrum(i)
@@ -289,6 +319,7 @@ func _create_strums() -> void:
 		strum.position = defaultStrumPos[i]
 		strum.mustPress = !playAsOpponent and !botplay
 		strum.modulate.a = defaultStrumAlpha[i]
+	
 	while i: #Opponent Strums
 		i -= 1
 		var strum = createStrum(i)
@@ -345,6 +376,9 @@ func _rebuild_keys():
 func _process_notes():
 	_check_unspawn_notes()
 	_check_respawn_notes()
+	_update_notes()
+
+func _update_notes():
 	if !notes.members: return
 	var members = notes.members
 	var note_index: int = members.size()
@@ -359,7 +393,7 @@ func _process_notes():
 		while note_index: 
 			note_index -= 1; 
 			if !updateNote(members[note_index]): notes.remove_at(note_index)
-
+	
 func updateNote(n: Note) -> bool:
 	if !n or !n.is_inside_tree(): return false
 	
@@ -453,9 +487,12 @@ func hitNote(note: Note) -> void: ##Hit a [NoteBase].
 	if note.strumConfirm: _strum_confirm_from_note(note)
 
 func splashAllowed(n: Note) -> bool:
-	var en = splashesEnabled and !(n.noteParent.ratingMod if n.isSustainNote and n.noteParent else n.ratingMod)
-	if n.isSustainNote: return en and !n.splashDisabled and !n.isBeingDestroyed
-	return en and !n.splashDisabled and (isPlayerNote(n) or opponentSplashes)
+	var en = splashesEnabled and !n.splashDisabled
+	if n.isSustainNote: 
+		en = en and !n.isBeingDestroyed
+		if n.noteParent: return en and !n.noteParent.ratingMod
+		else: return en
+	return en and !n.ratingMod and (isPlayerNote(n) or opponentSplashes)
 #endregion
 
 func isPlayerNote(note: Note) -> bool: return note.mustPress != playAsOpponent
@@ -521,7 +558,8 @@ func destroy(absolute: bool = true): ##Remove the state
 	Paths.clear_local_files()
 	if absolute: clear(); queue_free(); return
 	
-	if isModding: NoteStyleData.styles_loaded.clear()
+	if isModding: 
+		NoteStyleData.styles_loaded.clear()
 	for note in notes.members: note.kill()
 
 
@@ -532,22 +570,31 @@ func _set_botplay(is_botplay: bool) -> void: botplay = is_botplay; _update_strum
 
 func set_song_speed(value): songSpeed = value; noteSpawnTime = NOTE_SPAWN_TIME/(value*0.5)
 
-func _set_play_opponent(isOpponent: bool = playAsOpponent) -> void:
+func _set_play_opponent(isOpponent: bool) -> void:
 	if playAsOpponent == isOpponent: return
 	playAsOpponent = isOpponent
 	_update_strum_must_press()
 	current_player_strum = (opponentStrums if isOpponent else playerStrums).members
-	if middleScroll and stateLoaded: _update_strums_position()
+	if middleScroll and stateLoaded and updateStrumPositionOnScrollChange: 
+		refresh_strums_position()
+		refresh_strums_alpha()
+		_update_notes()
 
 func _set_downscroll(value):
 	FunkinGD.downscroll = value
 	if downScroll == value: return
 	downScroll = value
-	if stateLoaded: _update_strums_position()
+	
+	if stateLoaded: 
+		refresh_strums_position()
+		_update_notes()
 
 func _set_middlescroll(value):
 	FunkinGD.middlescroll = value
 	if middleScroll == value: return
 	middleScroll = value
-	if stateLoaded: _update_strums_position()
+	if stateLoaded and updateStrumPositionOnScrollChange: 
+		refresh_strums_position()
+		refresh_strums_alpha()
+		_update_notes()
 #endregion

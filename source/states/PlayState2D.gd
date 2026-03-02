@@ -41,10 +41,10 @@ func _load_song_objects():
 	camGame.add(gfGroup,true); 
 	camGame.add(dadGroup,true); 
 	camGame.add(boyfriendGroup,true)
+	loadCharactersFromData()
+	load_stage(SONG.data.get("stage",""))
 	super()
 	
-	loadCharactersFromData()
-
 #region Stage Methods
 func _set_characters_order():
 	var chars = stageJson.get('characters'); if !chars: return
@@ -81,7 +81,8 @@ func _load_characters_stage_data():
 func load_stage(stage: String) -> void:
 	if curStage == stage: return
 	var json = Stage.loadStage("stages/"+stage+'.json')
-	if !json: stageJson = Stage.loadStage("stages/2d/"+stage+'.json'); if !json: return
+	if !json: json = Stage.loadStage("stages/2d/"+stage+'.json'); 
+	if !json: return
 	curStage = stage
 	load_stage_from_json(json)
 	FunkinGD.callOnScripts(&"onLoadStage",stage)

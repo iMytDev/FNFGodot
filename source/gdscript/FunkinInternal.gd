@@ -92,13 +92,20 @@ static func _find_script_path(script: Object) -> String:
 
 static func _script_path(path: String): return path if path.ends_with('.gd') else path+'.gd'
 
+static func _get_script(script: Variant) -> Object:
+	if !script: return
+	if script is Object: return script
+	return scriptsCreated.get(_script_path(script))
+
 static func get_arguments(script: Script) -> Dictionary[StringName,Variant]:
 	var functions: Dictionary[StringName,Variant]
 	if !script: return functions
 	var methods = script.get_script_method_list()
 	var f = methods.size()
 	while f:
-		f -= 1; var data = methods[f]; if data.flags & METHOD_FLAG_STATIC: continue
+		f -= 1; 
+		var data = methods[f]; 
+		if data.flags & METHOD_FLAG_STATIC: continue
 		
 		var name: StringName = data.name
 		var args = data.args; if !args: functions[name] = null; continue
@@ -119,6 +126,8 @@ static func get_arguments(script: Script) -> Dictionary[StringName,Variant]:
 		functions[name] = new_args
 	return functions
 
+
+
 static func registerScript(script: Object, tag: StringName = &'') -> bool:
 	if !script: return false
 	var args = get_arguments(script.get_script())
@@ -137,10 +146,6 @@ static func removeScript(path: Variant):
 	if path is Object: path = _find_script_path(path)
 	_remove_script_from_path(_script_path(PathsStore.get_base_path(path,false)))
 
-static func _get_script(script: Variant) -> Object:
-	if !script: return
-	if script is Object: return script
-	return scriptsCreated.get(_script_path(script))
 
 static func _remove_script_from_path(path: StringName):
 	var script: Object = scriptsCreated.get(path); if !script: return
@@ -165,21 +170,14 @@ static func _clear_scripts(absolute: bool = false):
 	FunkinTweenerServer.clear(absolute)
 	FunkinTimerServer.clear(absolute)
 	FunkinGroups.clear(absolute)
-
-
-static func _call_script_no_check(script: Object, function: StringName, parameters: Array) -> Variant: 
-	if !parameters: return script.call(function)
-	return script.callv(function, parameters) 
-
-
-
-
 #endregion
 
 #region Warning Methods
 static func debug_error(warning: String):
-	if OS.is_debug_build(): push_error(warning)
-	else: debug_message(warning) 
+	if OS.is_debug_build(): 
+		push_error(warning)
+	else: 
+		debug_message(warning) 
 
 static func debug_message(warning: String, color: Color = Color.RED, only_show_when_debugging: bool = true):
 	if only_show_when_debugging and !debugMode: return
@@ -189,12 +187,6 @@ static func debug_message(warning: String, color: Color = Color.RED, only_show_w
 	text.modulate = color 
 	return text
 #endregion
-
-#region Timer Methods
-
-
-#endregion
-
 static func _add_game_node(node: Node) -> void:
 	if owner: owner.add_child(node)
 	else: Global.add_child(node)

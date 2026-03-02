@@ -26,10 +26,8 @@ static var videosCreated: Dictionary[String,VideoStream]
 static func _static_init() -> void: if is_on_mobile: OS.request_permissions()
 
 static func font(path: StringName) -> Font:
-	var font_file = fontFiles.get(path)
-	if font_file: return font_file
-	var fontPath = PathsStore.font(path)
-	if !fontPath: return ThemeDB.fallback_font
+	var font_file = fontFiles.get(path); if font_file: return font_file
+	var fontPath = PathsStore.font(path); if !fontPath: return ThemeDB.fallback_font
 	font_file = FontFile.new()
 	font_file.load_dynamic_font(fontPath)
 	return font_file
@@ -132,7 +130,7 @@ static func text(path: String) -> String:
 static func get_dialog(dir: String = '') -> FileDialog:
 	var dialog = FileDialog.new()
 	dialog.access = FileDialog.ACCESS_FILESYSTEM
-	if not dir.ends_with('/'): dir = dir+'/'
+	if !dir.ends_with('/'): dir = dir+'/'
 	
 	dialog.current_path = (dir if PathsDir.dir_exists(dir) else PathsStore.assetsPath+'/')
 	dialog.size = ScreenUtils.screenSize/1.5
@@ -145,8 +143,8 @@ static func get_dialog(dir: String = '') -> FileDialog:
 ##Save a File.[br]
 ##OBS: [param file_path] needs to contain the file extension: [br]
 ##[codeblock]
-##Paths.saveFile({}, "res://file") ## Wrong ❌
-##Paths.saveFile({}, "res://file.json") ## Correct ✅
+##Paths.saveFile({}, "res://file") ## ❌
+##Paths.saveFile({}, "res://file.json") ## ✅
 ##[/codeblock]
 static func saveFile(json: Variant, file_path: String) -> void:
 	if json is Dictionary: json = JSON.stringify(json,'\t')
@@ -184,8 +182,11 @@ static func loadShader(path: String) -> ShaderMaterial:
 	return material
 
 static func _set_shader_parameters_to_default(material: ShaderMaterial):
+	var rid = material.shader.get_rid()
 	for i in material.shader.get_shader_uniform_list():
-		material.set_shader_parameter(i.name,RenderingServer.shader_get_parameter_default(material.shader.get_rid(),i.name))
+		var name = i.name
+		material.set_shader_parameter(name,RenderingServer.shader_get_parameter_default(rid,name))
+
 static func loadShaderCode(path: String) -> Shader: return loadShaderCodeAbsolute(PathsStore.shaderPath(path))
 
 static func loadShaderCodeAbsolute(absolute_path: String) -> Shader:

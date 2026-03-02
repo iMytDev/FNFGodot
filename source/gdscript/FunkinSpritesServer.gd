@@ -1,26 +1,23 @@
 class_name FunkinSpritesServer extends FunkinInternal
 static var spritesCreated: Dictionary[StringName,Node] ##Sprites created using [method makeSprite] or [method makeAnimatedSprite] methods.
 
-
 static func makeSprite(tag: StringName, path: Variant = null, x: float = 0, y: float = 0) -> FunkinSprite2D: ##Creates a [Sprite].
 	var sprite = FunkinSprite2D.new(path); 
 	sprite.position = Vector2(x,y)
-	if tag: sprite.name = tag; 
-	_insert_sprite(tag,sprite)
+	if tag: _register_sprite(tag,sprite)
 	return sprite
 
 static func makeAnimatedSprite(tag: StringName, path: Variant = null, x: float = 0, y: float = 0) -> FunkinSprite2D: ##Creates a animated [Sprite].
 	var sprite = FunkinAnimatedSprite2D.new(path); 
 	sprite.position = Vector2(x,y)
-	if tag: sprite.name = tag; 
-	_insert_sprite(tag,sprite)
+	if tag: _register_sprite(tag,sprite)
 	return sprite
 
-static func makeGraphic(object: String, width: float = 0.0,height: float = 0.0,color: Variant = Color.BLACK) -> SolidNode2D:
+static func makeGraphic(tag: String, width: float = 0.0,height: float = 0.0,color: Variant = Color.BLACK) -> SolidNode2D:
 	var obj = SolidNode2D.new()
 	obj.size = Vector2(width,height)
 	obj.modulate = FunkinGD._get_color(color)
-	_insert_sprite(object,obj)
+	if tag: _register_sprite(tag,obj)
 	return obj
 
 static func loadGraphic(object: Variant, image: Variant, width: float = -1, height: float = -1) -> void: ##Load image in the sprite.
@@ -39,7 +36,7 @@ static func setGraphicSize(object: Variant, sizeX: float = -1, sizeY: float = -1
 	object = FunkinProperty._find_object(object); if !object: return
 	
 	if object is FunkinSprite2D: object = object.image
-	if !object is Sprite2D and !object is NinePatchRect or !object.texture: return
+	if !object is SolidNode2D and !object is Control or !object.texture: return
 	
 	var tex_size = object.texture.get_size()
 	var size = Vector2(
@@ -72,12 +69,14 @@ static func insertSpriteToGroup(object: Variant, group: Variant, at: int): ##Ins
 
 static func screenCenter(object: Variant, type: StringName = &"xy"):
 	object = FunkinProperty._find_object(object); if !object: return
-	var center = (object.get_viewport().size*0.5 if object.is_inside_tree() else ScreenUtils.screenCenter)
-	if object is FunkinSprite2D: center -= object.pivot_offset
+	var center = (object.get_viewport().size * 0.5 if object.is_inside_tree() else ScreenUtils.screenCenter)
+	if object is FunkinSprite2D: 
+		center -= object.pivot_offset * object.scale
 	else:
 		var tex = object.get(&'texture')
 		var size = tex.get_size() if tex else object.get(&'size')
-		if size: center += size*0.5
+		if size: center -= size*0.5
+	
 	
 	match type:
 		&'x': object.position.x = center.x
@@ -119,22 +118,25 @@ static func get_midpoint(object: Variant) -> Vector2:
 static func get_midpoint_3d(object: Variant) -> Vector3:
 	object = FunkinProperty._find_object(object)
 	if !object: return Vector3.ZERO
-	if object is Sprite3D: 
-		if !object.centered and object.texture: return object.position + object.texture.get_size() * 0.5
+	if object is Sprite3D and object.centered and object.texture: 
+		return object.position + object.texture.get_size() * 0.5
 	return object.position
-##Scale a object.
-static func scale(object: Variant, x: float = 1.0, y: float = 1.0) -> void:
+
+
+static func scale(object: Variant, x: float = 1.0, y: float = 1.0) -> void: ##Scale a [Node2D].
 	object = FunkinProperty._find_object(object); if !object: return
 	object.scale = Vector2(x,y)
 
-static func _insert_sprite(tag: StringName, object: Node) -> void: 
+static func _register_sprite(tag: StringName, object: Node) -> void: 
 	var sprite = spritesCreated.get(tag)
-	if sprite and sprite is Node: sprite.queue_free()
+	if sprite and sprite is Node:
+		sprite.queue_free()
+	object.name = tag
 	spritesCreated[tag] = object
 
 static func _get_texture(image: Variant) -> Texture:
 	if image is Texture: return image
 	if image is String or image is StringName: return Paths.texture(image)
 	return null
-	
+
 static func clear(): spritesCreated.clear()

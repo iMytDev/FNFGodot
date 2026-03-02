@@ -8,23 +8,15 @@
 
 config_version=5
 
-[animation]
-
-warnings/check_invalid_track_paths=false
-warnings/check_angle_interpolation_type_conflicting=false
-compatibility/default_parent_skeleton_in_mesh_instance_3d=true
-
 [application]
 
 config/name="Friday Night Funkin' Godot"
-config/version="0.1"
+config/version="0.2.5"
 config/tags=PackedStringArray("2d", "modding", "rhythm")
 run/main_scene="uid://d38t3n5h1bcw"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 run/max_fps=240
-boot_splash/show_image=false
 boot_splash/stretch_mode=0
-boot_splash/use_filter=false
 config/icon="res://icon.png"
 
 [audio]
@@ -38,8 +30,9 @@ Conductor="*res://source/backend/Conductor/Conductor.gd"
 AnimationService="*res://source/utils/animation/AnimationService.gd"
 TweenService="*res://source/gdscript/Tween/TweenService.gd"
 Discord="*res://source/backend/Discord.gd"
-Global="*res://source/gdscript/Global.gd"
+Global="*res://source/autoload/Global.gd"
 FunkinParallax="*uid://c46h3k11hth1q"
+SceneManager="*uid://bua5014div7cv"
 
 [debug]
 
@@ -136,5 +129,5 @@ pointing/emulate_touch_from_mouse=true
 
 textures/vram_compression/import_s3tc_bptc=true
 textures/vram_compression/import_etc2_astc=true
-environment/defaults/default_clear_color=Color(0, 0, 0, 1)
-2d/snap_controls_to_pixels=false
+environment/glow/upscale_mode=0
+environment/defaults/default_clear_color=Color(0.005084558, 0.005084162, 0.011245842, 1)

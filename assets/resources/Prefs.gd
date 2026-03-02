@@ -72,6 +72,7 @@ var note_keys: Dictionary[int,Array] = {
 var timeBarType: StringName = &"Disabled"
 @export var hideHud: bool:
 	set(val): hideHud = val;
+
 @export var botplay: bool = false
 
 @export var splashesEnabled: bool = true
@@ -81,7 +82,8 @@ var timeBarType: StringName = &"Disabled"
 @export var window_mode: DisplayServer.WindowMode = DisplayServer.WINDOW_MODE_WINDOWED
 @export var fps: int = 240:
 	set(val): Engine.max_fps = val; fps = val
-var vsync_mode: DisplayServer.VSyncMode = ProjectSettings.get_setting("display/window/vsync/vsync_mode")
+
+@export var vsync_mode: DisplayServer.VSyncMode = ProjectSettings.get_setting("display/window/vsync/vsync_mode")
 
 
 @export_category("Audio Options")

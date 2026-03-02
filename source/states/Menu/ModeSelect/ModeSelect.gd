@@ -1,8 +1,9 @@
 extends Node2D
 
-const StoryMenu = preload("res://source/states/StoryMenu/StoryMenu.gd")
+const StoryMenu = preload("uid://dlwh1vofi13a5")
 const Freeplay = preload("uid://c5emumn8mkcd5")
 const Options = preload("uid://by3jq4hq8gst8")
+const OptionScroll = preload("uid://d3jka7l4iy07n")
 
 #region Editors
 const CharacterEditorScene = preload("uid://droixhbemd0xd")
@@ -10,11 +11,9 @@ const CharacterEditorScene = preload("uid://droixhbemd0xd")
 const ChartEditorScene = preload("uid://bw5vas6axpdqk")
 
 const menu_options_name: PackedStringArray = ['story_mode','freeplay','mods','options']
-const mods_options: PackedStringArray = ['Character Editor','Chart Editor','Modchart Editor']
+const mods_options: PackedStringArray = ['Character Editor','Chart Editor','Modchart Editor', "Mod Creator"]
 
 var bg: Sprite2D = Sprite2D.new()
-
-var camera_limit_y: float = 300
 
 var menu_option_nodes: Dictionary
 
@@ -26,7 +25,7 @@ var _is_blinking: bool = false
 var treeSwap: Timer = Timer.new()
 
 @onready var option_parent: OptionScroll = OptionScroll.new()
-@onready var mods_parent: OptionScroll = OptionScroll.new()
+@onready var mods_parent: OptionScroll = preload("uid://d3jka7l4iy07n").new()
 @onready var cur_tab: OptionScroll = option_parent
 
 @onready var version: Label = Label.new()
@@ -78,7 +77,6 @@ func _ready():
 	FunkinGD.playSound(Paths.music('freakyMenu'),1.0,'freakyMenu',false,true)
 	
 	loadModeSelectOptions()
-	loadModsOptions()
 	
 	_create_version()
 
@@ -122,28 +120,6 @@ func loadModeSelectOptions():
 	)
 	add_child(option_parent)
 
-func loadModsOptions():
-	var index: int = 0
-	for i in mods_options:
-		var text = Label.new()
-		text.text = i
-		
-		var icon_texture = Paths.texture('editors/icons/'+i.to_lower().replace(' ','_'))
-		if icon_texture:
-			var icon = Sprite2D.new()
-			icon.texture = icon_texture
-			icon.centered = false
-			icon.position = Vector2(-130,-10)
-			text.add_child(icon)
-		text.modulate = OptionScroll.UNSELECTED_COLOR
-		text.name = i
-		text.position.x = ScreenUtils.screenCenter.x-150
-		text.position.y = ScreenUtils.screenCenter.y + 150*index - 50
-		index += 1
-		mods_parent.options.append(text)
-		mods_parent.add_child(text)
-	mods_parent.modulate.a = 0.0
-	add_child(mods_parent)
 
 func _process(_d) -> void:
 	if _is_blinking:
@@ -214,18 +190,18 @@ func exitTo(option_node: Node):
 			&'story_mode':
 				var story_menu = StoryMenu.new()
 				story_menu.back_to = get_script()
-				Global.swapTree(story_menu)
+				SceneManager.change_scene(story_menu)
 			&'freeplay':
 				var node = Freeplay.new()
 				Freeplay.back_to = get_script()
-				Global.swapTree(node)
+				SceneManager.change_scene(node)
 			&'mods':
 				select_tab(mods_parent)
 				set_process_input(true)
 			&'options':
 				var i = Options.new()
 				i.back_to = get_script()
-				Global.swapTree(i)
+				SceneManager.change_scene(i)
 			_:
 				set_process_input(true)
 		return
@@ -233,10 +209,10 @@ func exitTo(option_node: Node):
 	if cur_tab == mods_parent:
 		match option_node.name:
 			&'Character Editor': 
-				Global.swapTree(CharacterEditorScene)
+				SceneManager.change_scene(CharacterEditorScene)
 				CharacterEditorScene.get_state().get_node_property_value(0,0).back_to = get_script()
 			&'Chart Editor': 
-				Global.swapTree(ChartEditorScene)
+				SceneManager.change_scene(ChartEditorScene)
 
 func _input(event):
 	if event is InputEventKey and event.pressed:
@@ -270,30 +246,6 @@ static func getMenuBaseData() -> Dictionary:
 	}
 
 
-class OptionScroll extends Node2D:
-	const UNSELECTED_COLOR = Color.DARK_GRAY
-	const SELECTED_COLOR = Color.WHITE
-	
-	var options: Array[Node]
-	var option_node: Node
-	var option_index: int = 0: set = _set_option_index
-	var camera_limit_y = 500
-	
-	signal scrolled(index: int, old_index: int)
-	func _ready() -> void: if options: _set_option_index(0)
-	func _set_option_index(index: int):
-		if !options: option_index = 0; return
-		if option_node: option_node.modulate = UNSELECTED_COLOR
-		option_node = options[index]
-		scrolled.emit(index,option_index)
-		option_index = index
-		option_node.modulate = SELECTED_COLOR
-	
-	func _process(delta: float) -> void:
-		position.y = lerpf(
-			position.y,
-			-camera_limit_y*(float(option_index)/options.size()) + (500*(1.0-scale.y)),
-			10*delta
-		) 
+
 	
 	

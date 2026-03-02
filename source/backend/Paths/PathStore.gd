@@ -55,18 +55,24 @@ const commomFolders: PackedStringArray = [
 ]
 static func _detect_mods() -> void:
 	modsData.clear()
-	for mods in DirAccess.get_directories_at(assetsPath+'/mods'):
+	var mods_path = assetsPath+'/mods'
+	for mods in DirAccess.get_directories_at(mods_path):
 		if commomFolders.has(mods): continue
 		var data = ModData.new()
 		data.name = mods
 		modsData[mods] = data
+
+static func getModOptionValue(mod: StringName, property: String, default: Variant = null) -> Variant:
+	var data = modsData.get(mod); if !data: return default
+	data = data.get("options"); if !data: return default
+	return data.get(property,default)
 
 static func getRunningMods(location: bool = false) -> PackedStringArray:
 	var mods: PackedStringArray
 	if location: 
 		for mod in modsData: if isModRunning(mod): mods.append(assetsPath+'/mods/'+mod+'/')
 	else: 
-		for mod in modsData: print(mod, isModRunning(mod)); if isModRunning(mod): mods.append(mod)
+		for mod in modsData: if isModRunning(mod): mods.append(mod)
 	return mods
 
 static func isModRunning(mod_name: String) -> bool: 

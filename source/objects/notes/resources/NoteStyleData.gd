@@ -30,6 +30,7 @@ func load_from_style_json(style: StringName, key: StringName = &"strums", type: 
 	scale = json.get(&"scale",DEFAULT_NOTES_SCALE)
 	data = json.get(&"data",{})
 	angle = json.get(&"angle",0.0); if angle: angle = deg_to_rad(angle)
+	keyCount = json.get(&"keyCount",4)
 
 func _get_property_from_anim(anim: StringName, key: StringName, default: Variant) -> Variant:
 	var d = data.get(anim); if !d: d = data.get(&"default")

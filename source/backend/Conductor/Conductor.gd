@@ -173,13 +173,14 @@ func get_section_data(sec: int = section) -> Dictionary:
 func get_section_count() -> int: 
 	var b = _bpm_changes.back(); return b.section + ((songLength - b.time) / b.sectionCrochet)
 
-func get_section_time(_section: int = section) -> float:
+func get_section_time(_section: int = 0) -> float:
 	if !_section: return 0.0
 	var size = _bpm_changes.size()
-	var index: int = 0
+	var index: int = 1
 	var time: float = 0.0
 	var max_section = 0
-	var bpm_change
+	var bpm_change = default_bpm_data
+	
 	while index < size:
 		var i = _bpm_changes[index]
 		if i.section > section: break

@@ -33,9 +33,10 @@ func charactersDance() -> void:
 		if !(beat % character.danceEveryNumBeats): character.dance()
 
 func loadCharactersFromData():
-	if boyfriend is CharacterSprite3D: boyfriend.loadCharacter(SONG.data.get('player1','bf'))
-	if dad is CharacterSprite3D: dad.loadCharacter(SONG.data.get('player2','bf'))
-	if gf is CharacterSprite3D: gf.loadCharacter(SONG.data.get('gfVersion','gf'))
+	var data = SONG.data
+	if boyfriend is CharacterSprite3D: boyfriend.loadCharacter(data.get('player1','bf'))
+	if dad is CharacterSprite3D: dad.loadCharacter(data.get('player2','bf'))
+	if gf is CharacterSprite3D: gf.loadCharacter(data.get('gfVersion','gf'))
 
 func singCharacter(character: CharacterBase3D, anim_name: StringName) -> void: 
 	if character is CharacterMesh3D: 
@@ -61,8 +62,7 @@ func getCharacterFromNote(note: Note) -> Node: return gf if note.gfNote else (bo
 
 #region Camera Methods
 func screenBeat(multi: float = 1.0) -> void: 
-	super(multi); 
-	camGame.zoom += 0.05 * multi
+	super(multi); camGame.zoom += 0.05 * multi
 
 func get_focus_position(char: CharacterBase3D) -> Vector3: return char.getCameraPosition()
 
@@ -108,8 +108,7 @@ func _load_scripts():
 
 func _process(delta: float) -> void:
 	super(delta)
-	if camZooming: 
-		camGame.zoom = lerpf(camGame.zoom,camGame.default_zoom,delta*_real_zoom_speed)
+	if camZooming: camGame.zoom = lerpf(camGame.zoom, camGame.default_zoom,delta*_real_zoom_speed)
 	if camFollowPosition: _follow_camera(delta)
 
 func set_default_zoom(v: float): 

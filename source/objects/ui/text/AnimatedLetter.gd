@@ -5,10 +5,10 @@ var imageFile: StringName:
 
 var animation: Anim = Anim.new()
 
-var letter: StringName = '': set = set_letter
+var letter: StringName: set = set_letter
 
 var suffix: String = ' bold instance 1'
-func _init(imagePath: StringName = ''):
+func _init(imagePath: StringName = &''):
 	animation.node_to_animate = self
 	if imagePath: imageFile = imagePath
 

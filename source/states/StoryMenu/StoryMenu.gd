@@ -148,7 +148,7 @@ func createProp(data, prop_index:int =0):
 func exit():
 	if !back_to: return
 	set_process_input(false)
-	Global.swapTree(back_to,true)
+	SceneManager.change_scene(back_to,true)
 	
 func selectWeek(_week: int = cur_week_selected):pass
 func _input(event: InputEvent) -> void:

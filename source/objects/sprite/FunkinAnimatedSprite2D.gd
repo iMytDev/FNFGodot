@@ -14,13 +14,13 @@ func _init(texture: Variant = null) -> void:
 	super(texture)
 	_auto_resize_image = false
 	_set_animation_resource()
-	image.region_rect = Rect2(0,0,0,0)
 	image.item_rect_changed.connect(_check_image_pivot)
 
 func _on_texture_changed() -> void: super(); _pivot_set = false
 
 func _check_image_pivot() -> void: 
-	pivot_offset = image.region_rect.size * 0.5; if pivot_offset: _pivot_set = true
+	pivot_offset = image.region_rect.size * 0.5
+	if pivot_offset: _pivot_set = true
 
 func _process(delta: float) -> void: animation.process_frame(delta)
 

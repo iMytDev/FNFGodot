@@ -26,14 +26,14 @@ static func create_tween_safe(object: Variant, what: Dictionary,time: Variant = 
 ##Create a Tween Interpolation, see more about in [method TweenService.createTween]
 static func create_tween(object: Variant, what: Dictionary, time: Variant, easing: StringName = &'', tag: StringName = &""):
 	object = FunkinProperty._find_object(object); 
-	var tween = TweenService.createTween(object,what,time,easing); 
+	var tween = TweenService.create_object_tween(object,what,time,easing); 
 	tween.bind_node = object if object is Node else game
 	if tag: _insert_tween(tag,tween)
 	return tween
 
 ##Create a Tween Method, similar to [Tween.tween_method]
 static func create_tween_method(from: Variant, to: Variant, time: Variant, ease: String, method: Callable, tag: StringName = &"") -> FunkinTweenerMethod:
-	var tween = TweenService.createTweenMethod(method,from,to,time,ease)
+	var tween = TweenService.create_tween_method(method,from,to,time,ease)
 	tween.bind_node = game
 	if tag: _insert_tween(tag, tween)
 	return tween
@@ -44,13 +44,14 @@ static func create_tween_shader(shader: Variant, parameter: Variant, value: Vari
 	var shader_material = FunkinShadersServer.find_shader_material(shader)
 	var init_val = shader_material.get_shader_parameter(parameter)
 	if init_val == null: init_val = MathUtils.get_new_value(typeof(value))
-	
-	var tween: FunkinTweenerMethod = FunkinTweenerMethod.new(
+	var tween: FunkinTweenerMethod = TweenService.create_tween_method(
 		func(val): 
 			shader_material.set_shader_parameter(parameter,val),
-		init_val,value,time, TweenService.detect_trans(easing),TweenService.detect_ease(easing)
+		init_val,
+		value,
+		time, 
+		easing
 	)
-	
 	if tag: _insert_tween(tag, tween)
 	return tween
 
@@ -60,7 +61,8 @@ static func _insert_tween(tag: StringName, tween: FunkinTweener):
 	tweensCreated[tag] = tween
 
 static func cancel_tween(tag: String) -> void: ##Cancel the Tween. See also [method startTween].
-	var tween = tweensCreated.get(tag); if !tween: return
+	var tween = tweensCreated.get(tag); 
+	if !tween: return
 	TweenService.tweens_to_update.erase(tween)
 	tweensCreated.erase(tag)
 
@@ -91,7 +93,9 @@ static func _tween_completed(tag: StringName): FunkinGD.callOnScripts(&'onTweenC
 ##setShaderFloat('chrom','strength',0.01)
 ##doShaderTween('chrom','strength',0.0,0.2,&'','chrom_tag')[/codeblock]
 static func doShaderTween(shader: Variant, parameter: StringName, value: Variant, time: float, ease: StringName = &'', tag: StringName = '') -> FunkinTweenerMethod:
-	var material: ShaderMaterial = FunkinShadersServer.find_shader_material(shader); if !material: return
+	var material: ShaderMaterial = FunkinShadersServer.find_shader_material(shader); 
+	print(material)
+	if !material: return
 	if !time: material.set_shader_parameter(parameter,value); return
 	var tween = TweenService.tween_shader(material,parameter,value,time,ease)
 	tween.bind_node = game

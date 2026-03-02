@@ -62,7 +62,7 @@ func createMenuOptions(option_data: Prefs, tag: String):
 
 func backMenu():
 	if !prev_menus:
-		if back_to:  Global.swapTree(back_to); saveOptions()
+		if back_to:  SceneManager.change_scene(back_to); saveOptions()
 		return
 	cur_menu = prev_menus.pop_back()
 

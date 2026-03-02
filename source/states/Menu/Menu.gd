@@ -1,6 +1,6 @@
 extends Node
 
-const ModeSelect = preload("res://source/states/Menu/ModeSelect.gd")
+const ModeSelect = preload("uid://dbcawd2so03ht")
 
 var introText: PackedStringArray = [
 	'A Engine made on \n#Godot',
@@ -67,7 +67,7 @@ func _ready():
 	pressStart.position = Vector2(bpm_data.get('startx',100),bpm_data.get('starty',ScreenUtils.screenHeight - 150))
 	pressStart.name = &'pressStart'
 	
-	Global.on_swap_tree.connect(queue_free,CONNECT_ONE_SHOT)
+	SceneManager.on_scene_changed.connect(queue_free,CONNECT_ONE_SHOT)
 	if not playIntroText: changeState(1)
 	
 func changeState(state: int = 0):
@@ -110,7 +110,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				pressStart.animation.play(&'pressed')
 				doFlash()
 				FunkinGD.playSound(Paths.sound('confirmMenu'))
-				get_tree().create_timer(1.5).timeout.connect(Global.swapTree.bind(ModeSelect.new()))
+				get_tree().create_timer(1.5).timeout.connect(SceneManager.change_scene.bind(ModeSelect.new()))
 				menuState = 2
 func doFlash():
 	if flashTween: flashTween.kill()

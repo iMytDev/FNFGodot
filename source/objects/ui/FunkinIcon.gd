@@ -16,7 +16,7 @@ var hasWinningIcon: bool
 	set(val): scale_lerp = val; notify_property_list_changed();
 
 @export var cur_icon: StringName
-@export_tool_button("Load Icon","Image") var _c = changeIcon
+@export_tool_button("Load Icon","Image") var c = changeIcon
 
 var beat_value: Vector2 = Vector2(0.2,0.2)
 var scale_lerp_time: float = 10.0

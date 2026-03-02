@@ -1,26 +1,21 @@
 class_name ShaderUtils
 
+
+static var _blends_created: Dictionary[String,Material]
 const replace_frag: Dictionary = {
 	'#pragma header': '',
 	'main': 'fragment',
 	'openfl_TextureSize': 'vec2(textureSize(bitmap,0))',
+	'openfl_TextureCoordv': "UV",
+	'bitmap': 'TEXTURE',
 	'flixel_texture2D': 'texture',
 	'flixel_texture': 'texture',
 	'texture2D': 'texture',
 	'gl_FragColor': 'COLOR'
 }
-
-static var _blends_created: Dictionary[String,Material]
-
 static func fragToGd(shaderCode: String) -> String:
 	for r in replace_frag: shaderCode = shaderCode.replace(r,replace_frag[r])
-	
-	shaderCode = shaderCode.replace('openfl_TextureCoordv','UV').replace('bitmap','TEXTURE')
-	shaderCode = shaderCode.replace('texture(TEXTURE,UV)','COLOR').replace('texture(TEXTURE, UV)','COLOR')
-	
-	if not 'shader_type canvas_item;' in shaderCode: shaderCode = 'shader_type canvas_item;\n'+shaderCode
-	
-	return shaderCode
+	return 'shader_type canvas_item;\nrender_mode blend_premul_alpha;\n'+shaderCode
 	
 #region Blend Methods
 static func get_blend(blend: StringName) -> Material:

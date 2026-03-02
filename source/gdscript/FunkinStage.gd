@@ -1,6 +1,8 @@
 class_name FunkinStage extends Resource
 static func loadStage(path: String) -> Dictionary:
-	var j = Paths.loadJsonNoCache(path); return fixStageJson(j) if j else j
+	var j = Paths.loadJsonNoCache(path); 
+	if j: fixStageJson(j)
+	return j
 
 static func fixStageJson(json: Dictionary) -> Dictionary:
 	for i in json.get("characters",[]):

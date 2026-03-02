@@ -11,6 +11,7 @@ var camera_to_follow: Node:
 	
 func _init(camera: Node = null):
 	camera_to_follow = camera
+	debug_draw = Viewport.DEBUG_DRAW_DISABLED
 	size = ScreenUtils.screenSize
 
 func _update_size() -> void:

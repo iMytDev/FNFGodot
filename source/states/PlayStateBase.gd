@@ -284,8 +284,14 @@ func hitNote(note: Note) -> void:
 	if note.mustPress != playAsOpponent: health += note.hitHealth
 	if !note.noAnimation: singCharacterFromNote(note)
 	
-	var audio: AudioStreamPlayer = voices if note.mustPress else voice_opponent
-	if audio: audio.volume_db = 0
+	var voice: AudioStreamPlayer
+	if note.mustPress: 
+		voice = voices
+	else:
+		voice = voice_opponent
+		if !voice: voice = voices
+	if voice: voice.volume_db = 0
+	
 	
 	if note.noteType:
 		FunkinGD.callScript(
@@ -308,7 +314,6 @@ func hitNote(note: Note) -> void:
 func noteMiss(note, character: Variant = null) -> void:
 	health -= note.missHealth
 	var audio: AudioStreamPlayer = voices if note.mustPress else voice_opponent
-	print(voices)
 	if audio: audio.volume_db = -80
 	super(note)
 	FunkinGD.callOnScripts(&'onNoteMiss', note, character)
@@ -331,7 +336,7 @@ func _load_song():
 	mustHitSection = sections.get(&"mustHitSection",false)
 
 func _load_song_objects() -> void:
-	load_stage(SONG.data.get("stage",""))
+	print(SONG.data.get("stage",""))
 	_load_scripts()
 	super()
 	loadEventsScripts()
@@ -401,8 +406,8 @@ func endSound(skip_transition: bool = false) -> void:
 		
 
 func exit(skip_transition: bool = false):
-	Global.on_swap_tree.connect(destroy,CONNECT_ONE_SHOT)
-	Global.swapTree(back_state.new(), !skip_transition)
+	SceneManager.on_scene_changed.connect(destroy,CONNECT_ONE_SHOT)
+	SceneManager.change_scene(back_state.new(), !skip_transition)
 #endregion
 
 #endregion
@@ -428,7 +433,7 @@ func _reload_playstate():
 	for vars in PERSISTENT_PROPERTIES: state.set(vars,self.get(vars))
 	
 	destroy(false)
-	Global.swapTree(state,false)
+	SceneManager.change_scene(state,false)
 
 #region Modding Methods
 func chartEditor() -> void: 
@@ -439,7 +444,7 @@ func _change_to_chart_editor():
 	var chartEditor = ChartEditorScene.instantiate()
 	chartEditor.song_data = SONG
 	destroy(false)
-	Global.swapTree(chartEditor,false); 
+	SceneManager.change_scene(chartEditor,false); 
 
 func characterEditor():
 	Global.doTransition().finished.connect(_change_character_editor,CONNECT_ONE_SHOT)
@@ -448,7 +453,7 @@ func characterEditor():
 func _change_character_editor():
 	var editor = CharacterEditor.instantiate()
 	editor.back_to = get_script()
-	Global.swapTree(editor,false)
+	SceneManager.change_scene(editor,false)
 
 #endregion
 
@@ -563,6 +568,8 @@ func destroy(absolute: bool = true):
 	camHUD.controller.clear_filters()
 	Paths._clear_paths_cache()
 	if absolute: EventData.clear()
+	if isModding:
+		Character.clear_characters()
 	super(absolute)
 
 func _property_can_revert(property: StringName) -> bool:

@@ -7,4 +7,3 @@ extends Node
 
 [node name="Test" type="Node" unique_id=754538456]
 script = SubResource("GDScript_x5kc0")
-val = 0.425

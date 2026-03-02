@@ -169,8 +169,9 @@ func getCameraPosition() -> Vector2: ##Returns the [u]Camera[/u] position of thi
 		Character.Type.OPPONENT: return getMidpoint()  + Vector2(150,-100) + cameraPosition
 		Character.Type.BF: return getMidpoint()  + Vector2(-100 - cameraPosition.x,-100 + cameraPosition.y)
 		_: return getMidpoint() + cameraPosition 
+#endregion
 
-#Signals
+#region Signals
 func _on_animation_started(anim: StringName) -> void:
 	if hasDanceAnim: _check_dance_anim(anim)
 	_is_playing_sing_anim = anim.begins_with('sing');
@@ -178,7 +179,7 @@ func _on_animation_started(anim: StringName) -> void:
 func _on_animation_finished(_anim: StringName) -> void: 
 	if specialAnim or danceOnAnimEnd and _is_playing_sing_anim: dance();
 
-func _clear() -> void: animation.clearLibrary(); _pivot_set = false; json.assign({})
+func _clear() -> void: _pivot_set = false; json.assign({})
 #endregion
 
 #region Property Methods

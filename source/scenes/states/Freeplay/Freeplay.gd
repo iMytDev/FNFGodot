@@ -2,6 +2,7 @@ extends Node
 const ModImageSize = Vector2(60,60)
 const SONG_ICON_SIZE = Vector2(150,150)
 const default_difficulties: PackedStringArray = ['easy','normal','hard']
+const Sprite2DScaleWindow = preload("uid://bxwxuogjmeb0b")
 
 const default_difficulty_color: Dictionary[StringName, Color] ={
 	&"easy": Color.GREEN,
@@ -21,7 +22,7 @@ var default_bg_texture: Texture
 @onready var mod_name_node = FunkinText.new()
 @onready var mod_sprite = SparrowAnimatedSprite2D.new()
 
-@onready var bg = Sprite2D.new()
+@onready var bg = Sprite2DScaleWindow.new()
 var cur_mod_index: int: set = set_mod_index
 var cur_mod_node: WeekNode
 var default_mod_icon: Texture
@@ -204,7 +205,7 @@ func _enter_song_no_transition(songData: SongData):
 		instance.set("SONG", songData),
 		CONNECT_ONE_SHOT
 	)
-	Global.swapTree(instance,false)
+	SceneManager.change_scene(instance,false)
 #endregion
 
 #region Difficulty
@@ -258,7 +259,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				else: difficulty += 1
 			KEY_ENTER: 
 				if cur_song_node: _enter_song(cur_song_node.get_meta(&"songData"))
-			KEY_BACKSPACE: Global.swapTree(back_to)
+			KEY_BACKSPACE: SceneManager.change_scene(back_to)
 #endregion
 
 func _process(delta: float) -> void:
@@ -274,26 +275,13 @@ func get_uniform_fit_scale(size: Vector2, to: Vector2, max: bool = false) -> Vec
 	else: val = minf(_size.x,_size.y)
 	return Vector2(val,val)
 
-func _update_bg_scale():
-	bg.position = ScreenUtils.screenCenter
-	bar_bottom.size.x = ScreenUtils.screenWidth
-	bar_top.size.x = ScreenUtils.screenWidth
-	if !bg.texture: return
-	bg.scale = get_uniform_fit_scale(
-		bg.texture.get_size(),
-		ScreenUtils.screenSize,
-		true
-	)
 
 func _ready():
 	PathsStore.curMod = ''
 	default_mod_icon = Paths.texture("pack",false)
 	default_bg_texture = Paths.texture("menuDesat")
 	
-	get_window().size_changed.connect(_update_bg_scale)
 	get_window().size_changed.connect(_update_difficulty_position)
-	bg.texture_changed.connect(_update_bg_scale)
-	_update_bg_scale()
 	
 	add_child(bg, false, Node.INTERNAL_MODE_FRONT)
 	

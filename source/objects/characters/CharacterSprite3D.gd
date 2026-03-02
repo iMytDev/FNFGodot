@@ -39,7 +39,8 @@ var material: SparrowMeshMaterial = image.mesh.mesh.material
 @export var unshaded: bool:
 	set(val): 
 		unshaded = val
-		material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED if unshaded else material.SHADING_MODE_PER_PIXEL
+		if unshaded: material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		else: material.shading_mode = BaseMaterial3D.SHADING_MODE_PER_PIXEL
 
 @export_category("Transform3D")
 @export var offset: Vector2 = Vector2.ZERO:

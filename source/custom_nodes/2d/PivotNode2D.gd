@@ -32,12 +32,15 @@ var _last_scale: Vector2 = scale
 var _last_rotation: float = rotation
 func _update_rotation_scale() -> bool:
 	var r = _get_rotation()
-	if _last_scale == scale and _last_rotation == r: return false
-	_last_rotation = rotation; _last_scale = scale; _update_pivot()
-	return true
+	var changed: bool = false
+	if _last_scale != scale: _last_scale = scale; changed = true
+	if _last_rotation != r: _last_rotation = r; changed = true
+	if changed: _update_pivot()
+	return changed
 
-func _get_scale(): return scale
-func _get_rotation(): return rotation
+func _get_scale() -> Vector2: return scale
+func _get_rotation() -> float: return rotation
+func get_canvas_offset() -> Vector2: return _canvas_transform_offset
 func _update_pivot() -> void:
 	var pivot = _get_pivot()
 	_real_pivot = (pivot.rotated(rotation) if rotation else pivot)*scale - pivot

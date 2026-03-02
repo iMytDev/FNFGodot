@@ -8,7 +8,7 @@ static var root: Node
 var scripts_running = FunkinGD.scriptsCreated
 var sprites_created = FunkinSpritesServer.spritesCreated
 var method_list = FunkinGD.method_list
-var is_transiting: bool = false
+
 
 var anims = Sparrow.sparrows_loaded
 var current_transition: TRANSITION
@@ -16,42 +16,12 @@ var current_transition: TRANSITION
 var error_prints: Array[Label]
 
 var f11_to_fullscreeen: bool = true
-signal on_swap_tree()
+
 #endregion
 
-
-
 func _ready() -> void: root = get_tree().root
-
-
-
-
 #region Swap Tree methods
-##Swap the Tree for a new [Node]. [br][br]
-##[param newTree] can be a [Node], [PackedScene], [GDScript] or a [String] as a file path.
-func swapTree(newTree: Variant, transition: bool = true) -> void:
-	if !newTree: push_error('swapTree(): Paramter "newTree" is null.'); return
-	
-	if transition:
-		if is_transiting: return
-		is_transiting = true
-		var trans = FunkinTransition.create_transition()
-		trans.start_trans().finished.connect(swapTree.bind(newTree, false))
-		return
-	
-	is_transiting = false
-	on_swap_tree.emit()
-	newTree = _create_node(newTree)
-	var tree = get_tree()
-	if tree.current_scene: tree.current_scene.queue_free()
-	root.add_child(newTree)
-	tree.current_scene = newTree
 
-func _create_node(value: Variant):
-	if value is String: return load(value)
-	if value is GDScript: return value.new()
-	elif value is PackedScene: return value.instantiate()
-	return value
 
 #endregion
 

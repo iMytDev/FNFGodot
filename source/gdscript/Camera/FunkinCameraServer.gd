@@ -3,6 +3,9 @@ const View = preload("uid://bsuk447ulcs7u")
 
 static var _flash_sprites: Dictionary[int, CameraFlashRect]
 static var _fade_sprites: Dictionary[int, CameraFadeRect]
+static var _canvas_blend: CanvasItemMaterial = CanvasItemMaterial.new()
+static func _static_init() -> void:
+	_canvas_blend.blend_mode = CanvasItemMaterial.BLEND_MODE_PREMULT_ALPHA
 
 static func createCamera(tag: String, order: int = 5) -> FunkinCamera2D: return _create_camera(tag,order,FunkinCamera2D)
 static func createCamera3D(tag: String, order: int = 5) -> FunkinCamera3D: return _create_camera(tag,order,FunkinCamera3D)
@@ -115,17 +118,38 @@ static func camera_fade(cam: Node, color: Color = Color.BLACK, time: float = 1.0
 static func _camera_cancel_fade(cam: Node): _fade_sprites.erase(cam.get_instance_id())
 
 #region Camera Filters
-static func camera_add_shader_material(controller: FunkinCameraController, filter: Material) -> void:
+static func _camera_create_viewport(controller: FunkinCameraController) -> SubViewport:
+	var view = controller.main_viewport
+	if controller.main_viewport: return controller.main_viewport
+	
 	var cam = controller.camera
-	var main_viewport = _camera_create_viewport(controller)
+	view = cam.get_node_or_null(^"Viewport")
+	if !view: 
+		view = View.new(cam)
+		view.disable_3d = !controller.is_3d_camera
+		view.name = &"Viewport"
+		cam.add_child(view)
+		
+		cam.scroll_camera.reparent(view)
+		if Engine.is_editor_hint(): view.owner = cam.get_tree().edited_scene_root
+		view.tree_exiting.connect(cam.scroll_camera.reparent.bind(cam))
+	
+	controller.main_viewport = view
+	var view_sprite = _create_viewport_sprite(view)
+	view_sprite.material = _canvas_blend
+	cam.add_child(view_sprite)
+	
+	_camera_update_main_viewport_texture(controller)
+	return view
+
+static func camera_add_shader_material(controller: FunkinCameraController, filter: Material) -> void:
+	_camera_create_viewport(controller)
+	
 	var filters: Array[ShaderMaterial] = controller.filters_array
-	
-	if filters: 
-		var prev_sprite = _camera_create_shader_viewport(cam).get_meta(&"sprite")
-		prev_sprite.material = filters.back()
-	
 	filters.append(filter)
-	main_viewport.get_meta(&"sprite").material = filter
+	var prev_sprite = _camera_create_shader_viewport(controller).get_meta(&"sprite")
+	prev_sprite.material = filters.back()
+	_camera_update_viewports_texture(controller)
 
 static func camera_refresh_shader_materials(controller: FunkinCameraController):
 	var cam = controller.camera
@@ -135,6 +159,7 @@ static func camera_refresh_shader_materials(controller: FunkinCameraController):
 	
 	length -= 1
 	_camera_create_viewport(cam)
+	
 	while controller.viewports_created.size() < length: 
 		_camera_create_shader_viewport(cam)
 	while controller.viewports_created.size() > length: 
@@ -155,8 +180,10 @@ static func _camera_update_main_viewport_texture(controller: FunkinCameraControl
 	var sprite = view.get_meta(&"sprite")
 	
 	var views_created = controller.viewports_created
-	if views_created: sprite.texture = views_created.back().get_texture()
-	else: sprite.texture = view.get_texture()
+	if views_created: 
+		sprite.texture = views_created.back().get_texture()
+	else: 
+		sprite.texture = view.get_texture()
 
 static func _camera_update_viewports_texture(controller: FunkinCameraController) -> void:
 	var main_viewport: SubViewport = controller.main_viewport; if !main_viewport: return
@@ -193,31 +220,10 @@ static func camera_clear_shader_materials(controller: FunkinCameraController):
 	
 	_remove_camera_viewport_safe(controller)
 
-static func _camera_create_viewport(controller: FunkinCameraController) -> SubViewport:
-	var view = controller.main_viewport
-	if controller.main_viewport: return controller.main_viewport
-	
-	var cam = controller.camera
-	view = cam.get_node_or_null(^"Viewport")
-	if !view: 
-		view = View.new(cam)
-		view.name = &"Viewport"
-		cam.add_child(view)
-		
-		cam.scroll_camera.reparent(view)
-		if Engine.is_editor_hint(): view.owner = cam.get_tree().edited_scene_root
-		view.tree_exiting.connect(cam.scroll_camera.reparent.bind(cam))
-	
-	controller.main_viewport = view
-	var view_sprite = _create_viewport_sprite(view)
-	cam.add_child(view_sprite)
-	
-	_camera_update_main_viewport_texture(controller)
-	return view
 
 
 
-static func _camera_create_shader_viewport(controller: FunkinCameraController):
+static func _camera_create_shader_viewport(controller: FunkinCameraController) -> View:
 	var cam = controller.camera
 	var view = View.new(cam)
 	cam.add_child(view)
@@ -227,7 +233,7 @@ static func _camera_create_shader_viewport(controller: FunkinCameraController):
 	
 	controller.viewports_created.append(view)
 	_camera_update_main_viewport_texture(controller)
-	return cam
+	return view
 
 static func _create_viewport_sprite(view: Viewport) -> Sprite2D:
 	var view_sprite = Sprite2D.new()
@@ -247,5 +253,4 @@ static func _remove_camera_viewport(controller: FunkinCameraController):
 	controller.main_viewport = null
 
 static func _queue_free_camera_viewport(view: SubViewport):view.get_meta(&"sprite").queue_free(); view.queue_free()
-
 #endregion

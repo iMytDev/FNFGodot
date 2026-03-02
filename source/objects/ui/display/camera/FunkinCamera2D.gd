@@ -39,7 +39,7 @@ func _init() -> void:
 	
 func _ready() -> void:
 	_update_custom_rect()
-	bg.modulate = Color.TRANSPARENT; 
+	bg.modulate = Color(1.0,1.0,1.0,0.0); 
 	bg.name = &'bg'
 	add_child(bg,false,INTERNAL_MODE_BACK)
 	

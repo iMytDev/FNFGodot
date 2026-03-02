@@ -114,8 +114,6 @@ static func addCharacterToList(character: StringName) -> void: ##Precache charac
 	if json: Paths.image(json.assetPath) #Precache Character image
 #endregion
 
-#endregion
-
 #region Property methods
 ##Set a Property. If [param target] set, the function will try to set the property from this object.
 static func setProperty(property: String, value: Variant, target: Variant = null) -> void: 
@@ -142,7 +140,6 @@ static func setVar(variable: Variant, value: Variant = null) -> void: modVars[va
 static func getVar(variable: Variant, default: Variant = null) -> Variant: return modVars.get(variable,default)
 #endregion
 
-
 #region Class Methods
 static func getPropertyFromClass(_class: Variant, variable: String) -> Variant:
 	return FunkinProperty.get_object_property_split(variable.split('.'),FunkinProperty._find_class(_class))
@@ -154,11 +151,9 @@ static func setPropertyFromClass(_class: Variant,variable: String,value: Variant
 #region Group Methods
 ##Add [Sprite] to a [code]group[/code] [SpriteGroup] or [Array].[br][br]
 ##If [code]at = -1[/code], the sprite will be inserted at the last position.
-static func addSpriteToGroup(object: Variant, group: Variant, at: int = -1) -> void:
-	FunkinGroups.add_to_group(object, group, at)
-	
-static func removeFromGroup(group: Variant, at: int) -> Variant: 
-	return FunkinGroups.remove_from_group_at(group, at)
+static func addSpriteToGroup(object: Variant, group: Variant, at: int = -1) -> void: FunkinGroups.add_to_group(object, group, at)
+static func removeFromGroup(group: Variant, at: int) -> Variant: return FunkinGroups.remove_from_group_at(group, at)
+static func createSpriteGroup(tag: String) -> SpriteGroup: return FunkinGroups.create_group(tag) ##Creates a [SpriteGroup].
 #endregion
 
 
@@ -201,15 +196,12 @@ static func removeSprite(object: Variant, delete: bool = false) -> void:
 	FunkinSpritesServer.removeSprite(object, delete)
 
 
-static func createSpriteGroup(tag: String) -> SpriteGroup: return FunkinGroups.create_group(tag) ##Creates a [SpriteGroup].
-
 static func makeGraphic(object: String, width: float = 0.0,height: float = 0.0,color: Variant = Color.BLACK) -> SolidNode2D:
 	return FunkinSpritesServer.makeGraphic(object,width,height, color)
 
 ##Load image in the sprite.
 static func loadGraphic(object: Variant, image: Variant, width: float = -1, height: float = -1): 
 	FunkinSpritesServer.loadGraphic(object, image, width, height)
-
 
 ##Changes the image region size of the sprite.[br]
 static func setGraphicSize(object: Variant, x: float = -1, y: float = -1) -> void: 
@@ -258,7 +250,7 @@ static func playAnim(object: Variant, anim: StringName, force: bool = false, rev
 	FunkinAnimationServer.play_anim(object, anim, force, reverse)
 
 ##Add offset for the animation of the sprite.
-static func addOffset(object: Variant, anim: StringName, offsetX: float, offsetY: float)  -> void: FunkinAnimationServer.add_offset(object, anim, offsetX, offsetY)
+static func addAnimationOffset(object: Variant, anim: StringName, offsetX: float, offsetY: float)  -> void: FunkinAnimationServer.add_offset(object, anim, offsetX, offsetY)
 
 #endregion
 
@@ -294,13 +286,13 @@ static func textsExits(tag: String) -> bool: return FunkinTextServer.textsCreate
 
 
 #region Tween Methods
-##Start Tween. Similar to [method createTween].[br]
+##Start Tween. Similar to [method TweenService.create_tween].[br]
 ##[b]OBS:[/b] if [param time] is [code]0.0[/code], this will cause the function to set the values, without any tween.
-static func doTween(object: Variant, what: Dictionary,time: Variant = 1.0, easing: StringName = &'', tag: StringName = &"") -> FunkinTweenerObject:
+static func doTween(tag: StringName, object: Variant, what: Dictionary,time: Variant = 1.0, easing: StringName = &'') -> FunkinTweenerObject:
 	return FunkinTweenerServer.create_tween_safe(object, what, time, easing, tag)
 
 ##Create a Tween Method, similar to [Tween.tween_method]
-static func doTweenMethod(from: Variant, to: Variant, time: Variant, ease: String, method: Callable, tag: StringName = &""):
+static func doTweenMethod(tag: StringName, from: Variant, to: Variant, time: Variant, ease: String, method: Callable) -> FunkinTweenerMethod:
 	return FunkinTweenerServer.create_tween_method(from, to, time, ease, method, tag)
 
 
@@ -325,8 +317,8 @@ static func cancelTween(tag: String) -> void: FunkinTweenerServer.cancel_tween(t
 static func isTweenRunning(tag: String) -> bool: return FunkinTweenerServer.is_tween_running(tag) ##Detect if the a Tween is running by its tag.
 
 ##Creates a TweenZoom for cameras.
-static func doTweenZoom(tag: String,object: Variant, toZoom, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(object, {&'zoom': float(toZoom)}, float(time), easing, tag)
+static func doTweenZoom(tag: StringName,object: Variant, toZoom, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(tag, object, {&'zoom': float(toZoom)}, float(time), easing)
 
 ##Create a Tween changing the x value, can be usefull not just for positions, but for anothers variables too, the same for the different tweens.
 ##Example: [codeblock]
@@ -334,95 +326,74 @@ static func doTweenZoom(tag: String,object: Variant, toZoom, time = 1.0, easing:
 ##doTweenX('tween','boyfriend.offset',2) #Make a tween of the boyfriend offset.
 ##[/codeblock]
 ##See also [method doTweenY] and [method doTweenAngle].
-static func doTweenX(tag: String,object: Variant, to: Variant, time: float = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(object,{&'x': float(to)},float(time),easing, tag)
+static func doTweenX(tag: StringName,object: Variant, to: Variant, time: float = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(tag, object,{&'x': float(to)},float(time),easing)
 
 ##Creates a Tween for the y value. See also [method doTweenX] and [method doTweenAngle].
-static func doTweenY(tag: String,object: Variant, to: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(object,{&'y': float(to)},float(time),easing, tag)
+static func doTweenY(tag: StringName,object: Variant, to: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(tag, object,{&'y': float(to)},float(time),easing)
 
 ##Creates a Tween for the alpha of a [Node]. See also [method doTweenColor].
-static func doTweenAlpha(tag: String, object: Variant, to: Variant, time: Variant = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(object,{^"modulate:a": float(to)},float(time),easing, tag)
+static func doTweenAlpha(tag: StringName, object: Variant, to: Variant, time: Variant = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(tag, object,{^"modulate:a": float(to)},float(time),easing)
 	
 ##Creates a Tween for the color of a [Node]. See also [method doTweenAlpha].
-static func doTweenColor(tag: String, object: Variant,color: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerMethod:
+static func doTweenColor(tag: StringName, object: Variant,color: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerMethod:
 	object = FunkinProperty._find_object(object); if !object: return null
-	return doTweenMethod(object.modulate,_get_color(color),float(time),easing,_modulate_method.bind(object), tag)
+	return doTweenMethod(tag, object.modulate,_get_color(color), float(time), easing,_modulate_method.bind(object))
 
 static func _modulate_method(col: Variant, obj: CanvasItem) -> void: obj.modulate = Color(col.r,col.b,col.g,obj.modulate.a)
 
 ##Creates a Tween for the rotation of a [Node]. See also [method doTweenX] and [method doTweenY].
-static func doTweenAngle(tag: String, object: Variant, to: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+static func doTweenAngle(tag: StringName, object: Variant, to: Variant, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
 	object = FunkinProperty._find_object(object)
 	if !object: return
 	if object is Node3D: return doTween(object,{^'rotation_degrees:z': float(to)},time,easing, tag)
-	return doTween(object,{&'angle': float(to)},time,easing, tag)
+	return doTween(tag, object,{&'angle': float(to)}, time, easing)
 #endregion
 
 
 #region Note Tween Methods
-##Creates a Tween for the rotation of a Note. See also [method noteTweenY] and [method noteTweenAngle].
-static func noteTweenX(tag: String, id: Variant,target = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
+static func doNoteTween(tag: StringName, id: int, properties: Dictionary, time: float = 1.0, easing: StringName = &"") -> FunkinTweenerObject:
 	return doTween(
+		tag,
 		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
-		{^'position:x': float(target)},
+		properties,
 		float(time),
-		easing, 
-		tag
+		easing
 	)
+
+##Creates a Tween for the rotation of a Note. See also [method noteTweenY] and [method noteTweenAngle].
+static func noteTweenX(tag: StringName, id: Variant,target = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
+	return doNoteTween(tag, id,{^'position:x': float(target)},float(time),easing)
 
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenX] and [method noteTweenAngle].
-static func noteTweenY(tag: String, id: Variant,target: Variant  = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(
-		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
-		{^'position:y': float(target)},
-		float(time),
-		easing, 
-		tag
-	)
+static func noteTweenY(tag: StringName, id: Variant,target: Variant  = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
+	return doNoteTween(tag, id,{^'position:y': float(target)},float(time),easing)
 
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenColor].
-static func noteTweenAlpha(tag: String,id: Variant,target: Variant = 0.0, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(
-		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
-		{^'modulate:a': float(target)},
-		float(time),
-		easing, 
-		tag
-	)
+static func noteTweenAlpha(tag: StringName,id: Variant,target: Variant = 0.0, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doNoteTween(tag, id,{^'modulate:a': float(target)},float(time),easing)
 
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenY] and [method noteTweenAngle].
-static func noteTweenAngle(tag: String, id: Variant,target = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(
-		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
-		{&"rotation_degrees": float(target)},
-		float(time),
-		easing, 
-		tag
-	)
+static func noteTweenAngle(tag: StringName, id: Variant,target = 0.0,time = 1.0,easing: StringName = &'') -> FunkinTweenerObject: 
+	return doNoteTween(tag, id,{&"rotation_degrees": float(target)},float(time),easing)
 
 ##Creates a Tween for the rotation of a Note. See also [method noteTweenY] and [method noteTweenAngle].
-static func noteTweenDirection(tag: String, id: Variant,target: Variant = 0.0, time: Variant = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(
-		FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)),
-		{&"direction": float(target)},
-		float(time),
-		easing, 
-		tag
-	)
+static func noteTweenDirection(tag: StringName, id: Variant,target: Variant = 0.0, time: Variant = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doNoteTween(tag,id,{&"direction": float(target)},float(time),easing)
 
 ##Creates a Tween for the color of a Note. See also [method noteTweenAlpha].
-static func noteTweenColor(tag: String,id: Variant,color: Variant = 0.0,time: Variant = 1.0,easing: StringName = &'') -> FunkinTweenerMethod: 
+static func noteTweenColor(tag: StringName, id: Variant,color: Variant = 0.0,time: Variant = 1.0,easing: StringName = &'') -> FunkinTweenerMethod: 
 	id = FunkinProperty.get_property("strumLineNotes.members[%d]" % int(id)); if !id: return
 	color = _get_color(color)
 	return doTweenMethod(
+		tag,
 		Vector3(id.modulate.r,id.modulate.g,id.modulate.b),
 		Vector3(color.r,color.g,color.b),
 		float(time),
 		easing,
-		_modulate_method.bind(id),
-		tag
+		_modulate_method.bind(id)
 	)
 #endregion
 
@@ -448,7 +419,7 @@ static func initShader(shader: String, tag: StringName = &'', obrigatory: bool =
 ##var shader_material1 = ShaderMaterial.new()
 ##var shader_material2 = ShaderMaterial.new()
 ##addShaderToCamera('game',shader_material1)
-##addShaderToCamera('game',shader_material1,shader_material2)
+##addShaderToCamera('game', shader_material1, shader_material2)
 ###or
 ##addShaderToCamera('game','ChromaticAberration',shader_material2)
 ##[/codeblock][br]
@@ -462,18 +433,17 @@ static func addShadersToCamera(camera: Variant, ...shaders: Array) -> void: Funk
 
 static func setBlendMode(object: Variant, blend: String) -> void: FunkinShadersServer.setBlendMode(object, blend) ##Sets Object Blend mode, can be: [code]add,subtract,mix[/code]
 
-##Remove shader from the camera, [code]shader[/code] can be a [String] or a [Array].[br]See also [method addShaderCamera].
 static func addShaderFloat(shader: Variant, parameter: String, value: float): FunkinShadersServer.addShaderFloat(shader, parameter, value) ##Add [code]value[/code] to a [u][float] parameter[/u] of a [code]shader[/code] created using [method initShader].
 static func setShaderParameter(shader: Variant, parameter: String, value: Variant): FunkinShadersServer.setShaderParameter(shader, parameter, value)
 static func getShaderParameter(shader: Variant, shaderVar: String) -> Variant: return FunkinShadersServer.getShaderParameter(shader, shaderVar)
-static func removeShaderCamera(camera: Variant, shader: Variant) -> void: FunkinShadersServer.remove_camera_shader(camera, shader)
+static func removeShaderCamera(camera: Variant, shader: Variant) -> void: FunkinShadersServer.remove_camera_shader(camera, shader) ##Remove shader from the camera, [code]shader[/code] can be a [String] or a [Array].[br]See also [method addShaderCamera].
 #endregion
 
 
 #region Camera Methods
 static func createCamera(tag: String, order: int = 5) -> FunkinCamera2D: return FunkinCameraServer.createCamera(tag, order)
-static func cameraFlash(cam: Variant, flashColor: Variant = Color.WHITE, time = 1.0) -> void: ##Do Camera Flash
-	FunkinCameraServer.camera_flash(FunkinCameraServer.camera_get(cam), flashColor, time) 
+static func cameraFlash(cam: Variant, flashColor: Variant = Color.WHITE, time: Variant = 1.0) -> void: ##Do Camera Flash
+	FunkinCameraServer.camera_flash(FunkinCameraServer.camera_get(cam), flashColor, float(time))
 static func cameraShake(cam: Variant, intensity: float = 0.0, time: float = 1.0) -> CameraShake: 
 	return FunkinCameraServer.camera_shake(FunkinCameraServer.camera_get_controller(cam), intensity, time) ##Make a camera shake.
 static func cameraFade(cam: Variant, color: Variant = Color.BLACK, time: Variant = 1.0, fadeIn: bool = true): 
@@ -575,10 +545,6 @@ static func addScript(path: String, tag: StringName = &'') -> Object:
 	registerScript(script,tag)
 	return script
 
-static func getScriptCode(path: String) -> GDScript:
-	if !path.ends_with(".gd"): path += ".gd"
-	return _get_script_code(path)
-
 
 ##Returns the script added using [method addScript].
 static func getScript(path: String): return scriptsCreated.get(path)
@@ -621,7 +587,7 @@ static func _callv_script(script: Variant, function: StringName, parameters: Arr
 	if !args: return script.call(function)
 	
 	parameters = _sign_parameters(args, parameters)
-	return _call_script_no_check(script, function, parameters) 
+	return script.callv(function, parameters) 
 
 ##Calls a function for every script created.
 static func callOnScripts(function: StringName, ...parameters: Array) -> void:
@@ -704,7 +670,6 @@ static func getColorFromArray(array: Array, divided_by_255: bool = true) -> Colo
 ##[/codeblock]
 static func getColorFromName(color_name: String, default: Color = Color.WHITE) -> Color: return Color.from_string(color_name.to_lower(),default)
 #endregion
-
 
 #region Utils
 static func getArrayIndex(array: Variant, index: int, default: Variant) -> Variant:

@@ -10,8 +10,6 @@ class_name SolidNode2D extends Node2D
 @export var size: Vector2 = Vector2(15,15): 
 	set(val): size = val; queue_redraw(); if !filled: notify_property_list_changed()
 
-@export_custom(PROPERTY_HINT_NONE, "suffix:m") var suffix: Vector3
-
 func _get_rect(): return Rect2(Vector2.ZERO,size)
 
 func _draw():

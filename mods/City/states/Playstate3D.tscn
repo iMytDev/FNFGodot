@@ -2,7 +2,6 @@
 
 [ext_resource type="Script" uid="uid://dj6mim1fcomjg" path="res://source/states/PlayState3D.gd" id="1_doisg"]
 [ext_resource type="Script" uid="uid://cerxbopol4l1g" path="res://source/backend/Song/SongData.gd" id="2_4htwx"]
-[ext_resource type="Material" uid="uid://db1erfski0kuu" path="res://assets/shaders/3d/sky.tres" id="3_fhqw1"]
 [ext_resource type="Script" uid="uid://cy48tucumoxy4" path="res://source/objects/ui/display/camera/FunkinCamera3D.gd" id="3_qks6i"]
 [ext_resource type="PackedScene" uid="uid://bspxvt7njpdgx" path="res://mods/City/models/Beach/Beach.tscn" id="4_55o6w"]
 [ext_resource type="Script" uid="uid://duup8gtapd1" path="res://source/objects/ui/display/camera/LockedCamera3D.gd" id="5_be2nr"]
@@ -1171,6 +1170,7 @@ frames = [{
 &"region_rect": Rect2(1669, 2344, 408, 412),
 &"rotated": false
 }]
+looped = true
 asset = ""
 metadata/offset = Vector2(0, 0)
 
@@ -2418,7 +2418,7 @@ animationsArray = {
 }
 curAnim = SubResource("Resource_mq6iw")
 current_animation = &"idle"
-frame = 13
+frame = 2
 
 [sub_resource type="Resource" id="Resource_ahui6"]
 script = ExtResource("7_ia13n")
@@ -3571,6 +3571,7 @@ frames = [{
 &"region_rect": Rect2(1669, 2344, 408, 412),
 &"rotated": false
 }]
+looped = true
 asset = ""
 metadata/offset = Vector2(0, 0)
 
@@ -4818,7 +4819,7 @@ animationsArray = {
 }
 curAnim = SubResource("Resource_juqrl")
 current_animation = &"idle"
-frame = 13
+frame = 2
 
 [sub_resource type="Resource" id="Resource_t7u2e"]
 script = ExtResource("7_ia13n")
@@ -5619,17 +5620,6 @@ curAnim = SubResource("Resource_m1wsa")
 current_animation = &"danceLeft"
 frame = 14
 
-[sub_resource type="Sky" id="Sky_k7oai"]
-sky_material = ExtResource("3_fhqw1")
-
-[sub_resource type="Environment" id="Environment_gs670"]
-background_mode = 2
-sky = SubResource("Sky_k7oai")
-tonemap_exposure = 1.5
-sdfgi_read_sky_light = false
-glow_enabled = true
-glow_strength = 0.8
-
 [node name="Breach" type="Node3D" unique_id=658534795 node_paths=PackedStringArray("boyfriend", "dad", "gf")]
 script = ExtResource("1_doisg")
 boyfriend = NodePath("camGame/boyfriend")
@@ -5655,7 +5645,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15725672, 2.3008246, 11.27
 script = ExtResource("5_be2nr")
 
 [node name="boyfriend" type="Node3D" parent="camGame" unique_id=1112969228]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 2.503197, 9.562133)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.7, 2.4508564, 9.562133)
 script = ExtResource("6_xbp0w")
 curCharacter = "bf"
 json = Dictionary[StringName, Variant]({
@@ -5711,7 +5701,7 @@ metadata/_custom_type_script = "uid://b71vleqndetjo"
 metadata/_flipped_sing_anims = true
 
 [node name="dad" type="Node3D" parent="camGame" unique_id=1399483037]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.186, 2.494374, 9.562133)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.186, 2.4420335, 9.562133)
 script = ExtResource("6_xbp0w")
 curCharacter = "bf"
 json = Dictionary[StringName, Variant]({
@@ -5768,7 +5758,7 @@ metadata/_flipped_sing_anims = true
 metadata/_custom_type_script = "uid://b71vleqndetjo"
 
 [node name="gf" type="Node3D" parent="camGame" unique_id=1782573022]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0905359, 3.1632657, 9.48088)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.0905359, 3.1102023, 9.48088)
 script = ExtResource("6_xbp0w")
 curCharacter = "gf"
 json = Dictionary[StringName, Variant]({
@@ -5837,6 +5827,3 @@ try_to_follow_aspect = true
 [node name="scroll" type="Node2D" parent="camOther" unique_id=1562103320]
 script = ExtResource("10_l7fuk")
 pivot_offset = Vector2(640, 360)
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1196795777]
-environment = SubResource("Environment_gs670")

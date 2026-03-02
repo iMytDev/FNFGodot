@@ -71,8 +71,8 @@ func _on_confirm_time_completed():
 
 func back() -> void:
 	if !back_state: return
-	Global.swapTree(back_state,true)
-	Global.on_swap_tree.connect(queue_free,CONNECT_ONE_SHOT)
+	SceneManager.change_scene(back_state,true)
+	SceneManager.on_scene_changed.connect(queue_free,CONNECT_ONE_SHOT)
 	
 func _input(event: InputEvent) -> void:
 	if event is InputEventKey:
