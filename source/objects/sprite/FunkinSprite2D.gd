@@ -106,14 +106,15 @@ func set_texture(tex: Variant):
 #endregion
 
 #region Updaters
-func _update_real_offset() -> void:
+func _update_real_offset() -> void: _real_offset = _get_real_offset()
+func _get_real_offset() -> Vector2:
 	var off = offset
 	if offset_follow_scale: off *= scale * image.scale
 	if offset_follow_flip:
 		if image.flip_h: off.x = -off.x 
 		if image.flip_v: off.y = -off.y 
 	if offset_follow_rotation and rotation: off = off.rotated(rotation)
-	_real_offset = off
+	return off
 #endregion
 
 #region Change Signals

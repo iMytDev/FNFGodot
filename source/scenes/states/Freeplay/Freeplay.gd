@@ -1,14 +1,18 @@
 extends Node
-const ModImageSize = Vector2(60,60)
-const SONG_ICON_SIZE = Vector2(150,150)
+const ModImageSize = Vector2(60.0, 60.0)
+const SONG_ICON_SIZE = Vector2(150.0, 150.0)
+
 const default_difficulties: PackedStringArray = ['easy','normal','hard']
 const Sprite2DScaleWindow = preload("uid://bxwxuogjmeb0b")
+
+const WeekNode = preload("uid://d3oulttdmbwlv")
 
 const default_difficulty_color: Dictionary[StringName, Color] ={
 	&"easy": Color.GREEN,
 	&"normal": Color.YELLOW,
 	&"hard": Color.RED
 }
+
 static var last_mod_index: int
 static var last_difficulty: int
 static var mods_node_created: Dictionary[StringName, Variant]
@@ -16,13 +20,18 @@ static var mods_created_keys: Array
 static var cur_mod_selected: StringName
 static var back_to: Object
 
-var default_bg_texture: Texture
+@export var weeks: Array[FreeplaySection]
+@export var load_external_weeks: bool = true
+
 @onready var bar_top = SolidNode2D.new()
 @onready var bar_bottom = SolidNode2D.new()
 @onready var mod_name_node = FunkinText.new()
 @onready var mod_sprite = SparrowAnimatedSprite2D.new()
 
 @onready var bg = Sprite2DScaleWindow.new()
+
+var default_bg_texture: Texture
+
 var cur_mod_index: int: set = set_mod_index
 var cur_mod_node: WeekNode
 var default_mod_icon: Texture
@@ -30,11 +39,8 @@ var default_mod_icon: Texture
 var cur_song_node: Node
 var cur_song_data: SongData
 
-@export var weeks: Array[FreeplaySection]
-@export var load_external_weeks: bool = true
-
 @onready var difficultyText: Label = Label.new()
-var difficulty: int = 0: set = set_difficulty
+var difficulty: int: set = set_difficulty
 var difficulty_string: String
 
 @onready var left_arrow = SparrowAnimatedSprite2D.new()
@@ -52,7 +58,8 @@ func _load_external_weeks():
 		var folder = f+'/weeks'
 		var dir = PathsDir.get_dir(folder)
 		if !dir: continue
-		for i in dir.get_files():  if i.ends_with('.json'): load_week_from_json(folder+'/'+i) 
+		for i in dir.get_files():
+			if i.ends_with('.json'): load_week_from_json(folder+'/'+i) 
 	load_external_weeks = true
 
 func load_week_from_json(json_path: String):
@@ -136,7 +143,6 @@ func select_mod(mod: StringName) -> void:
 	
 	var bg_tex = mod_data.bg; if !bg_tex: bg_tex = default_bg_texture 
 	if bg_tex != bg.texture: bg.texture = bg_tex; bg.self_modulate = Color.BLACK
-
 
 func set_mod_index(i: int):
 	cur_mod_index = wrapi(i, 0,mods_created_keys.size())
@@ -259,7 +265,8 @@ func _unhandled_input(event: InputEvent) -> void:
 				else: difficulty += 1
 			KEY_ENTER: 
 				if cur_song_node: _enter_song(cur_song_node.get_meta(&"songData"))
-			KEY_BACKSPACE: SceneManager.change_scene(back_to)
+			KEY_BACKSPACE: 
+				SceneManager.change_scene(back_to)
 #endregion
 
 func _process(delta: float) -> void:
@@ -268,27 +275,20 @@ func _process(delta: float) -> void:
 	bar_bottom.position.y = ScreenUtils.screenHeight + 5.0 - bar_bottom.size.y - offset
 	if cur_song_data: bg.self_modulate = bg.self_modulate.lerp(cur_song_data.bg_color, delta * 10.0)
 
-func get_uniform_fit_scale(size: Vector2, to: Vector2, max: bool = false) -> Vector2:
-	var _size = to / size
-	var val: float
-	if max: val = maxf(_size.x,_size.y)
-	else: val = minf(_size.x,_size.y)
-	return Vector2(val,val)
-
-
 func _ready():
 	PathsStore.curMod = ''
 	default_mod_icon = Paths.texture("pack",false)
 	default_bg_texture = Paths.texture("menuDesat")
 	
 	get_window().size_changed.connect(_update_difficulty_position)
-	
 	add_child(bg, false, Node.INTERNAL_MODE_FRONT)
 	
+	
 	if !mods_node_created: _load_weeks()
+	
 	for i in mods_node_created: add_child(mods_node_created[i])
+	
 	if mods_created_keys: set_mod_index(last_mod_index)
-	_update_difficulty_text()
 	
 	bar_top.size = Vector2(ScreenUtils.screenWidth,78)
 	bar_top.name = &"bar_top"
@@ -297,27 +297,22 @@ func _ready():
 	
 	bar_bottom.size = Vector2(ScreenUtils.screenWidth,78)
 	bar_bottom.self_modulate = Color.BLACK
-	
-	var bottom_text = Label.new()
-	bottom_text.text = '
-	Left/Right Arrows: Change Mod
-	Shift + Left/Right Arrows: Change Difficulty
-	'
-	bottom_text.position.x = 10
-	bottom_text.add_theme_color_override('font_color',Color.DIM_GRAY)
-	bar_bottom.add_child(bottom_text)
 	bar_bottom.name = &"bar_bottom"
 	add_child(bar_bottom)
+	
+	var bottom_text = Label.new()
+	bottom_text.add_theme_color_override('font_color', Color.DIM_GRAY)
+	bottom_text.text = 'Left/Right Arrows: Change Mod\nShift + Left/Right Arrows: Change Difficulty'
+	bottom_text.position.x = 10
+	bar_bottom.add_child(bottom_text)
 
 	difficultyText.add_theme_font_override('font',load("res://assets/fonts/FNFWEEKUIFONT.TTF"))
 	difficultyText.add_theme_font_size_override("font_size",90)
 	difficultyText.position.y = 5
+	_update_difficulty_text()
 	
-	left_arrow.texture = Paths.texture('freeplay/freeplaySelector')
-	left_arrow.looped = true
+	_load_arrow(left_arrow)
 	left_arrow.position = Vector2(-60.0,-5)
-	left_arrow.scale = Vector2(0.8,0.8)
-	left_arrow._load_sparrow()
 	difficultyText.add_child(left_arrow)
 	
 	var left_button = Button2D.new()
@@ -325,9 +320,7 @@ func _ready():
 	left_button.size = left_arrow.region_rect.size
 	left_arrow.add_child(left_button)
 	
-	right_arrow.texture = left_arrow.texture
-	right_arrow.looped = true
-	right_arrow.scale = Vector2(0.8,0.8)
+	_load_arrow(right_arrow)
 	right_arrow.flip_h = true
 	right_arrow.position.y = -5
 	difficultyText.add_child(right_arrow)
@@ -339,65 +332,28 @@ func _ready():
 	
 	
 	mod_name_node.scale = Vector2(0.5,0.5)
+	mod_sprite.position = Vector2(60.0, 10.0)
+	mod_name_node.position.x = ModImageSize.x + 50
 	
 	
 	bar_bottom.add_child(difficultyText)
-	mod_sprite.position = Vector2(60,10)
 	bar_top.add_child(mod_sprite)
 	mod_sprite.add_child(mod_name_node)
-	mod_name_node.position.x = ModImageSize.x + 50
 	set_difficulty(last_difficulty)
 
-func _exit_tree() -> void:
-	if is_queued_for_deletion(): while get_child_count(): remove_child(get_child(0))
+func _load_arrow(arrow):
+	arrow.texture = Paths.texture('freeplay/freeplaySelector')
+	arrow.looped = true
+	arrow.scale = Vector2(0.8,0.8)
+	arrow._load_sparrow()
 
-class WeekNode extends Node2D:
-	const Unselect = Color.DARK_GRAY; const Selected = Color.WHITE
-	static var week_index: Dictionary[StringName, int]
-	
-	var index: int = 0: set = set_index
-	var cur_song: Node
-	
-	signal on_song_selected(song: Node)
-	func _init() -> void: child_entered_tree.connect(
-		func(i): 
-			i.modulate = Unselect
-			if !cur_song: cur_song = i
-	)
-	
-	func hide_week() -> void: visible = false; process_mode = Node.PROCESS_MODE_DISABLED
-	
-	func show_week() -> void:
-		visible = true; process_mode = Node.PROCESS_MODE_INHERIT
-		position.y = 0.0
-		set_index(week_index.get(name,0))
-	
-	func _process(delta: float) -> void:
-		if !cur_song: return
-		position.y = lerpf(position.y,-cur_song.position.y + ScreenUtils.screenCenter.y,delta*15.0)
-	
-	func set_index(i: int):
-		FunkinGD.playSound('scrollMenu')
-		if cur_song: cur_song.modulate = Unselect
-		index = wrapi(i, 0, get_child_count())
-		
-		cur_song = get_child(index)
-		on_song_selected.emit(cur_song)
-		if cur_song: cur_song.modulate = Selected
-		week_index[name] = index
-	
-	
-	func _unhandled_input(event: InputEvent) -> void:
-		if event is InputEventKey:
-			if !event.pressed: return
-			match event.keycode:
-				KEY_UP: 
-					if get_child_count() > 1: index -= 5 if event.shift_pressed else 1;
-				KEY_DOWN: 
-					if get_child_count() > 1: index += 5 if event.shift_pressed else 1;
-					
-		elif event is InputEventMouseButton:
-			if !event.pressed: return
-			match event.button_index:
-				4: index -= 1
-				5: index += 1
+func _exit_tree() -> void:
+	if !is_queued_for_deletion(): return
+	while get_child_count():
+		remove_child(get_child(0))
+func get_uniform_fit_scale(size: Vector2, to: Vector2, max: bool = false) -> Vector2:
+	var _size = to / size
+	var val: float
+	if max: val = maxf(_size.x,_size.y)
+	else: val = minf(_size.x,_size.y)
+	return Vector2(val,val)

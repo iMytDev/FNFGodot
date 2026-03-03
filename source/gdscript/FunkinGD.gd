@@ -110,8 +110,8 @@ static func precacheSound(path: String) -> AudioStreamOggVorbis: return Paths.so
 static func precacheVideo(path: String) -> VideoStreamTheora: return Paths.video(path) ##Precache a video file.
 static func checkFileExists(path: String) -> bool: return PathsStore.file_exists(path) ##Similar to [method Paths.file_exists].
 static func addCharacterToList(character: StringName) -> void: ##Precache character.
-	var json = Character.load_character_json(character)
-	if json: Paths.image(json.assetPath) #Precache Character image
+	var data: CharacterData = Character.load_character_data(character)
+	if data: Paths.texture(data.imageFile) #Precache Character image
 #endregion
 
 #region Property methods
@@ -276,7 +276,7 @@ static func setTextAlignment(tag: Variant, alignmentHorizontal: StringName = &'l
 static func setTextSize(text: Variant, size: float = 15) -> void: FunkinTextServer.set_text_size(text, size)
 
 ##Add Text to game
-static func addText(text: Variant, front: bool = false) -> void: FunkinTextServer.addText(text, front)
+static func addText(text: Variant, front: bool = false, camera: StringName = &"hud") -> void: FunkinTextServer.addText(text, front, camera)
 
 ##Remove Text from the game, if [code]delete[/code] is [code]true[/code], the text will be removed from the memory.
 static func removeText(text: Variant,delete: bool = false) -> void: FunkinTextServer.removeText(text, delete)
@@ -448,7 +448,7 @@ static func cameraShake(cam: Variant, intensity: float = 0.0, time: float = 1.0)
 	return FunkinCameraServer.camera_shake(FunkinCameraServer.camera_get_controller(cam), intensity, time) ##Make a camera shake.
 static func cameraFade(cam: Variant, color: Variant = Color.BLACK, time: Variant = 1.0, fadeIn: bool = true): 
 	FunkinCameraServer.camera_fade(FunkinCameraServer.camera_get(cam), color, time, fadeIn) ##Make a fade in, or out, in the camera.
-static func cameraSetTarget(target: String = 'boyfriend') -> void: game.moveCamera(target) ##Move the game camera for the [code]target[/code].
+static func cameraSetTarget(target: StringName = 'boyfriend') -> void: game.moveCamera(target) ##Move the game camera for the [code]target[/code].
 static func setObjectCamera(object: Variant, camera: Variant): FunkinSpritesServer.set_object_camera(object, camera)##Set the object camera.
 static func cameraAsString(string: StringName) -> StringName: return FunkinCameraServer.camera_get_name(string)##Detect the camera name using a String.
 #endregion

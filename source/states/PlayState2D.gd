@@ -38,6 +38,7 @@ func _setup_cameras() -> void:
 
 func _load_song_objects():
 	if Engine.is_editor_hint(): return
+	
 	camGame.add(gfGroup,true); 
 	camGame.add(dadGroup,true); 
 	camGame.add(boyfriendGroup,true)
@@ -112,8 +113,10 @@ func _check_stage_sprites_beat():
 #endregion
 
 func _process(delta: float) -> void:
-	if camZooming: camGame.zoom = lerpf(camGame.zoom,camGame.default_zoom,delta*_real_zoom_speed*Conductor.music_pitch)
-	if camFollowPosition and !Engine.is_editor_hint(): _follow_camera(delta)
+	if camZooming: 
+		camGame.zoom = lerpf(camGame.zoom,camGame.default_zoom,delta*_real_zoom_speed*Conductor.music_pitch)
+	if camFollowPosition and !Engine.is_editor_hint(): 
+		_follow_camera(delta)
 	super(delta)
 
 func onBeatHit() -> void: _check_stage_sprites_beat(); super()
@@ -156,7 +159,6 @@ func loadCharacter(json: String, type: Character.Type) -> Character2D:
 	var char = Character.create_from_json(json, type); if !char: return
 	group.append(char)
 	set_character_position_from_stage(char, type)
-	FunkinGD.callOnScripts(&"onCharacterLoaded", char, type)
 	return char
 
 func loadCharactersFromData():
@@ -173,7 +175,7 @@ func loadCharactersFromData():
 
 func charactersDance() -> void:
 	var b = Conductor.beat
-	for i in active_characters: if i and i.can_dance() and !(b % i.danceEveryNumBeats): i.dance()
+	for i in active_characters: if i and i.can_dance() and !(b % i.data.danceEveryNumBeats): i.dance()
 
 func singCharacter(character: Character2D, anim_name: StringName) -> void:
 	if !character or character.stunned: return

@@ -6,6 +6,7 @@
 [ext_resource type="Script" uid="uid://gou2lt74gx0i" path="res://source/objects/characters/Character2D.gd" id="3_q1us5"]
 [ext_resource type="Script" uid="uid://br8wh5do7l62w" path="res://source/utils/animation/AnimationData.gd" id="4_6whtv"]
 [ext_resource type="Script" uid="uid://cvvli26q7wviq" path="res://source/custom_nodes/popup/DynamicFileMenuButton.gd" id="4_6y1bd"]
+[ext_resource type="Script" uid="uid://cuyd34wgy8dtl" path="res://source/objects/characters/CharacterData.gd" id="4_dmyli"]
 [ext_resource type="Script" uid="uid://bcwb15rt0wux4" path="res://source/custom_nodes/controls/LineEditAutoUnfocus.gd" id="5_3un4d"]
 [ext_resource type="Script" uid="uid://bv8xd8nuxerrp" path="res://source/utils/animation/FunkinAnimator.gd" id="5_dmyli"]
 [ext_resource type="Script" uid="uid://bscbt2dibch22" path="res://source/custom_nodes/controls/ButtonRange/ButtonRange.gd" id="5_q1us5"]
@@ -173,7 +174,6 @@ func createGhost(animation: StringName):
 func loadCharacter(json: StringName = curCharacter, type: Character.Type = Character.Type.BF) -> Character2D:
 	character_node.charType = type
 	character_node.loadCharacter(json)
-	Character.assign_character_json(character_ghost,character_node.json)
 	updateCharacterData()
 	character_node.danceAfterHold = false
 	character_node.danceOnAnimEnd = false
@@ -261,7 +261,7 @@ func updateCharacterData():
 	cur_anim = character_node.animation.current_animation
 
 func updateDataInfo():
-	icon.reloadIconFromCharacterJson(charJson)
+	icon.reloadIconFromCharacterData(charJson)
 	
 	cur_scale = charJson.scale
 	updateAnimationList()
@@ -535,7 +535,7 @@ func _on_flip_x_toggled(toggled_on: bool) -> void:
 
 
 func _on_create_new_character_button_down() -> void:
-	var json = Character.getCharacterBaseData()
+	var json = CharacterData.getCharacterBaseData()
 	json.assetPath = new_character_image.text if new_character_image.text else new_character_image.placeholder_text
 	characterList.text = \"\"
 	
@@ -574,9 +574,25 @@ func _validate_property(property: Dictionary) -> void:
 		&\"texture\": property.usage = PROPERTY_USAGE_NONE
 "
 
+[sub_resource type="Resource" id="Resource_882oy"]
+script = ExtResource("4_dmyli")
+jsonScale = null
+imageFile = null
+positionArray = null
+healthIcon = null
+healthBarColors = null
+
 [sub_resource type="Resource" id="Resource_acya4"]
 script = ExtResource("5_dmyli")
 auto_loop = true
+
+[sub_resource type="Resource" id="Resource_mdh58"]
+script = ExtResource("4_dmyli")
+jsonScale = null
+imageFile = null
+positionArray = null
+healthIcon = null
+healthBarColors = null
 
 [sub_resource type="Resource" id="Resource_6whtv"]
 script = ExtResource("4_6whtv")
@@ -657,7 +673,6 @@ asset = null
 script = ExtResource("5_dmyli")
 curAnim = SubResource("Resource_6whtv")
 current_animation = &"idle"
-playing = false
 auto_loop = true
 
 [sub_resource type="GDScript" id="GDScript_e6wko"]
@@ -707,7 +722,11 @@ script = SubResource("GDScript_acya4")
 [node name="CharacterGhost" type="Node2D" parent="BG" unique_id=966918551]
 scale = Vector2(0.99999994, 0.99999994)
 script = ExtResource("3_q1us5")
+data = SubResource("Resource_882oy")
 animation = SubResource("Resource_acya4")
+offset_follow_flip = null
+offset_follow_scale = null
+offset_follow_rotation = null
 flipX = false
 flipY = false
 region_rect = Rect2(0, 0, 0, 0)
@@ -717,229 +736,12 @@ metadata/_custom_type_script = "uid://gou2lt74gx0i"
 texture_filter = 2
 position = Vector2(748.74994, 23.749998)
 script = ExtResource("3_q1us5")
+data = SubResource("Resource_mdh58")
 curCharacter = "bf"
-positionArray = Vector2(0, 350)
-healthBarColors = Color(0, 0, 0, 1)
-json = Dictionary[StringName, Variant]({
-&"animations": [Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "idle",
-&"offsets": Vector2(0, 0),
-&"prefix": "BF idle dance"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "singLEFT",
-&"offsets": Vector2(12, -6),
-&"prefix": "BF NOTE LEFT0"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "singDOWN",
-&"offsets": Vector2(-10, -50),
-&"prefix": "BF NOTE DOWN0"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "singUP",
-&"offsets": Vector2(-41, 31),
-&"prefix": "BF NOTE UP0"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "singRIGHT",
-&"offsets": Vector2(-41, -7),
-&"prefix": "BF NOTE RIGHT0"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "singLEFTmiss",
-&"offsets": Vector2(12, 24),
-&"prefix": "BF NOTE LEFT MISS"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "singDOWNmiss",
-&"offsets": Vector2(-11, -19),
-&"prefix": "BF NOTE DOWN MISS"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "singUPmiss",
-&"offsets": Vector2(-29, 27),
-&"prefix": "BF NOTE UP MISS"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "singRIGHTmiss",
-&"offsets": Vector2(-30, 21),
-&"prefix": "BF NOTE RIGHT MISS"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "preAttack",
-&"offsets": Vector2(-20, -40),
-&"prefix": "bf pre attack"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "attack",
-&"offsets": Vector2(300, 270),
-&"prefix": "boyfriend attack"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "dodge",
-&"offsets": Vector2(0, -20),
-&"prefix": "boyfriend dodge"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "characters/BOYFRIEND",
-&"fps": 24.0,
-&"frameIndices": [10.0, 11.0, 12.0],
-&"loop_frame": 0.0,
-&"looped": true,
-&"name": "dodge-hold",
-&"offsets": Vector2(0, -20),
-&"prefix": "boyfriend dodge"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "hey",
-&"offsets": Vector2(7, 4),
-&"prefix": "BF HEY!!"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "characters/BFCheer",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "cheer",
-&"offsets": Vector2(0, 10),
-&"prefix": "Cheer"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "characters/BOYFRIEND",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "hit",
-&"offsets": Vector2(20, 20),
-&"prefix": "BF hit"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "characters/BOYFRIEND",
-&"fps": 24.0,
-&"frameIndices": [10.0, 11.0],
-&"loop_frame": 0.0,
-&"looped": true,
-&"name": "hit-hold",
-&"offsets": Vector2(20, 20),
-&"prefix": "BF hit"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "firstDeath",
-&"offsets": Vector2(23, 11),
-&"prefix": "BF dies"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "fakeoutDeath",
-&"offsets": Vector2(33, 11),
-&"prefix": "BF dies"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": true,
-&"name": "deathLoop",
-&"offsets": Vector2(33, 5),
-&"prefix": "BF Dead Loop"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "deathConfirm",
-&"offsets": Vector2(33, 69),
-&"prefix": "BF Dead confirm"
-}), Dictionary[StringName, Variant]({
-&"assetPath": "",
-&"fps": 24.0,
-&"frameIndices": [],
-&"loop_frame": 0.0,
-&"looped": false,
-&"name": "scared",
-&"offsets": Vector2(-4, 0),
-&"prefix": "BF idle shaking"
-})],
-&"assetPath": "characters/BOYFRIEND",
-&"camera_position": Vector2(0, 0),
-&"flipX": true,
-&"healthIcon": {
-"id": "icon-bf",
-"isPixel": false
-},
-&"healthbar_colors": Color(0.19215687, 0.6901961, 0.81960785, 1),
-&"isPixel": false,
-&"mirror_sing_on_flip": true,
-&"offset_follow_flip": true,
-&"offset_follow_scale": true,
-&"offsets": Vector2(0, 350),
-&"origin_offset": [0.0, 0.0],
-&"scale": 1.0,
-&"singTime": 8.0
-})
 animation = SubResource("Resource_dmyli")
-offset_follow_flip = true
-offset_follow_scale = true
+offset_follow_flip = null
+offset_follow_scale = null
+offset_follow_rotation = null
 flipX = false
 flipY = false
 region_rect = Rect2(1669, 2344, 408, 412)

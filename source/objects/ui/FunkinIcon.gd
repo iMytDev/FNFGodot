@@ -53,10 +53,9 @@ func set_icon(icon: Texture):
 		animation.add_frame_animation(&'normal',[0])
 		animation.add_frame_animation(&'losing',[1])
 
-func reloadIconFromCharacterJson(json: Dictionary): 
-	json = json.get(&'healthIcon',{})
-	changeIcon(json.get(&'id',&'icon-face')); 
-	set_pixel(json.get(&'isPixel',false),json.get(&'canScale',false))
+func reloadIconFromCharacterJson(data: CharacterData): 
+	changeIcon(data.iconData.get(&'id',&'icon-face')); 
+	set_pixel(data.iconData.get(&'isPixel',false),data.iconData.get(&'canScale',false))
 
 func _process(delta: float) -> void:
 	if scale_lerp and scale != default_scale: scale = scale.lerp(default_scale,delta*scale_lerp_time)

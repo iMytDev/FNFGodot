@@ -16,7 +16,7 @@ var _real_pivot: Vector2:
 func _init() -> void: set_notify_local_transform(true);
 func _ready() -> void: _rid = get_canvas_item();
 func _draw() -> void:
-	var _transform = transform; _transform.origin += _canvas_transform_offset
+	var _transform = transform; _transform.origin += get_canvas_offset()
 	RenderingServer.canvas_item_set_transform(_rid,_transform)
 
 func _notification(what: int) -> void:

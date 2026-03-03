@@ -3,18 +3,9 @@
 @icon("res://icons/FunkinMicrophone3D.svg")
 class_name CharacterBase3D extends Node3D
 
+@export var data: CharacterData = CharacterData.new(): set = _on_data_set
 @export_group("Dance")
-@export var danceEveryNumBeats: int = 2
-@export var danceAfterHold: bool = true ##If [code]false[/code], the character will not return to the idle anim.
-@export var danceOnAnimEnd: bool = false ##If [code]true[/code],the character will dance when a "sing" animation ends.
-@export var autoDance: bool = false
-@export_storage var hasMissAnimations: bool = false
-@export_storage var hasDanceAnim: bool = false
-
-
-@export_group("Health Bar")
-@export var healthIcon: String = 'icon-face'
-@export var healthBarColors: Color = Color.WHITE
+@export var autoDance: bool
 
 var danced: bool
 var forceDance: bool #Used in Subclasses
@@ -25,8 +16,6 @@ var forceDance: bool #Used in Subclasses
 @export_storage var holdTimer: float = 0.0
 @export_storage var heyTimer: float = 0.0
 var _real_hold_limit: float = 4.1
-
-
 var _is_playing_sing_anim: bool
 
 
@@ -58,7 +47,7 @@ func _update_hold_time(delta: float) -> void:
 	if holdTimer < _real_hold_limit: holdTimer += delta; return
 	var hold_dance: bool = false
 	if !autoDance: hold_dance = InputUtils.is_any_key_pressed(holdKeys)
-	if danceAfterHold and !hold_dance: dance()
+	if data.danceAfterHold and !hold_dance: dance()
 
 func set_hold_limit(limit: float) -> void: holdLimit = limit; _update_hold_limit()
 func _update_hold_limit() -> void: _real_hold_limit = holdLimit * singDuration
@@ -75,10 +64,12 @@ func dance() -> void:
 func can_dance() -> bool: return !(specialAnim or holdTimer or heyTimer)
 #endregion
 
+func _on_data_set(val: CharacterData) -> void: data = val;
+
 func _on_animation_started(animName: StringName):
 	if Engine.is_editor_hint(): return
 	_is_playing_sing_anim = animName.begins_with('sing')
-	if hasDanceAnim: _check_dance_anim(animName)
+	if data.hasDanceAnim: _check_dance_anim(animName)
 
 func _check_dance_anim(anim_name: String) -> void:
 	if anim_name.begins_with('singLEFT'): danced = false

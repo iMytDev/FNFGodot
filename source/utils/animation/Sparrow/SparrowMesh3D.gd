@@ -3,10 +3,13 @@ class_name SparrowMeshInstance3D extends MeshInstance3D
 const deg_90 = deg_to_rad(90)
 
 @export var flip_h: bool:
-	set(val): flip_h = val; _update_region()
-
+	set(val): flip_h = val; _update_flip();
 @export var flip_v: bool:
-	set(val): flip_v = val; _update_region()
+	set(val): flip_v = val; _update_flip();
+
+var _is_real_flip_h: bool
+var _is_real_flip_v: bool
+
 
 @export var texture: Texture2D:
 	set(val): 
@@ -31,7 +34,7 @@ var frameData: Rect2:
 		if !pivot_offset: pivot_offset = region_rect.size*0.5*pixel_size
 
 @export var rotated: bool:
-	set(val): rotated = val; rotation.z = deg_90 if val else 0.0; _update_region()
+	set(val): rotated = val; rotation.z = deg_90 if val else 0.0; _update_flip()
 
 @export_storage var pivot_offset: Vector2 = Vector2.ZERO:
 	set(val): pivot_offset = val; _update_uv()
@@ -45,6 +48,11 @@ func _ready() -> void: _update_region()
 
 func _update_region(): _update_uv(); _update_region_area()
 
+func _update_flip():
+	_is_real_flip_h = flip_v if rotated else flip_h
+	_is_real_flip_v = flip_h if rotated else flip_v
+	_update_region()
+
 func _update_uv():
 	if !texture: return
 	var rect = region_rect
@@ -53,8 +61,8 @@ func _update_uv():
 	var _pos_div = rect.position / _tex_size
 	
 	
-	if _is_absolute_flipped_h(): _pos_div.x -= 1.0 - size_div.x; size_div.x = -size_div.x
-	if _is_absolute_flipped_v(): _pos_div.y -= 1.0 - size_div.y; size_div.y = -size_div.y
+	if _is_real_flip_h: _pos_div.x -= 1.0 - size_div.x; size_div.x = -size_div.x
+	if _is_real_flip_v: _pos_div.y -= 1.0 - size_div.y; size_div.y = -size_div.y
 	
 	mesh.material.uv1_scale.x = size_div.x
 	mesh.material.uv1_scale.y = size_div.y
@@ -64,9 +72,6 @@ func _update_uv():
 	
 	mesh.size = region_rect.size * pixel_size
 
-func _is_absolute_flipped_h(): return flip_v if rotated else flip_h
-func _is_absolute_flipped_v(): return flip_h if rotated else flip_v
-
 func _update_region_area(): 
 	var off: Vector3 = Vector3.ZERO
 	
@@ -74,26 +79,28 @@ func _update_region_area():
 	off.x += mesh.size.x * 0.5
 	off.y -= mesh.size.y * 0.5
 	
-	
-	
 	var frame_offset = frameData.position * pixel_size
+	
+	off.x += frame_offset.x
+	off.y -= frame_offset.y
+	
 	if rotated: 
-		#off.x += pivot_offset.y
-		#off.y += pivot_offset.x
+		off.x -= mesh.size.x
 		
-		off.x += frame_offset.x - mesh.size.x
-		off.y -= frame_offset.y
-		
-		if _is_absolute_flipped_h(): off.x = -off.x + pivot_offset.x * 2.0
-		if _is_absolute_flipped_v(): off.y = -off.y + pivot_offset.y * 2.0
+		if _is_real_flip_h: 
+			off.x *= -1.0
+			off.x += pivot_offset.y * 2.0
+		if _is_real_flip_v: 
+			off.y *= -1.0
+			off.y -= pivot_offset.x * 2.0
 	else:
-		off.x += frame_offset.x
-		off.y -= frame_offset.y
-		
-		if _is_absolute_flipped_h(): off.x = -off.x + pivot_offset.x * 2.0
-		if _is_absolute_flipped_v(): off.y = -off.y + pivot_offset.y * 2.0
-		
-	#if _is_absolute_flipped_h(): off.x *= -1.0
-	#if _is_absolute_flipped_v(): off.y *= -1.0
+		if _is_real_flip_h: 
+			off.x *= -1.0
+			off.x += pivot_offset.x * 2.0
+		if _is_real_flip_v: 
+			off.y *= -1.0
+			off.y += pivot_offset.y * 2.0
+	
+	
 	
 	mesh.center_offset = off

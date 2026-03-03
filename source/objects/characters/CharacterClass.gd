@@ -2,7 +2,7 @@
 class_name Character extends Node
 const dance_anims: Array = [&'danceLeft',&'danceRight']
 
-static var characters_loaded: Dictionary[StringName, Dictionary]
+static var characters_loaded: Dictionary[StringName, CharacterData]
 
 enum Type{BF, OPPONENT, GF}
 
@@ -15,93 +15,34 @@ static func validate_character_property(property: Dictionary):
 static func isPlayer(char: Node) -> bool: return !char.get(&"charType")
 
 static func create_from_json(json_name: String, type: Type = Type.OPPONENT) -> Character2D:
-	var script = FunkinGD.addScript('characters/'+json_name+'.gd')
-	if script and !script is Character:
-		var char_type: String
-		var base_script = script.get_script().get_base_script()
-		if !base_script: char_type = script.get_class()
-		else: char_type = base_script.resource_path.get_file().get_basename()
-		
-		FunkinGD.debug_message(
-			'"'+json_name+'" character cannot be loaded: Script should be extended by Character, but it is by of '+char_type+'.'
-		)
-		return
-	
-	var char: Character2D = (script if script else Character2D).new()
+	var char: Character2D = Character2D.new()
 	char.charType = type
 	load_character_json_from_name(char, json_name)
 	return char
 
-static func fix_char_json(j: Dictionary):
-	if j.has(&'camera_position'): j.camera_position = Vector2(j.camera_position[0],j.camera_position[1])
-	if j.has(&'offsets'): j.offsets = Vector2(j.offsets[0],j.offsets[1])
-	if j.has(&'healthbar_colors'): 
-		j.healthbar_colors = Color(
-			j.healthbar_colors[0]/255.0,
-			j.healthbar_colors[1]/255.0,
-			j.healthbar_colors[2]/255.0
-		)
-
 static func load_character_json_from_name(char: Node, char_name: String):
-	var new_json: Dictionary = load_character_json(char_name); 
-	if !new_json: char_name = &'bf'; new_json = load_character_json('bf')
-	if !new_json: char._clear(); char.curCharacter = &''; return new_json
+	var data: CharacterData = load_character_data(char_name); 
+	if !data: 
+		char_name = &'bf'; 
+		data = load_character_data('bf')
+		if !data: return data
+	
 	char.curCharacter = char_name
-	assign_character_json(char, new_json)
+	char.data = data
 	char.dance()
-	return new_json
+	return data
 
-static func load_character_json(json_name: StringName) -> Dictionary[StringName, Variant]:
+static func load_character_data(json_name: StringName) -> CharacterData:
 	var data = characters_loaded.get(json_name)
 	if data: return data
 	
-	data = Paths.character(json_name)
-	var json: Dictionary[StringName, Variant]
-	if !data: return json
-	json.assign(data)
-	load_character_json_animations(json)
-	if !Engine.is_editor_hint(): characters_loaded[json_name] = json
-	return json
-
-static func load_character_json_animations(dict: Dictionary) -> Dictionary[StringName, AnimationData]:
-	var anims = dict.get("animations",[]).duplicate()
-	var animation_file: String = _get_character_anim_file(dict.assetPath)
+	var json = Paths.character(json_name)
+	if !json: return null
+	data = CharacterData.create_from_json(json)
 	
-	dict.animations = Dictionary(
-		{},
-		TYPE_STRING_NAME,&"",null, 
-		TYPE_OBJECT, &"Resource", AnimationData
-	)
-	for i in anims:
-		var asset = i.get("asset","")
-		var anim_file = animation_file
-		var resource = AnimationData.new()
-		resource.asset = asset
-		
-		resource.frameRate = i.get("fps",24.0)
-		resource.prefix = i.get("prefix","")
-		resource.looped = i.get("looped",false)
-		resource.loop_frame = i.get("loop_frame",0)
-		resource.frames = AnimationService.get_anim_frames(resource.prefix,anim_file, i.get("frameIndices",[]))
-		
-		var offset = i.get("offsets")
-		resource.set_meta(&"offset", Vector2(offset[0],offset[1]) if offset else Vector2.ZERO)
-		
-		dict.animations[i.name] = resource
-	return dict.animations
+	if !Engine.is_editor_hint(): characters_loaded[json_name] = data
+	return data
 
-static func _get_character_anim_file(path: String) -> String:
-	path = PathsStore.image(path); if !path: return ''
-	path = AnimationService.findAnimFile(path.get_basename());
-	return path
-
-static func assign_character_json(char: Node, dict: Dictionary):
-	fix_char_json(dict)
-	char._clear(); 
-	char.json.assign(dict)
-	load_character_animations(char)
-	char._on_load_character()
-	return char.json
 #endregion
 
 static func get_type_from_name(char_type: StringName):
@@ -157,7 +98,7 @@ static func _add_character_animation(char, animName: StringName, data: Dictionar
 
 static func _character_needs_flip_animations(char: Node) -> bool: return char.image.flip_h and char.mirror_sing_on_flip
 
-static func flip_sign_animations(character: Node):
+static func flip_sing_animations(character: Node):
 	var is_flipped = character.get_meta(&"flipped_anims",false)
 	if is_flipped == character.image.flip_h or !character.animation.animationsArray: return
 	character.set_meta(&"_flipped_sing_anims", character.image.flip_h)
@@ -175,7 +116,6 @@ static func flip_sign_animations(character: Node):
 	for i in right_anims_data: character.animation.animationsArray[i.replace('RIGHT','LEFT')] = left_anims_data[i]
 	character.animation.update_anim()
 
-
 static func export_character_json(char_json: Dictionary) -> Dictionary:
 	var j = char_json.duplicate_deep()
 	if j.has('camera_position'): j.camera_position = [j.camera_position[0],j.camera_position[1]]
@@ -188,23 +128,6 @@ static func export_character_json(char_json: Dictionary) -> Dictionary:
 	var anims = j.get('animations')
 	if anims: for i in anims: if i.has('offsets'): i.offsets = [i.offsets[0],i.offsets[1]]
 	return j
-
-static func getCharacterBaseData() -> Dictionary[StringName,Variant]: ##Returns a base to character data.
-	return {
-		&"animations": [],
-		&"offsets": Vector2.ZERO,
-		&"camera_position": Vector2.ZERO,
-		&"assetPath": "",
-		&"healthbar_colors": Color.WHITE,
-		&"healthIcon": {
-			&"id": "icon-face",
-			&"isPixel": false,
-			&'canScale': false
-		},
-		&"singTime": 4.0,
-		&"scale": 1,
-		&'danceAfterHold': true,
-	}
 
 static func clear_characters() -> void: characters_loaded.clear()
 #endregion

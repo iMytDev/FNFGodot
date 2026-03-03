@@ -311,12 +311,12 @@ func hitNote(note: Note) -> void:
 @abstract func getCharacterFromNote(note: Note) -> Node
 @abstract func get_focus_position(char)
 
-func noteMiss(note, character: Variant = null) -> void:
+func noteMiss(note, kill_note: bool = true) -> void:
 	health -= note.missHealth
 	var audio: AudioStreamPlayer = voices if note.mustPress else voice_opponent
 	if audio: audio.volume_db = -80
-	super(note)
-	FunkinGD.callOnScripts(&'onNoteMiss', note, character)
+	super(note, kill_note)
+	FunkinGD.callOnScripts(&'onNoteMiss', note, getCharacterFromNote(note))
 #endregion
 
 #region Script Methods
