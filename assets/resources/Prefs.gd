@@ -99,3 +99,8 @@ var timeBarType: StringName = &"Disabled"
 @export var fixImageBorders: bool = false
 
 @export var camZooms: bool = true
+
+
+func load_from(prefs: Prefs):
+	for i in prefs.get_property_list():
+		set(i.name,prefs[i.name]) 

@@ -261,7 +261,7 @@ func updateCharacterData():
 	cur_anim = character_node.animation.current_animation
 
 func updateDataInfo():
-	icon.reloadIconFromCharacterData(charJson)
+	icon.reloadIconFromCharacterData(character_node.data)
 	
 	cur_scale = charJson.scale
 	updateAnimationList()
@@ -724,9 +724,6 @@ scale = Vector2(0.99999994, 0.99999994)
 script = ExtResource("3_q1us5")
 data = SubResource("Resource_882oy")
 animation = SubResource("Resource_acya4")
-offset_follow_flip = null
-offset_follow_scale = null
-offset_follow_rotation = null
 flipX = false
 flipY = false
 region_rect = Rect2(0, 0, 0, 0)
@@ -739,9 +736,6 @@ script = ExtResource("3_q1us5")
 data = SubResource("Resource_mdh58")
 curCharacter = "bf"
 animation = SubResource("Resource_dmyli")
-offset_follow_flip = null
-offset_follow_scale = null
-offset_follow_rotation = null
 flipX = false
 flipY = false
 region_rect = Rect2(1669, 2344, 408, 412)

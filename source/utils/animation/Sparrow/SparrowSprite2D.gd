@@ -65,19 +65,20 @@ func _draw() -> void:
 	var rect = region_rect
 	_draw_offset = -_flip_offset
 	
+	var _real_draw_scale = _draw_scale * rect.size.sign()
 	if rotated: 
 		_draw_offset += Vector2(
 			frameData.position.y,
 			-frameData.position.x + rect.size.x
 		)
-		_draw_offset *= _draw_scale
-		draw_set_transform(_draw_offset, deg_90, Vector2(_draw_scale.y, _draw_scale.x))
+		_draw_offset *= _real_draw_scale
+		draw_set_transform(_draw_offset, deg_90, Vector2(_real_draw_scale.y, _real_draw_scale.x))
 	else: 
 		_draw_offset += frameData.position
-		_draw_offset *= _draw_scale
-		draw_set_transform(_draw_offset, 0.0, _draw_scale)
+		_draw_offset *= _real_draw_scale
+		draw_set_transform(_draw_offset, 0.0, _real_draw_scale)
 	
-	if use_region_offset: _draw_with_offset(rect, _draw_scale)
+	if use_region_offset: _draw_with_offset(rect, _real_draw_scale)
 	else: draw_texture_rect_region(texture, Rect2(Vector2.ZERO, rect.size), rect, Color.WHITE)
 
 func _draw_with_offset(rect: Rect2, scale_draw: Vector2 = Vector2.ONE):

@@ -13,6 +13,7 @@ var end_sustain: NoteSustain
 
 var _sustain_fill: float
 var _sustain_filled: bool
+var _is_flipped: bool
 func _init(data: int, is_end: bool = false) -> void:
 	isEndSustain = is_end
 	splashStyle = &'HoldNoteSplashes'
@@ -23,7 +24,9 @@ func _init(data: int, is_end: bool = false) -> void:
 	copyAngle = false
 	super(data)
 
-func _reload_note_without_data() -> void: loadSustainFrame(); image.scale = Vector2(noteScale,noteScale)
+func _reload_note_without_data() -> void: 
+	loadSustainFrame(); 
+	image.scale.x = noteScale
 
 func _reload_note_from_data(d: Dictionary) -> void:
 	image.use_region_offset = true
@@ -35,7 +38,7 @@ func _reload_note_from_data(d: Dictionary) -> void:
 	
 	region = Rect2(_region[0],_region[1],_region[2],_region[3]);
 	image.region_rect = region
-	pivot_offset = region.size*0.5 
+	pivot_offset = region.size * 0.5 
 
 func _get_sus_name() -> StringName: return &'holdEnd' if isEndSustain else &'hold'
 
@@ -73,21 +76,21 @@ func updateNote() -> void:
 func _update_hit_time() -> void: _hit_time = maxf(0.0,_hit_time-get_process_delta_time() * Conductor.music_pitch); 
 
 func _get_note_style_key() -> StringName: return &"holdNote"
+
 func _get_sustain_height() -> float:
-	if !isEndSustain: 
-		return _height / (scale.y * image.scale.y)
-	if image.use_region_offset: 
-		return image.region_rect.size.y
-	return imageSize.y
+	if isEndSustain: 
+		if image.use_region_offset: 
+			return image.region_rect.size.y
+		return imageSize.y
+	
+	return _height / (scale.y * image.scale.y)
+	
+
 #region Updaters
-
-
 func updateSustain():
 	var full_scale = scale.y * image.scale.y
 	var _sus_height: float = _get_sustain_height()
-	if distance >= 0.0: 
-		_fill_sustain(_sus_height, 0.0)
-		return
+	if distance >= 0.0: _fill_sustain(_sus_height, 0.0); return
 	
 	if isBeingDestroyed:
 		_sustain_fill = real_distance
@@ -98,10 +101,17 @@ func updateSustain():
 
 func _update_note_speed() -> void:
 	super()
-	if !isEndSustain: _height = sustainLength * _real_note_speed; updateSustain();
+	_is_flipped = _real_note_speed < 0.0
+	
+	if _is_flipped: image.scale.y = -noteScale
+	else: image.scale.y = noteScale
+	
+	if !isEndSustain: 
+		_height = sustainLength * _real_note_speed; updateSustain();
 
 func _fill_sustain(height: float, dist: float) -> void:
 	height = maxf(height, 0.0)
+	
 	if image.use_region_offset:
 		image.region_rect_offset.size.y = height - image.region_rect.size.y
 		image.region_rect_offset.position.y = dist

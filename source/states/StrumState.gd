@@ -102,8 +102,7 @@ func _init(data: SongData = null):
 	splashesEnabled = ClientPrefs.data.splashesEnabled
 	opponentSplashes = splashesEnabled and ClientPrefs.data.opponentSplashes
 	downScroll = ClientPrefs.data.downscroll
-	#middleScroll = ClientPrefs.data.middlescroll
-	middleScroll = true
+	middleScroll = ClientPrefs.data.middlescroll
 	
 	add_child(uiGroup)
 	uiGroup.name = &'uiGroup'
@@ -297,7 +296,8 @@ func getDefaultStrumX(
 			strum_position -= offset * (keyCount + space_between_notes)
 	return strum_position
 
-func getDefaultStrumY(downscroll: bool = downScroll): return (ScreenUtils.screenHeight - 50.0) if downscroll else 50.0
+func getDefaultStrumY(downscroll: bool = downScroll): 
+	return (ScreenUtils.screenHeight - 150.0) if downscroll else 50.0
 
 func _create_strums() -> void:
 	StrumNote.keyCount = keyCount

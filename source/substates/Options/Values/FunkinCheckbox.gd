@@ -33,15 +33,13 @@ func _init():
 	super('checkboxThingie')
 	animation.animation_finished.connect(func(anim):
 		if anim == &'selection': 
-			animation.play(&'unselected' if animation.curAnim.reverse else &'selected')
-	)
-	animation.animation_started.connect(func(anim):
-		match anim:
-			&'selection': offset = Vector2(10,90)
-			_: offset = Vector2.ZERO
+			animation.play(&'unselected' if animation.reversed else &'selected')
 	)
 	animation.add_animation_by_prefix(&'unselected',&'Check Box unselected')
+	animation.add_animation_offset(&"unselected",Vector2(10,40))
 	animation.add_animation_by_prefix(&'selection',&'Check Box selecting animation')
+	animation.add_animation_offset(&"selection",Vector2(15.0,95))
 	animation.add_animation_by_prefix(&'selected',&'Check Box selected')
+	animation.add_animation_offset(&"selected",Vector2(15.0,95))
 	
-	animation.curAnim.curFrame = animation.curAnim.maxFrames
+	animation.frame = animation.maxFrames-1

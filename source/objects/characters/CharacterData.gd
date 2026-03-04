@@ -5,7 +5,7 @@ var hasDanceAnim: bool ##If character have "danceLeft" or "danceRight" animation
 var hasDifferentAnimationTextures: bool
 
 @export_category("Animations")
-var animationsArray: Dictionary[StringName, AnimationData]
+@export var animationsArray: Dictionary[StringName, AnimationData] = {}
 @export var mirror_sing_on_flip: bool
 
 @export_category("Dance Properties")
@@ -26,8 +26,8 @@ var singDuration: float = 4.1
 var json: Dictionary
 
 @export_category("Position")
-@export var positionArray: Vector2 = Vector2.ZERO
-@export var cameraPosition: Vector2 = Vector2.ZERO ##The camera position offset.
+@export var positionArray: Vector2
+@export var cameraPosition: Vector2 ##The camera position offset.
 
 @export var offset_follow_flip: bool
 @export var offset_follow_scale: bool
@@ -49,6 +49,8 @@ static func create_from_json(json: Dictionary) -> CharacterData:
 	data.danceAfterHold = json.get(&'danceAfterHold',true)
 	data.danceOnAnimEnd = json.get(&'danceOnAnimEnd',false)
 	data.imageFile = json.get(&'assetPath',&"")
+	
+	data.jsonScale = json.get(&"scale",1.0)
 	
 	data.singDuration = json.get(&"singTime",4.1)
 	
@@ -73,14 +75,18 @@ static func create_from_json(json: Dictionary) -> CharacterData:
 	data.animationsArray = _load_animations(json)
 	
 	for i in data.animationsArray:
-		if !data.hasMissAnim: data.hasMissAnim = i.ends_with("-miss")
+		if !data.hasMissAnim: data.hasMissAnim = i.ends_with("-miss"); data.danceEveryNumBeats = 1
 		if !data.hasDanceAnim: data.hasDanceAnim = i.begins_with("dance")
 		if data.hasMissAnim and data.hasDanceAnim: break
 	return data
 
 func _validate_property(property: Dictionary) -> void:
 	match StringName(property.name):
-		&"positionArray",&"cameraPosition": property.usage = PROPERTY_USAGE_DEFAULT
+		&"positionArray",&"cameraPosition": 
+			property.usage = PROPERTY_USAGE_DEFAULT
+		&"animationsArray": 
+			property.usage = PROPERTY_USAGE_READ_ONLY | PROPERTY_USAGE_STORAGE
+
 func get_as_json():
 	var icon_data: Dictionary[StringName, Variant] = {
 		&"id": iconData.get(&"id","icon-face")
@@ -144,16 +150,23 @@ static func _load_animations(dict: Dictionary) -> Dictionary[StringName,Animatio
 	var animation_file: String = _get_character_anim_file(dict.assetPath)
 	var animations: Dictionary[StringName,AnimationData]
 	for i in dict.get("animations",[]):
+		var name = i.get("name",""); if !name: continue
 		var asset = i.get("asset","")
+		var prefix = i.get("prefix","")
 		var anim_file = animation_file
+		var frames = AnimationService.get_anim_frames(prefix,anim_file, i.get("frameIndices",[]))
+		if !frames: 
+			push_error(name+" animation not added to data: this animation don't have frames.")
+			continue
+		
 		var resource = AnimationData.new()
 		resource.asset = asset
+		resource.frames = frames
 		
 		resource.frameRate = i.get("fps",24.0)
-		resource.prefix = i.get("prefix","")
+		resource.prefix = prefix
 		resource.looped = i.get("looped",false)
 		resource.loop_frame = i.get("loop_frame",0)
-		resource.frames = AnimationService.get_anim_frames(resource.prefix,anim_file, i.get("frameIndices",[]))
 		
 		var offset = i.get("offsets")
 		resource.set_meta(&"offset", Vector2(offset[0],offset[1]) if offset else Vector2.ZERO)

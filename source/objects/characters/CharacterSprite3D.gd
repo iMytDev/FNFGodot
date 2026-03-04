@@ -1,6 +1,6 @@
 @tool
 class_name CharacterSprite3D extends CharacterBase3D 
-const DEFAULT_CAM_POS = Vector3(0.0,0.2,2.0)
+const DEFAULT_CAM_POS = Vector3(0.0, 0.2, 2.0)
 
 var image = SparrowSprite3D.new()
 var material: SparrowMeshMaterial = image.mesh.mesh.material
@@ -75,24 +75,23 @@ func loadCharacter(char_name: StringName = curCharacter): Character.load_charact
 
 func _on_data_set(d: CharacterData) -> void:
 	super(d);
-	
-	print(d.positionArray)
 	if data.isPixel: 
 		image.mesh.mesh.material.texture_filter = StandardMaterial3D.TEXTURE_FILTER_NEAREST
 	else: 
 		image.mesh.mesh.material.texture_filter = StandardMaterial3D.TEXTURE_FILTER_LINEAR
 	
-	image.texture = Paths.texture(data.imageFile)
-	animation.animationsArray = data.animationsArray
-	
 	offset_follow_flip = data.offset_follow_flip
 	offset_follow_scale = data.offset_follow_scale
 	offset_follow_rotation = true
+	image.texture = Paths.texture(data.imageFile)
+	
+	animation.animationsArray = data.animationsArray
 	
 	_update_character_flip()
 	_update_character_scale()
 	_update_offset()
 	notify_property_list_changed()
+	
 
 func dance() -> void: ##Make character returns to his dance animation.
 	if data.hasDanceAnim: 
@@ -118,7 +117,11 @@ func getMidpoint() -> Vector3:
 
 func getCameraPosition() -> Vector3:
 	var center = getMidpoint()
-	var cam_off = Vector3(data.cameraPosition.x,data.cameraPosition.y,0.0) * image.mesh.pixel_size
+	var cam_off = Vector3(
+		data.cameraPosition.x * image.mesh.pixel_size, 
+		data.cameraPosition.y * image.mesh.pixel_size, 
+		0.0
+	) 
 	match charType:
 		Character.Type.OPPONENT: cam_off.x += 0.3
 		Character.Type.BF: 

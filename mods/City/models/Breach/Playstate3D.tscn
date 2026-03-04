@@ -1,27 +1,27 @@
 [gd_scene format=3 uid="uid://c04txgydygggl"]
 
-[ext_resource type="Script" uid="uid://dj6mim1fcomjg" path="res://source/states/PlayState3D.gd" id="1_doisg"]
-[ext_resource type="Script" uid="uid://cerxbopol4l1g" path="res://source/backend/Song/SongData.gd" id="2_4htwx"]
-[ext_resource type="Script" uid="uid://cy48tucumoxy4" path="res://source/objects/ui/display/camera/FunkinCamera3D.gd" id="3_qks6i"]
-[ext_resource type="PackedScene" uid="uid://bspxvt7njpdgx" path="res://mods/City/models/Beach/Beach.tscn" id="4_55o6w"]
-[ext_resource type="Script" uid="uid://duup8gtapd1" path="res://source/objects/ui/display/camera/LockedCamera3D.gd" id="5_be2nr"]
-[ext_resource type="Script" uid="uid://b71vleqndetjo" path="res://source/objects/characters/CharacterSprite3D.gd" id="6_xbp0w"]
-[ext_resource type="Script" uid="uid://br8wh5do7l62w" path="res://source/utils/animation/AnimationData.gd" id="7_ia13n"]
-[ext_resource type="Script" uid="uid://bv8xd8nuxerrp" path="res://source/utils/animation/FunkinAnimator.gd" id="8_sf0sj"]
-[ext_resource type="Script" uid="uid://cuyd34wgy8dtl" path="res://source/objects/characters/CharacterData.gd" id="9_fhqw1"]
-[ext_resource type="Script" uid="uid://dxuhy4065ximc" path="res://source/objects/ui/display/camera/FunkinCamera2D.gd" id="9_sc367"]
-[ext_resource type="Script" uid="uid://sp0gefpiyn7t" path="res://source/objects/ui/display/camera/FunkinScroll2D.gd" id="10_l7fuk"]
+[ext_resource type="Script" uid="uid://dj6mim1fcomjg" path="res://source/states/PlayState3D.gd" id="1_s8hal"]
+[ext_resource type="Script" uid="uid://cerxbopol4l1g" path="res://source/backend/Song/SongData.gd" id="2_tk30t"]
+[ext_resource type="Script" uid="uid://cy48tucumoxy4" path="res://source/objects/ui/display/camera/FunkinCamera3D.gd" id="3_t5r1v"]
+[ext_resource type="PackedScene" uid="uid://bspxvt7njpdgx" path="res://mods/City/models/Breach/Breach.tscn" id="4_5ltl1"]
+[ext_resource type="Script" uid="uid://duup8gtapd1" path="res://source/objects/ui/display/camera/LockedCamera3D.gd" id="5_rcu5i"]
+[ext_resource type="Script" uid="uid://b71vleqndetjo" path="res://source/objects/characters/CharacterSprite3D.gd" id="6_wncyn"]
+[ext_resource type="Script" uid="uid://br8wh5do7l62w" path="res://source/utils/animation/AnimationData.gd" id="7_43lla"]
+[ext_resource type="Script" uid="uid://bv8xd8nuxerrp" path="res://source/utils/animation/FunkinAnimator.gd" id="8_vaoqp"]
+[ext_resource type="Script" uid="uid://cuyd34wgy8dtl" path="res://source/objects/characters/CharacterData.gd" id="9_x00br"]
+[ext_resource type="Script" uid="uid://dxuhy4065ximc" path="res://source/objects/ui/display/camera/FunkinCamera2D.gd" id="10_l107v"]
+[ext_resource type="Script" uid="uid://sp0gefpiyn7t" path="res://source/objects/ui/display/camera/FunkinScroll2D.gd" id="11_q33tf"]
 
 [sub_resource type="Resource" id="Resource_c4mer"]
-script = ExtResource("2_4htwx")
-mod = "StarlightMayhem"
-songName = "echoes"
+script = ExtResource("2_tk30t")
+mod = "vs-omori"
+songName = "abyssal"
 difficulty = "hard"
 difficulties = PackedStringArray("easy", "normal", "hard")
 metadata/_custom_type_script = "uid://cerxbopol4l1g"
 
-[sub_resource type="Resource" id="Resource_o3sid"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_q33tf"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 87, 708, 685),
 &"region_rect": Rect2(4941, 2344, 697, 597),
@@ -54,13 +54,13 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(300, 270)
 
-[sub_resource type="Resource" id="Resource_ycfx3"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_tawyo"]
+script = ExtResource("7_43lla")
 asset = ""
 metadata/offset = Vector2(0, 10)
 
-[sub_resource type="Resource" id="Resource_4t52u"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_tvj0o"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 64, 439, 499),
 &"region_rect": Rect2(2694, 0, 439, 435),
@@ -201,8 +201,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(33, 69)
 
-[sub_resource type="Resource" id="Resource_2im0t"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_pie71"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 0, 0, 0),
 &"region_rect": Rect2(0, 0, 439, 435),
@@ -344,8 +344,8 @@ looped = true
 asset = ""
 metadata/offset = Vector2(33, 5)
 
-[sub_resource type="Resource" id="Resource_5gduu"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_arben"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(3, 0, 380, 404),
 &"region_rect": Rect2(7226, 2344, 375, 404),
@@ -410,8 +410,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(0, -20)
 
-[sub_resource type="Resource" id="Resource_t51ob"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_0567q"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 1, 380, 404),
 &"region_rect": Rect2(780, 3038, 380, 403),
@@ -429,8 +429,8 @@ looped = true
 asset = ""
 metadata/offset = Vector2(0, -20)
 
-[sub_resource type="Resource" id="Resource_eid1d"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_l3ars"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 0, 439, 445),
 &"region_rect": Rect2(5082, 988, 433, 415),
@@ -667,8 +667,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(33, 11)
 
-[sub_resource type="Resource" id="Resource_ev8re"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_d8d6q"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 0, 439, 445),
 &"region_rect": Rect2(5082, 988, 433, 415),
@@ -905,8 +905,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(23, 11)
 
-[sub_resource type="Resource" id="Resource_qu037"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_2tb78"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 0, 415, 418),
 &"region_rect": Rect2(5388, 509, 395, 416),
@@ -1015,8 +1015,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(7, 4)
 
-[sub_resource type="Resource" id="Resource_dhlvi"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_ijgqu"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 16, 451, 441),
 &"region_rect": Rect2(4939, 1893, 429, 425),
@@ -1097,8 +1097,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(20, 20)
 
-[sub_resource type="Resource" id="Resource_4co61"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_uppbv"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(47, 39, 451, 441),
 &"region_rect": Rect2(7386, 1893, 392, 392),
@@ -1112,8 +1112,8 @@ looped = true
 asset = ""
 metadata/offset = Vector2(20, 20)
 
-[sub_resource type="Resource" id="Resource_fhqw1"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_s8hal"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 20, 411, 412),
 &"region_rect": Rect2(0, 2344, 406, 392),
@@ -1174,8 +1174,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(0, 0)
 
-[sub_resource type="Resource" id="Resource_ahui6"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_l107v"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 1, 386, 374),
 &"region_rect": Rect2(3761, 2344, 386, 373),
@@ -1300,8 +1300,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-20, -40)
 
-[sub_resource type="Resource" id="Resource_m1wsa"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_8nv3a"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 1, 410, 413),
 &"region_rect": Rect2(2087, 2344, 408, 412),
@@ -1322,8 +1322,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-4, 0)
 
-[sub_resource type="Resource" id="Resource_bjdj4"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_t5r1v"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 5, 375, 362),
 &"region_rect": Rect2(6640, 509, 374, 357),
@@ -1448,8 +1448,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-10, -50)
 
-[sub_resource type="Resource" id="Resource_wfsvk"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_43lla"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 35, 375, 362),
 &"region_rect": Rect2(6640, 509, 374, 357),
@@ -1570,8 +1570,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-11, -19)
 
-[sub_resource type="Resource" id="Resource_gs670"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_tk30t"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 0, 385, 406),
 &"region_rect": Rect2(0, 988, 383, 406),
@@ -1636,8 +1636,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(12, -6)
 
-[sub_resource type="Resource" id="Resource_nhuyv"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_wncyn"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 26, 384, 432),
 &"region_rect": Rect2(777, 988, 383, 406),
@@ -1778,8 +1778,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(12, 24)
 
-[sub_resource type="Resource" id="Resource_2fpyq"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_rcu5i"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 2, 409, 407),
 &"region_rect": Rect2(1929, 988, 408, 405),
@@ -2032,8 +2032,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-41, -7)
 
-[sub_resource type="Resource" id="Resource_700ej"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_x00br"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(7, 30, 409, 407),
 &"region_rect": Rect2(1929, 988, 408, 405),
@@ -2222,8 +2222,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-30, 21)
 
-[sub_resource type="Resource" id="Resource_bb6md"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_5ltl1"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(5, 0, 376, 446),
 &"region_rect": Rect2(3580, 988, 369, 446),
@@ -2288,8 +2288,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-41, 31)
 
-[sub_resource type="Resource" id="Resource_ew61o"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_vaoqp"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(9, 0, 376, 446),
 &"region_rect": Rect2(3580, 988, 369, 446),
@@ -2391,37 +2391,61 @@ asset = ""
 metadata/offset = Vector2(-29, 27)
 
 [sub_resource type="Resource" id="Resource_k6agu"]
-script = ExtResource("8_sf0sj")
-animationsArray = {
-&"attack": SubResource("Resource_o3sid"),
-&"cheer": SubResource("Resource_ycfx3"),
-&"deathConfirm": SubResource("Resource_4t52u"),
-&"deathLoop": SubResource("Resource_2im0t"),
-&"dodge": SubResource("Resource_5gduu"),
-&"dodge-hold": SubResource("Resource_t51ob"),
-&"fakeoutDeath": SubResource("Resource_eid1d"),
-&"firstDeath": SubResource("Resource_ev8re"),
-&"hey": SubResource("Resource_qu037"),
-&"hit": SubResource("Resource_dhlvi"),
-&"hit-hold": SubResource("Resource_4co61"),
-&"idle": SubResource("Resource_fhqw1"),
-&"preAttack": SubResource("Resource_ahui6"),
-&"scared": SubResource("Resource_m1wsa"),
-&"singDOWN": SubResource("Resource_bjdj4"),
-&"singDOWNmiss": SubResource("Resource_wfsvk"),
-&"singLEFT": SubResource("Resource_gs670"),
-&"singLEFTmiss": SubResource("Resource_nhuyv"),
-&"singRIGHT": SubResource("Resource_2fpyq"),
-&"singRIGHTmiss": SubResource("Resource_700ej"),
-&"singUP": SubResource("Resource_bb6md"),
-&"singUPmiss": SubResource("Resource_ew61o")
-}
-curAnim = SubResource("Resource_fhqw1")
+script = ExtResource("8_vaoqp")
+animationsArray = Dictionary[StringName, ExtResource("7_43lla")]({
+&"attack": SubResource("Resource_q33tf"),
+&"cheer": SubResource("Resource_tawyo"),
+&"deathConfirm": SubResource("Resource_tvj0o"),
+&"deathLoop": SubResource("Resource_pie71"),
+&"dodge": SubResource("Resource_arben"),
+&"dodge-hold": SubResource("Resource_0567q"),
+&"fakeoutDeath": SubResource("Resource_l3ars"),
+&"firstDeath": SubResource("Resource_d8d6q"),
+&"hey": SubResource("Resource_2tb78"),
+&"hit": SubResource("Resource_ijgqu"),
+&"hit-hold": SubResource("Resource_uppbv"),
+&"idle": SubResource("Resource_s8hal"),
+&"preAttack": SubResource("Resource_l107v"),
+&"scared": SubResource("Resource_8nv3a"),
+&"singDOWN": SubResource("Resource_t5r1v"),
+&"singDOWNmiss": SubResource("Resource_43lla"),
+&"singLEFT": SubResource("Resource_tk30t"),
+&"singLEFTmiss": SubResource("Resource_wncyn"),
+&"singRIGHT": SubResource("Resource_rcu5i"),
+&"singRIGHTmiss": SubResource("Resource_x00br"),
+&"singUP": SubResource("Resource_5ltl1"),
+&"singUPmiss": SubResource("Resource_vaoqp")
+})
+curAnim = SubResource("Resource_s8hal")
 current_animation = &"idle"
 frame = 13
 
-[sub_resource type="Resource" id="Resource_tb0b2"]
-script = ExtResource("9_fhqw1")
+[sub_resource type="Resource" id="Resource_ygkkm"]
+script = ExtResource("9_x00br")
+animationsArray = Dictionary[StringName, ExtResource("7_43lla")]({
+&"attack": SubResource("Resource_q33tf"),
+&"cheer": SubResource("Resource_tawyo"),
+&"deathConfirm": SubResource("Resource_tvj0o"),
+&"deathLoop": SubResource("Resource_pie71"),
+&"dodge": SubResource("Resource_arben"),
+&"dodge-hold": SubResource("Resource_0567q"),
+&"fakeoutDeath": SubResource("Resource_l3ars"),
+&"firstDeath": SubResource("Resource_d8d6q"),
+&"hey": SubResource("Resource_2tb78"),
+&"hit": SubResource("Resource_ijgqu"),
+&"hit-hold": SubResource("Resource_uppbv"),
+&"idle": SubResource("Resource_s8hal"),
+&"preAttack": SubResource("Resource_l107v"),
+&"scared": SubResource("Resource_8nv3a"),
+&"singDOWN": SubResource("Resource_t5r1v"),
+&"singDOWNmiss": SubResource("Resource_43lla"),
+&"singLEFT": SubResource("Resource_tk30t"),
+&"singLEFTmiss": SubResource("Resource_wncyn"),
+&"singRIGHT": SubResource("Resource_rcu5i"),
+&"singRIGHTmiss": SubResource("Resource_x00br"),
+&"singUP": SubResource("Resource_5ltl1"),
+&"singUPmiss": SubResource("Resource_vaoqp")
+})
 mirror_sing_on_flip = true
 imageFile = "characters/BOYFRIEND"
 flipX = true
@@ -2430,8 +2454,8 @@ offset_follow_flip = true
 offset_follow_scale = true
 healthBarColors = Color(0.19215687, 0.6901961, 0.81960785, 1)
 
-[sub_resource type="Resource" id="Resource_fe5sr"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_fp2wi"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 87, 708, 685),
 &"region_rect": Rect2(4941, 2344, 697, 597),
@@ -2464,13 +2488,13 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(300, 270)
 
-[sub_resource type="Resource" id="Resource_ogyg8"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_wapen"]
+script = ExtResource("7_43lla")
 asset = ""
 metadata/offset = Vector2(0, 10)
 
-[sub_resource type="Resource" id="Resource_7tb3v"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_2ffil"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 64, 439, 499),
 &"region_rect": Rect2(2694, 0, 439, 435),
@@ -2611,8 +2635,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(33, 69)
 
-[sub_resource type="Resource" id="Resource_f3a1k"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_u88sn"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 0, 0, 0),
 &"region_rect": Rect2(0, 0, 439, 435),
@@ -2754,8 +2778,8 @@ looped = true
 asset = ""
 metadata/offset = Vector2(33, 5)
 
-[sub_resource type="Resource" id="Resource_pol13"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_jiqfa"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(3, 0, 380, 404),
 &"region_rect": Rect2(7226, 2344, 375, 404),
@@ -2820,8 +2844,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(0, -20)
 
-[sub_resource type="Resource" id="Resource_4tlls"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_7yryo"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 1, 380, 404),
 &"region_rect": Rect2(780, 3038, 380, 403),
@@ -2839,8 +2863,8 @@ looped = true
 asset = ""
 metadata/offset = Vector2(0, -20)
 
-[sub_resource type="Resource" id="Resource_dt7n6"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_8r4r0"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 0, 439, 445),
 &"region_rect": Rect2(5082, 988, 433, 415),
@@ -3077,8 +3101,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(33, 11)
 
-[sub_resource type="Resource" id="Resource_xxble"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_vcgix"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 0, 439, 445),
 &"region_rect": Rect2(5082, 988, 433, 415),
@@ -3315,8 +3339,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(23, 11)
 
-[sub_resource type="Resource" id="Resource_bgece"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_8popc"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 0, 415, 418),
 &"region_rect": Rect2(5388, 509, 395, 416),
@@ -3425,8 +3449,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(7, 4)
 
-[sub_resource type="Resource" id="Resource_make0"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_pdbew"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 16, 451, 441),
 &"region_rect": Rect2(4939, 1893, 429, 425),
@@ -3507,8 +3531,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(20, 20)
 
-[sub_resource type="Resource" id="Resource_fboar"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_tne4h"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(47, 39, 451, 441),
 &"region_rect": Rect2(7386, 1893, 392, 392),
@@ -3522,8 +3546,8 @@ looped = true
 asset = ""
 metadata/offset = Vector2(20, 20)
 
-[sub_resource type="Resource" id="Resource_w8xh5"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_sm5sv"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 20, 411, 412),
 &"region_rect": Rect2(0, 2344, 406, 392),
@@ -3584,8 +3608,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(0, 0)
 
-[sub_resource type="Resource" id="Resource_nph56"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_0n0w1"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 1, 386, 374),
 &"region_rect": Rect2(3761, 2344, 386, 373),
@@ -3710,8 +3734,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-20, -40)
 
-[sub_resource type="Resource" id="Resource_yht48"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_0af0n"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 1, 410, 413),
 &"region_rect": Rect2(2087, 2344, 408, 412),
@@ -3732,8 +3756,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-4, 0)
 
-[sub_resource type="Resource" id="Resource_22afp"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_xe32v"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 5, 375, 362),
 &"region_rect": Rect2(6640, 509, 374, 357),
@@ -3858,8 +3882,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-10, -50)
 
-[sub_resource type="Resource" id="Resource_3xu65"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_rldgr"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 35, 375, 362),
 &"region_rect": Rect2(6640, 509, 374, 357),
@@ -3980,8 +4004,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-11, -19)
 
-[sub_resource type="Resource" id="Resource_4nf1v"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_vvopb"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 0, 385, 406),
 &"region_rect": Rect2(0, 988, 383, 406),
@@ -4046,8 +4070,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(12, -6)
 
-[sub_resource type="Resource" id="Resource_l3awn"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_ln7om"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(0, 26, 384, 432),
 &"region_rect": Rect2(777, 988, 383, 406),
@@ -4188,8 +4212,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(12, 24)
 
-[sub_resource type="Resource" id="Resource_t7u2e"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_jvrwm"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(1, 2, 409, 407),
 &"region_rect": Rect2(1929, 988, 408, 405),
@@ -4442,8 +4466,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-41, -7)
 
-[sub_resource type="Resource" id="Resource_7jurn"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_n33rj"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(7, 30, 409, 407),
 &"region_rect": Rect2(1929, 988, 408, 405),
@@ -4632,8 +4656,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-30, 21)
 
-[sub_resource type="Resource" id="Resource_0j3am"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_1ju3y"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(5, 0, 376, 446),
 &"region_rect": Rect2(3580, 988, 369, 446),
@@ -4698,8 +4722,8 @@ frames = [{
 asset = ""
 metadata/offset = Vector2(-41, 31)
 
-[sub_resource type="Resource" id="Resource_4qgxf"]
-script = ExtResource("7_ia13n")
+[sub_resource type="Resource" id="Resource_r0e2b"]
+script = ExtResource("7_43lla")
 frames = [{
 &"frameData": Rect2(9, 0, 376, 446),
 &"region_rect": Rect2(3580, 988, 369, 446),
@@ -4801,37 +4825,61 @@ asset = ""
 metadata/offset = Vector2(-29, 27)
 
 [sub_resource type="Resource" id="Resource_pcvdj"]
-script = ExtResource("8_sf0sj")
-animationsArray = {
-&"attack": SubResource("Resource_fe5sr"),
-&"cheer": SubResource("Resource_ogyg8"),
-&"deathConfirm": SubResource("Resource_7tb3v"),
-&"deathLoop": SubResource("Resource_f3a1k"),
-&"dodge": SubResource("Resource_pol13"),
-&"dodge-hold": SubResource("Resource_4tlls"),
-&"fakeoutDeath": SubResource("Resource_dt7n6"),
-&"firstDeath": SubResource("Resource_xxble"),
-&"hey": SubResource("Resource_bgece"),
-&"hit": SubResource("Resource_make0"),
-&"hit-hold": SubResource("Resource_fboar"),
-&"idle": SubResource("Resource_w8xh5"),
-&"preAttack": SubResource("Resource_nph56"),
-&"scared": SubResource("Resource_yht48"),
-&"singDOWN": SubResource("Resource_22afp"),
-&"singDOWNmiss": SubResource("Resource_3xu65"),
-&"singLEFT": SubResource("Resource_4nf1v"),
-&"singLEFTmiss": SubResource("Resource_l3awn"),
-&"singRIGHT": SubResource("Resource_t7u2e"),
-&"singRIGHTmiss": SubResource("Resource_7jurn"),
-&"singUP": SubResource("Resource_0j3am"),
-&"singUPmiss": SubResource("Resource_4qgxf")
-}
-curAnim = SubResource("Resource_w8xh5")
+script = ExtResource("8_vaoqp")
+animationsArray = Dictionary[StringName, ExtResource("7_43lla")]({
+&"attack": SubResource("Resource_fp2wi"),
+&"cheer": SubResource("Resource_wapen"),
+&"deathConfirm": SubResource("Resource_2ffil"),
+&"deathLoop": SubResource("Resource_u88sn"),
+&"dodge": SubResource("Resource_jiqfa"),
+&"dodge-hold": SubResource("Resource_7yryo"),
+&"fakeoutDeath": SubResource("Resource_8r4r0"),
+&"firstDeath": SubResource("Resource_vcgix"),
+&"hey": SubResource("Resource_8popc"),
+&"hit": SubResource("Resource_pdbew"),
+&"hit-hold": SubResource("Resource_tne4h"),
+&"idle": SubResource("Resource_sm5sv"),
+&"preAttack": SubResource("Resource_0n0w1"),
+&"scared": SubResource("Resource_0af0n"),
+&"singDOWN": SubResource("Resource_xe32v"),
+&"singDOWNmiss": SubResource("Resource_rldgr"),
+&"singLEFT": SubResource("Resource_vvopb"),
+&"singLEFTmiss": SubResource("Resource_ln7om"),
+&"singRIGHT": SubResource("Resource_jvrwm"),
+&"singRIGHTmiss": SubResource("Resource_n33rj"),
+&"singUP": SubResource("Resource_1ju3y"),
+&"singUPmiss": SubResource("Resource_r0e2b")
+})
+curAnim = SubResource("Resource_sm5sv")
 current_animation = &"idle"
 frame = 13
 
-[sub_resource type="Resource" id="Resource_i8k8d"]
-script = ExtResource("9_fhqw1")
+[sub_resource type="Resource" id="Resource_ob1ui"]
+script = ExtResource("9_x00br")
+animationsArray = Dictionary[StringName, ExtResource("7_43lla")]({
+&"attack": SubResource("Resource_fp2wi"),
+&"cheer": SubResource("Resource_wapen"),
+&"deathConfirm": SubResource("Resource_2ffil"),
+&"deathLoop": SubResource("Resource_u88sn"),
+&"dodge": SubResource("Resource_jiqfa"),
+&"dodge-hold": SubResource("Resource_7yryo"),
+&"fakeoutDeath": SubResource("Resource_8r4r0"),
+&"firstDeath": SubResource("Resource_vcgix"),
+&"hey": SubResource("Resource_8popc"),
+&"hit": SubResource("Resource_pdbew"),
+&"hit-hold": SubResource("Resource_tne4h"),
+&"idle": SubResource("Resource_sm5sv"),
+&"preAttack": SubResource("Resource_0n0w1"),
+&"scared": SubResource("Resource_0af0n"),
+&"singDOWN": SubResource("Resource_xe32v"),
+&"singDOWNmiss": SubResource("Resource_rldgr"),
+&"singLEFT": SubResource("Resource_vvopb"),
+&"singLEFTmiss": SubResource("Resource_ln7om"),
+&"singRIGHT": SubResource("Resource_jvrwm"),
+&"singRIGHTmiss": SubResource("Resource_n33rj"),
+&"singUP": SubResource("Resource_1ju3y"),
+&"singUPmiss": SubResource("Resource_r0e2b")
+})
 mirror_sing_on_flip = true
 imageFile = "characters/BOYFRIEND"
 flipX = true
@@ -4840,189 +4888,9 @@ offset_follow_flip = true
 offset_follow_scale = true
 healthBarColors = Color(0.19215687, 0.6901961, 0.81960785, 1)
 
-[sub_resource type="Resource" id="Resource_q8yxo"]
-script = ExtResource("7_ia13n")
-frames = [{
-&"frameData": Rect2(2, 0, 703, 657),
-&"region_rect": Rect2(0, 0, 699, 657),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(709, 0, 703, 657),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 3, 703, 657),
-&"region_rect": Rect2(1422, 0, 703, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2135, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}]
-asset = ""
-metadata/offset = Vector2(0, 0)
-
-[sub_resource type="Resource" id="Resource_4qd8d"]
-script = ExtResource("7_ia13n")
-frames = [{
-&"frameData": Rect2(2, 0, 703, 657),
-&"region_rect": Rect2(0, 0, 699, 657),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(709, 0, 703, 657),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 3, 703, 657),
-&"region_rect": Rect2(1422, 0, 703, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2135, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 3, 703, 657),
-&"region_rect": Rect2(2844, 0, 699, 654),
-&"rotated": false
-}]
-asset = ""
-metadata/offset = Vector2(0, 0)
-
-[sub_resource type="Resource" id="Resource_h8f6s"]
-script = ExtResource("7_ia13n")
-frames = [{
+[sub_resource type="Resource" id="Resource_aba1a"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
 &"frameData": Rect2(2, 14, 703, 648),
 &"region_rect": Rect2(3553, 0, 699, 634),
 &"rotated": false
@@ -5082,13 +4950,13 @@ frames = [{
 &"frameData": Rect2(2, 0, 703, 648),
 &"region_rect": Rect2(2127, 667, 699, 648),
 &"rotated": false
-}]
+}])
 asset = ""
 metadata/offset = Vector2(0, -9)
 
-[sub_resource type="Resource" id="Resource_1m7tc"]
-script = ExtResource("7_ia13n")
-frames = [{
+[sub_resource type="Resource" id="Resource_e30ob"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
 &"frameData": Rect2(2, 12, 703, 648),
 &"region_rect": Rect2(2836, 667, 699, 636),
 &"rotated": false
@@ -5148,13 +5016,13 @@ frames = [{
 &"frameData": Rect2(2, 6, 703, 648),
 &"region_rect": Rect2(1418, 1325, 699, 642),
 &"rotated": false
-}]
+}])
 asset = ""
 metadata/offset = Vector2(0, -9)
 
-[sub_resource type="Resource" id="Resource_lwjfr"]
-script = ExtResource("7_ia13n")
-frames = [{
+[sub_resource type="Resource" id="Resource_n77s7"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
 &"frameData": Rect2(0, 3, 699, 636),
 &"region_rect": Rect2(709, 5294, 699, 633),
 &"rotated": false
@@ -5206,169 +5074,79 @@ frames = [{
 &"frameData": Rect2(0, 0, 0, 0),
 &"region_rect": Rect2(2127, 5294, 699, 636),
 &"rotated": false
-}]
-asset = ""
-metadata/offset = Vector2(2, -21)
-
-[sub_resource type="Resource" id="Resource_nnh53"]
-script = ExtResource("7_ia13n")
-frames = [{
-&"frameData": Rect2(45, 13, 748, 649),
-&"region_rect": Rect2(7098, 1325, 701, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(45, 13, 748, 649),
-&"region_rect": Rect2(0, 1978, 703, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 21, 748, 649),
-&"region_rect": Rect2(713, 1978, 748, 628),
-&"rotated": false
-}, {
-&"frameData": Rect2(47, 22, 748, 649),
-&"region_rect": Rect2(1471, 1978, 699, 627),
-&"rotated": false
-}]
-asset = ""
-metadata/offset = Vector2(45, -8)
-
-[sub_resource type="Resource" id="Resource_4he0h"]
-script = ExtResource("7_ia13n")
-frames = [{
-&"frameData": Rect2(2, 13, 703, 648),
-&"region_rect": Rect2(2127, 1325, 699, 635),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 13, 703, 648),
-&"region_rect": Rect2(2836, 1325, 703, 635),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 29, 703, 648),
-&"region_rect": Rect2(3549, 1325, 703, 619),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 29, 703, 648),
-&"region_rect": Rect2(4262, 1325, 699, 619),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 41, 703, 648),
-&"region_rect": Rect2(4971, 1325, 699, 607),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 41, 703, 648),
-&"region_rect": Rect2(5680, 1325, 699, 607),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 22, 703, 648),
-&"region_rect": Rect2(6389, 1325, 699, 626),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 0, 703, 648),
-&"region_rect": Rect2(709, 667, 699, 648),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 0, 703, 648),
-&"region_rect": Rect2(709, 667, 699, 648),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 0, 703, 648),
-&"region_rect": Rect2(709, 667, 699, 648),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 0, 703, 648),
-&"region_rect": Rect2(1418, 667, 699, 648),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 0, 703, 648),
-&"region_rect": Rect2(1418, 667, 699, 648),
-&"rotated": false
-}]
-asset = ""
-metadata/offset = Vector2(0, -9)
-
-[sub_resource type="Resource" id="Resource_jj73h"]
-script = ExtResource("7_ia13n")
-frames = [{
-&"frameData": Rect2(0, 3, 699, 636),
-&"region_rect": Rect2(709, 5294, 699, 633),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 3, 699, 636),
-&"region_rect": Rect2(709, 5294, 699, 633),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(1418, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(1418, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(2127, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(2127, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(2836, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(2836, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(3545, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(3545, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(1418, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(1418, 5294, 699, 636),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(2127, 5294, 699, 636),
-&"rotated": false
-}]
+}])
 asset = ""
 metadata/offset = Vector2(-2, -21)
 
-[sub_resource type="Resource" id="Resource_i70o8"]
-script = ExtResource("7_ia13n")
-frames = [{
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(6406, 3295, 699, 640),
+[sub_resource type="Resource" id="Resource_4mqbd"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
+&"frameData": Rect2(2, 5, 703, 638),
+&"region_rect": Rect2(2844, 4623, 699, 633),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 7, 703, 638),
+&"region_rect": Rect2(3553, 4623, 703, 631),
 &"rotated": false
 }, {
 &"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(7115, 3295, 699, 640),
+&"region_rect": Rect2(4266, 4623, 703, 638),
 &"rotated": false
 }, {
-&"frameData": Rect2(0, 2, 699, 640),
-&"region_rect": Rect2(0, 3952, 699, 638),
+&"frameData": Rect2(2, 0, 703, 638),
+&"region_rect": Rect2(4979, 4623, 699, 638),
 &"rotated": false
 }, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(709, 3952, 699, 640),
+&"frameData": Rect2(2, 0, 703, 638),
+&"region_rect": Rect2(5688, 4623, 699, 638),
 &"rotated": false
-}]
+}, {
+&"frameData": Rect2(2, 0, 703, 638),
+&"region_rect": Rect2(6397, 4623, 699, 638),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(7106, 4623, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(7106, 4623, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 1, 703, 638),
+&"region_rect": Rect2(0, 5294, 699, 637),
+&"rotated": false
+}])
 asset = ""
-metadata/offset = Vector2(-2, -17)
+metadata/offset = Vector2(0, -19)
 
-[sub_resource type="Resource" id="Resource_uc8n0"]
-script = ExtResource("7_ia13n")
-frames = [{
+[sub_resource type="Resource" id="Resource_i5p2q"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
 &"frameData": Rect2(2, 6, 703, 637),
 &"region_rect": Rect2(2853, 3295, 699, 631),
 &"rotated": false
@@ -5448,79 +5226,47 @@ frames = [{
 &"frameData": Rect2(2, 0, 703, 637),
 &"region_rect": Rect2(5697, 3295, 699, 637),
 &"rotated": false
-}]
+}])
 asset = ""
 metadata/offset = Vector2(0, -20)
 
-[sub_resource type="Resource" id="Resource_j3g7o"]
-script = ExtResource("7_ia13n")
-frames = [{
-&"frameData": Rect2(2, 5, 703, 638),
-&"region_rect": Rect2(2844, 4623, 699, 633),
-&"rotated": false
-}, {
-&"frameData": Rect2(0, 7, 703, 638),
-&"region_rect": Rect2(3553, 4623, 703, 631),
+[sub_resource type="Resource" id="Resource_go818"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(7098, 3952, 699, 661),
 &"rotated": false
 }, {
 &"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(4266, 4623, 703, 638),
+&"region_rect": Rect2(0, 4623, 703, 661),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 0, 703, 638),
-&"region_rect": Rect2(4979, 4623, 699, 638),
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(713, 4623, 703, 661),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 0, 703, 638),
-&"region_rect": Rect2(5688, 4623, 699, 638),
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(1426, 4623, 699, 661),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 0, 703, 638),
-&"region_rect": Rect2(6397, 4623, 699, 638),
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(2135, 4623, 699, 661),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(7106, 4623, 699, 637),
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(2135, 4623, 699, 661),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(7106, 4623, 699, 637),
+&"frameData": Rect2(2, 0, 703, 661),
+&"region_rect": Rect2(2135, 4623, 699, 661),
 &"rotated": false
-}, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(0, 5294, 699, 637),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(0, 5294, 699, 637),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(0, 5294, 699, 637),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(0, 5294, 699, 637),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(0, 5294, 699, 637),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(0, 5294, 699, 637),
-&"rotated": false
-}, {
-&"frameData": Rect2(2, 1, 703, 638),
-&"region_rect": Rect2(0, 5294, 699, 637),
-&"rotated": false
-}]
+}])
 asset = ""
-metadata/offset = Vector2(0, -19)
+metadata/offset = Vector2(0, 4)
 
-[sub_resource type="Resource" id="Resource_lmq12"]
-script = ExtResource("7_ia13n")
-frames = [{
+[sub_resource type="Resource" id="Resource_rthpv"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
 &"frameData": Rect2(2, 5, 703, 637),
 &"region_rect": Rect2(1418, 3952, 699, 632),
 &"rotated": false
@@ -5580,72 +5326,389 @@ frames = [{
 &"frameData": Rect2(2, 0, 703, 637),
 &"region_rect": Rect2(6389, 3952, 699, 637),
 &"rotated": false
-}]
+}])
 asset = ""
 metadata/offset = Vector2(0, -20)
 
-[sub_resource type="Resource" id="Resource_loo7g"]
-script = ExtResource("7_ia13n")
-frames = [{
-&"frameData": Rect2(2, 0, 703, 661),
-&"region_rect": Rect2(7098, 3952, 699, 661),
+[sub_resource type="Resource" id="Resource_17urv"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
+&"frameData": Rect2(2, 0, 703, 657),
+&"region_rect": Rect2(0, 0, 699, 657),
 &"rotated": false
 }, {
 &"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(0, 4623, 703, 661),
+&"region_rect": Rect2(709, 0, 703, 657),
 &"rotated": false
 }, {
-&"frameData": Rect2(0, 0, 0, 0),
-&"region_rect": Rect2(713, 4623, 703, 661),
+&"frameData": Rect2(0, 3, 703, 657),
+&"region_rect": Rect2(1422, 0, 703, 654),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 0, 703, 661),
-&"region_rect": Rect2(1426, 4623, 699, 661),
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2135, 0, 699, 654),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 0, 703, 661),
-&"region_rect": Rect2(2135, 4623, 699, 661),
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 0, 703, 661),
-&"region_rect": Rect2(2135, 4623, 699, 661),
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
 &"rotated": false
 }, {
-&"frameData": Rect2(2, 0, 703, 661),
-&"region_rect": Rect2(2135, 4623, 699, 661),
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
 &"rotated": false
-}]
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}])
 asset = ""
-metadata/offset = Vector2(0, 4)
+metadata/offset = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Resource_e6760"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
+&"frameData": Rect2(2, 0, 703, 657),
+&"region_rect": Rect2(0, 0, 699, 657),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(709, 0, 703, 657),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 3, 703, 657),
+&"region_rect": Rect2(1422, 0, 703, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2135, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 3, 703, 657),
+&"region_rect": Rect2(2844, 0, 699, 654),
+&"rotated": false
+}])
+asset = ""
+metadata/offset = Vector2(0, 0)
+
+[sub_resource type="Resource" id="Resource_ruiue"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
+&"frameData": Rect2(0, 3, 699, 636),
+&"region_rect": Rect2(709, 5294, 699, 633),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 3, 699, 636),
+&"region_rect": Rect2(709, 5294, 699, 633),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2836, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2836, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3545, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(3545, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(1418, 5294, 699, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(2127, 5294, 699, 636),
+&"rotated": false
+}])
+asset = ""
+metadata/offset = Vector2(2, -21)
+
+[sub_resource type="Resource" id="Resource_5nlvy"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
+&"frameData": Rect2(45, 13, 748, 649),
+&"region_rect": Rect2(7098, 1325, 701, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(45, 13, 748, 649),
+&"region_rect": Rect2(0, 1978, 703, 636),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 21, 748, 649),
+&"region_rect": Rect2(713, 1978, 748, 628),
+&"rotated": false
+}, {
+&"frameData": Rect2(47, 22, 748, 649),
+&"region_rect": Rect2(1471, 1978, 699, 627),
+&"rotated": false
+}])
+asset = ""
+metadata/offset = Vector2(45, -8)
+
+[sub_resource type="Resource" id="Resource_egoye"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
+&"frameData": Rect2(2, 13, 703, 648),
+&"region_rect": Rect2(2127, 1325, 699, 635),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 13, 703, 648),
+&"region_rect": Rect2(2836, 1325, 703, 635),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 29, 703, 648),
+&"region_rect": Rect2(3549, 1325, 703, 619),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 29, 703, 648),
+&"region_rect": Rect2(4262, 1325, 699, 619),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 41, 703, 648),
+&"region_rect": Rect2(4971, 1325, 699, 607),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 41, 703, 648),
+&"region_rect": Rect2(5680, 1325, 699, 607),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 22, 703, 648),
+&"region_rect": Rect2(6389, 1325, 699, 626),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(709, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(1418, 667, 699, 648),
+&"rotated": false
+}, {
+&"frameData": Rect2(2, 0, 703, 648),
+&"region_rect": Rect2(1418, 667, 699, 648),
+&"rotated": false
+}])
+asset = ""
+metadata/offset = Vector2(0, -9)
+
+[sub_resource type="Resource" id="Resource_aknf8"]
+script = ExtResource("7_43lla")
+frames = Array[Dictionary]([{
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(6406, 3295, 699, 640),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(7115, 3295, 699, 640),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 2, 699, 640),
+&"region_rect": Rect2(0, 3952, 699, 638),
+&"rotated": false
+}, {
+&"frameData": Rect2(0, 0, 0, 0),
+&"region_rect": Rect2(709, 3952, 699, 640),
+&"rotated": false
+}])
+asset = ""
+metadata/offset = Vector2(-2, -17)
 
 [sub_resource type="Resource" id="Resource_pemq3"]
-script = ExtResource("8_sf0sj")
-animationsArray = {
-&"cheer": SubResource("Resource_q8yxo"),
-&"combo50": SubResource("Resource_4qd8d"),
-&"danceLeft": SubResource("Resource_h8f6s"),
-&"danceRight": SubResource("Resource_1m7tc"),
-&"drop70": SubResource("Resource_lwjfr"),
-&"hairBlow": SubResource("Resource_nnh53"),
-&"hairFall": SubResource("Resource_4he0h"),
-&"sad": SubResource("Resource_jj73h"),
-&"scared": SubResource("Resource_i70o8"),
-&"singDOWN": SubResource("Resource_uc8n0"),
-&"singLEFT": SubResource("Resource_j3g7o"),
-&"singRIGHT": SubResource("Resource_lmq12"),
-&"singUP": SubResource("Resource_loo7g")
-}
-curAnim = SubResource("Resource_h8f6s")
-current_animation = &"danceLeft"
+script = ExtResource("8_vaoqp")
+animationsArray = Dictionary[StringName, ExtResource("7_43lla")]({
+&"cheer": SubResource("Resource_17urv"),
+&"combo50": SubResource("Resource_e6760"),
+&"danceLeft": SubResource("Resource_aba1a"),
+&"danceRight": SubResource("Resource_e30ob"),
+&"drop70": SubResource("Resource_ruiue"),
+&"hairBlow": SubResource("Resource_5nlvy"),
+&"hairFall": SubResource("Resource_egoye"),
+&"sad": SubResource("Resource_n77s7"),
+&"scared": SubResource("Resource_aknf8"),
+&"singDOWN": SubResource("Resource_i5p2q"),
+&"singLEFT": SubResource("Resource_4mqbd"),
+&"singRIGHT": SubResource("Resource_rthpv"),
+&"singUP": SubResource("Resource_go818")
+})
+curAnim = SubResource("Resource_e30ob")
+current_animation = &"danceRight"
 frame = 14
 
-[sub_resource type="Resource" id="Resource_33vsg"]
-script = ExtResource("9_fhqw1")
+[sub_resource type="Resource" id="Resource_c2n8v"]
+script = ExtResource("9_x00br")
+animationsArray = Dictionary[StringName, ExtResource("7_43lla")]({
+&"cheer": SubResource("Resource_17urv"),
+&"combo50": SubResource("Resource_e6760"),
+&"danceLeft": SubResource("Resource_aba1a"),
+&"danceRight": SubResource("Resource_e30ob"),
+&"drop70": SubResource("Resource_ruiue"),
+&"hairBlow": SubResource("Resource_5nlvy"),
+&"hairFall": SubResource("Resource_egoye"),
+&"sad": SubResource("Resource_n77s7"),
+&"scared": SubResource("Resource_aknf8"),
+&"singDOWN": SubResource("Resource_i5p2q"),
+&"singLEFT": SubResource("Resource_4mqbd"),
+&"singRIGHT": SubResource("Resource_rthpv"),
+&"singUP": SubResource("Resource_go818")
+})
 imageFile = "characters/GF_assets"
 healthBarColors = Color(0.64705884, 0, 0.3019608, 1)
 
 [node name="Breach" type="Node3D" unique_id=658534795 node_paths=PackedStringArray("boyfriend", "dad", "gf")]
-script = ExtResource("1_doisg")
+script = ExtResource("1_s8hal")
 boyfriend = NodePath("camGame/boyfriend")
 dad = NodePath("camGame/dad")
 gf = NodePath("camGame/gf")
@@ -5655,43 +5718,43 @@ playAsOpponent = false
 botplay = false
 
 [node name="camGame" type="Node3D" parent="." unique_id=877551204]
-script = ExtResource("3_qks6i")
+script = ExtResource("3_t5r1v")
 zoom = 0.8
 default_zoom = 0.8
 scroll = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15725672, 2.3008246, 11.27621)
 size = Vector2(1280, 720)
 
-[node name="Brench" parent="camGame" unique_id=1834704661 instance=ExtResource("4_55o6w")]
+[node name="Brench" parent="camGame" unique_id=1834704661 instance=ExtResource("4_5ltl1")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.016497612, 0, 8.467769)
 
 [node name="scroll" type="Camera3D" parent="camGame" unique_id=254921380]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.15725672, 2.3008246, 11.27621)
-script = ExtResource("5_be2nr")
+script = ExtResource("5_rcu5i")
 
 [node name="boyfriend" type="Node3D" parent="camGame" unique_id=496240671]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6535006, 3.1292522, 8.515144)
-script = ExtResource("6_xbp0w")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.6535006, 3.152609, 8.515144)
+script = ExtResource("6_wncyn")
 curCharacter = "bf"
 animation = SubResource("Resource_k6agu")
 self_modulate = Color(1, 1, 1, 1)
 pivot_offset = Vector2(0.51, 0.515)
-data = SubResource("Resource_tb0b2")
+data = SubResource("Resource_ygkkm")
 metadata/_custom_type_script = "uid://b71vleqndetjo"
 
 [node name="dad" type="Node3D" parent="camGame" unique_id=1026247770]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8816367, 3.1255457, 8.395768)
-script = ExtResource("6_xbp0w")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.8816367, 3.1489027, 8.395768)
+script = ExtResource("6_wncyn")
 curCharacter = "bf"
 charType = 1
 animation = SubResource("Resource_pcvdj")
 self_modulate = Color(1, 1, 1, 1)
 pivot_offset = Vector2(0.51, 0.515)
-data = SubResource("Resource_i8k8d")
+data = SubResource("Resource_ob1ui")
 metadata/_custom_type_script = "uid://b71vleqndetjo"
 
 [node name="gf" type="Node3D" parent="camGame" unique_id=422068453]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8626978, 8.18861)
-script = ExtResource("6_xbp0w")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.8485696, 8.226431)
+script = ExtResource("6_wncyn")
 curCharacter = "gf"
 charType = 2
 animation = SubResource("Resource_pemq3")
@@ -5699,25 +5762,25 @@ self_modulate = Color(1, 1, 1, 1)
 offset = Vector2(0, -0.022499999)
 offset_follow_flip = false
 offset_follow_scale = false
-pivot_offset = Vector2(0.87375, 0.81)
-data = SubResource("Resource_33vsg")
+pivot_offset = Vector2(0.87375, 0.8025)
+data = SubResource("Resource_c2n8v")
 metadata/_custom_type_script = "uid://b71vleqndetjo"
 
 [node name="camHUD" type="Node2D" parent="." unique_id=1772871308]
-modulate = Color(1, 1, 0.8117647, 1)
-script = ExtResource("9_sc367")
+modulate = Color(0.9019608, 1, 1, 1)
+script = ExtResource("10_l107v")
 size = Vector2(1280, 720)
 try_to_follow_aspect = true
 
 [node name="scroll" type="Node2D" parent="camHUD" unique_id=1664743972]
-script = ExtResource("10_l7fuk")
+script = ExtResource("11_q33tf")
 pivot_offset = Vector2(640, 360)
 
 [node name="camOther" type="Node2D" parent="." unique_id=1890960877]
-script = ExtResource("9_sc367")
+script = ExtResource("10_l107v")
 size = Vector2(1280, 720)
 try_to_follow_aspect = true
 
 [node name="scroll" type="Node2D" parent="camOther" unique_id=1562103320]
-script = ExtResource("10_l7fuk")
+script = ExtResource("11_q33tf")
 pivot_offset = Vector2(640, 360)

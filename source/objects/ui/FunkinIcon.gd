@@ -53,7 +53,7 @@ func set_icon(icon: Texture):
 		animation.add_frame_animation(&'normal',[0])
 		animation.add_frame_animation(&'losing',[1])
 
-func reloadIconFromCharacterJson(data: CharacterData): 
+func reloadIconFromCharacterData(data: CharacterData): 
 	changeIcon(data.iconData.get(&'id',&'icon-face')); 
 	set_pixel(data.iconData.get(&'isPixel',false),data.iconData.get(&'canScale',false))
 

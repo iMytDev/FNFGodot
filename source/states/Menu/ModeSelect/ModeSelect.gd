@@ -2,7 +2,7 @@ extends Node2D
 
 const StoryMenu = preload("uid://dlwh1vofi13a5")
 const Freeplay = preload("uid://c5emumn8mkcd5")
-const Options = preload("uid://by3jq4hq8gst8")
+const Options = preload("uid://bf7b2xysqcv0i")
 const OptionScroll = preload("uid://d3jka7l4iy07n")
 
 #region Editors

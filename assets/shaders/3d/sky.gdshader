@@ -25,8 +25,8 @@ uniform sampler2D sky_cover: filter_linear, source_color, hint_default_black;
 group_uniforms Clouds;
 uniform bool clouds = true;
 uniform float clouds_offset = -0.1;
-uniform vec2 cloud_direction = vec2(3.0,9.0);
-uniform float clouds_wave_strength = 0.01;
+uniform vec2 cloud_direction = vec2(3.0,7.0);
+uniform float clouds_wave_strength = 0.005;
 uniform vec2 cloud_scale = vec2(1.0);
 uniform sampler2D cloud_texture;
 
@@ -120,14 +120,16 @@ void sky() {
 		if(cloud_y >= 0.15){
 			float time = TIME*0.005;
 			vec2 uv = EYEDIR.xz / cloud_y;
+			float _time_cos = cos(time + uv.y * 20.0);
 			vec2 wave = vec2(
-				cos(time + uv.y * 20.0),
+				_time_cos,
 				sin(time + uv.x * 20.0)
 			);
 			wave *= clouds_wave_strength;
 			uv += wave;
 			vec4 clouds_col = texture(cloud_texture,uv * cloud_scale + time*cloud_direction);
 			clouds_col *= max(0.005,1.0 - dts);
+			clouds_col *= 1.0 - (1.0 - cos(time) - _time_cos)*0.15;
 			COLOR += max(vec3(0.0),clouds_col.rgb - COLOR);
 		}
 	}

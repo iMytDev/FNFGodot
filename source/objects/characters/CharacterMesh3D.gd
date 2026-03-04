@@ -16,7 +16,7 @@ func _ready() -> void:
 		_update_marker_editor()
 		return
 	
-	hasDanceAnim = animation.has_animation(&"danceLeft") or animation.has_animation(&"danceRight")
+	data.hasDanceAnim = animation.has_animation(&"danceLeft") or animation.has_animation(&"danceRight")
 	animation.animation_started.connect(_on_animation_started)
 	animation.animation_finished.connect(_on_animation_finished)
 
@@ -27,7 +27,7 @@ func _update_marker_editor():
 
 #region Dance Methods
 func dance() -> void: ##Make character returns to his dance animation.
-	if not hasDanceAnim: animation.play(_idle_anim,forceDance)
+	if not data.hasDanceAnim: animation.play(_idle_anim,forceDance)
 	else: animation.play(&'danceRight' if danced else &'danceLeft',forceDance); danced = !danced
 	super()
 #endregion
@@ -37,4 +37,4 @@ func getCameraRotation() -> Vector3: return cameraPosition.rotation
 
 func _on_animation_started(anim: StringName) -> void: super(anim); animation.seek(0)
 
-func _on_animation_finished(_anim: StringName): if specialAnim or danceOnAnimEnd and _anim.begins_with('sing'): dance();
+func _on_animation_finished(_anim: StringName): if specialAnim or data.danceOnAnimEnd and _anim.begins_with('sing'): dance();

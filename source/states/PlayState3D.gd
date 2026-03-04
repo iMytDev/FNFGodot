@@ -30,7 +30,7 @@ func charactersDance() -> void:
 	var beat = Conductor.beat
 	for character in active_characters:
 		if !(character and character.can_dance()): continue
-		if !(beat % character.danceEveryNumBeats): character.dance()
+		if !(beat % character.data.danceEveryNumBeats): character.dance()
 
 func loadCharactersFromData():
 	var data = SONG.data

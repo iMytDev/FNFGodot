@@ -55,6 +55,7 @@ var animations_use_textures: bool
 ##[/codeblock]
 @export var auto_loop: bool
 
+var reversed: bool = false
 var frame_data: Dictionary
 var maxFrames: int ##The number of frames in the animation.
 
@@ -73,6 +74,7 @@ signal animation_stopped()
 ##If [param force] is [code]true[/code], the animation will be forced to restart if already playing.[br]
 ##See also [method play_reverse].
 func play(anim: StringName = current_animation, force: bool = false) -> bool:
+	reversed = false
 	if !can_play(anim,force): return false
 	current_animation = anim
 	update_anim()
@@ -94,6 +96,7 @@ func play_reverse(anim: StringName, force: bool = false) -> void: ##Plays the an
 	update_anim()
 	frame = maxFrames-1; 
 	_float_frame = frame;
+	reversed = true
 	_start_anim()
 #endregion
 
@@ -119,6 +122,7 @@ func add_animation_by_prefix(animName: StringName, prefix: StringName, fps: floa
 	anim_data.looped = loop
 	anim_data.prefix = prefix
 	anim_data.frameRate = fps
+	anim_data.resource_name = animName
 	insert_animation(animName,anim_data)
 	return anim_data
 
@@ -197,7 +201,8 @@ func _validate_property(property: Dictionary) -> void:
 		
 func _set(property: StringName, value: Variant) -> bool:
 	match property:
-		&"frame": frame = (clampi(value,0,maxi(0,maxFrames-1)));
+		&"frame": 
+			if maxFrames: frame = (clampi(value,0,maxFrames-1));
 		_: return false
 	return true
 #endregion
@@ -211,9 +216,7 @@ func _verify_loop(anim: String): if !play(anim+'-loop',true): play(anim+'-hold',
 
 func _start_anim():
 	finished = false
-	if curAnim.frames: 
-		playing = true
-		_on_frame_set()
+	if curAnim.frames: playing = true; _on_frame_set()
 	animation_started.emit(current_animation)
 
 func update_anim():
@@ -231,6 +234,9 @@ func _finish_animation() -> void:
 
 func insert_animation(animName: StringName, animData: AnimationData) -> void:
 	if !animData: return
+	if !animData.frames:
+		push_error("Error in insert_animation: Cannot add a animation without frames")
+		return
 	animationsArray[animName] = animData
 	
 	if !current_animation: play(animName)
@@ -243,19 +249,25 @@ func insert_animation(animName: StringName, animData: AnimationData) -> void:
 
 #region Process Animation
 func process_frame(delta: float) -> void: ##Process animation
-	if !playing or !curAnim: return
-	_float_frame += delta*curAnim._real_frame_rate*speed_scale
+	if !playing or !curAnim: 
+		return
+	var del = delta * curAnim._real_frame_rate * speed_scale
+	if reversed: 
+		del *= -1.0
+	_float_frame += del
 	
 	var int_frame = int(_float_frame)
 	if int_frame < 0 or int_frame >= maxFrames: 
 		if curAnim.looped: 
 			int_frame = curAnim.loop_frame; _float_frame = int_frame;
-		else: _finish_animation()
+		else: 
+			_finish_animation()
 		return
 	frame = int_frame;
 
 func _on_frame_safe_set() -> void:
-	if !curAnim or curAnim.frames.size() < frame: return
+	if not (curAnim and curAnim.frames): return
+	frame = clampi(frame,0,maxFrames)
 	_on_frame_set()
 
 func _on_frame_set():

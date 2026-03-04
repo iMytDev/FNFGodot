@@ -39,7 +39,10 @@ func _input(event: InputEvent) -> void: if controller.main_viewport: controller.
 #region Setters
 func set_size(s: Vector2): size = s
 func set_scroll(v: Transform3D): scroll_camera.transform = v
-func set_zoom(v: float = zoom): scroll_camera.fov = LockedCamera3D.DEFAULT_FOV / v; zoom = v
+func set_zoom(v: float = zoom): 
+	zoom = v
+	v *= 1.0
+	scroll_camera.fov = LockedCamera3D.DEFAULT_FOV / v;
 func _set_shake_pos(s: Vector2): 
 	var s_r = s * 0.0025
 	_shake_pos = s; scroll_camera.h_offset = s_r.x; scroll_camera.v_offset = s_r.y

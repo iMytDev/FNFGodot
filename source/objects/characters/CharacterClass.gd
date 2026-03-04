@@ -60,26 +60,12 @@ static func getCharactersList(return_jsons: bool = false) -> Variant:
 
 #region Character Animations
 static func update_dance_speed(char):
-	if !char.hasDanceAnim: return
+	if !char.data.hasDanceAnim: return
 	for i in dance_anims:
 		var animData = char.animation.animationsArray.get(i); if !animData: continue
 		var anim_length = 1.0/animData.frameRate * animData.frames.size()
 		var crochet_speed = (Conductor.bpm_data.crochet*0.007)
 		animData.speed_scale = clampf(anim_length / crochet_speed,1.0,3.0)
-
-static func load_character_animations(char: Node):
-	var has_dance_anim: bool
-	var has_miss_anims: bool
-	
-	char.animation.clearLibrary()
-	char.animation.animations_use_textures = false
-	char.animation.animationsArray = char.json.animations
-	for i in char.json.animations:
-		if !has_miss_anims and i.ends_with("-miss"): has_miss_anims = true
-		if !has_dance_anim and (i.begins_with("danceLeft") or i.begins_with("danceRight")): has_dance_anim = true
-	char.hasMissAnimations = has_miss_anims
-	char.hasDanceAnim = has_dance_anim
-	char.danceEveryNumBeats = 1 if has_dance_anim else 2
 
 static func _add_character_animation(char, animName: StringName, data: Dictionary) -> AnimationData:
 	var asset = char.image.texture

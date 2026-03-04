@@ -317,8 +317,8 @@ static func cancelTween(tag: String) -> void: FunkinTweenerServer.cancel_tween(t
 static func isTweenRunning(tag: String) -> bool: return FunkinTweenerServer.is_tween_running(tag) ##Detect if the a Tween is running by its tag.
 
 ##Creates a TweenZoom for cameras.
-static func doTweenZoom(tag: StringName,object: Variant, toZoom, time = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
-	return doTween(tag, object, {&'zoom': float(toZoom)}, float(time), easing)
+static func doTweenZoom(tag: StringName, object: Variant, to: Variant, time: Variant = 1.0, easing: StringName = &'') -> FunkinTweenerObject: 
+	return doTween(tag, object, {&'zoom': float(to)}, float(time), easing)
 
 ##Create a Tween changing the x value, can be usefull not just for positions, but for anothers variables too, the same for the different tweens.
 ##Example: [codeblock]

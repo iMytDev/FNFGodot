@@ -124,7 +124,8 @@ func onBeatHit() -> void: _check_stage_sprites_beat(); super()
 #region Scripts methods
 func trigger_event(event: StringName, values: Dictionary) -> void:
 	super(event, values)
-	FunkinGD.callScript(&"onLocalEvent", "custom_events/2d/"+event, values)
+	print("custom_events/2d/"+event)
+	FunkinGD.callScript("custom_events/2d/"+event,&"onLocalEvent", values)
 
 func loadExternalScript(path: String) -> Object:
 	var script = super(path); if script: return script
