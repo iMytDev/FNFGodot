@@ -5,5 +5,3 @@
 </p>
 
 Only the repository of the engine, it isn't functioning yet.
-
-Discord Link: https://discord.gg/Xp8MGVpgfr
